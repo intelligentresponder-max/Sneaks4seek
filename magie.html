@@ -54,6 +54,17 @@
   /* Confetti */
   .confetti{position:fixed;width:10px;height:10px;z-index:40;opacity:0;pointer-events:none}
   @keyframes fall{0%{opacity:1;transform:translateY(-20px) rotate(0)}100%{opacity:0;transform:translateY(100vh) rotate(540deg)}}
+
+  /* JOKER hypnotic overlay */
+  .joker-overlay{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.85);opacity:0;pointer-events:none;transition:opacity .5s}
+  .joker-overlay.show{opacity:1;pointer-events:auto}
+  .joker-spiral{width:min(90vw,460px);height:min(90vw,460px);background-image:url('joker-spiral.webp');background-size:contain;background-repeat:no-repeat;background-position:center;animation:spin-spiral 6s linear infinite;filter:drop-shadow(0 0 30px rgba(204,255,0,.4))}
+  @keyframes spin-spiral{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .joker-text{position:absolute;text-align:center;z-index:62;pointer-events:none}
+  .joker-text .jt-main{font-family:'Archivo Black',sans-serif;font-size:clamp(2rem,9vw,4rem);color:var(--volt);text-transform:uppercase;letter-spacing:.05em;filter:drop-shadow(0 0 20px rgba(0,0,0,.9));animation:joker-pulse 1.2s ease-in-out infinite}
+  @keyframes joker-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+  .joker-close{position:absolute;bottom:8vh;z-index:63;background:var(--volt);color:var(--nero);font-weight:700;font-family:'Inter',sans-serif;padding:14px 36px;border:none;border-radius:50px;cursor:pointer;font-size:1rem;box-shadow:0 8px 30px rgba(204,255,0,.4)}
+  @media(prefers-reduced-motion:reduce){.joker-spiral{animation:none}.joker-text .jt-main{animation:none}}
 </style>
 </head>
 <body>
@@ -87,6 +98,14 @@
   <a class="wa" id="rwa" href="#" target="_blank">Auf WhatsApp einlösen →</a>
 </div>
 
+<div class="joker-overlay" id="jokerOverlay">
+  <div class="joker-spiral"></div>
+  <div class="joker-text">
+    <div class="jt-main">🃏 JOKER<br>777</div>
+  </div>
+  <button class="joker-close" id="jokerClose">Bonus einlösen ✨</button>
+</div>
+
 <footer>
   <div class="wrap">
     Sneakers<span style="color:var(--volt)">4</span>Seeker · Glücksrad nur zum Spaß ✨<br>
@@ -98,7 +117,7 @@
   const segments = [
     {label:"5% Bonus", title:"5% EXTRA", text:"Du bekommst 5% mehr auf deinen Verkauf oder 5% Rabatt beim Ankauf!", win:true},
     {label:"Free Check", title:"GRATIS CHECK", text:"Kostenloser Echtheits-Check für dein nächstes Paar.", win:true},
-    {label:"Nochmal", title:"FAST!", text:"Knapp daneben — aber meld dich trotzdem, wir finden was für dich.", win:false},
+    {label:"🃏 JOKER", title:"🃏 JOKER 777", text:"DER JACKPOT! Du hast den Joker gedreht. Schreib uns '777 JOKER' für deinen größten Bonus — frei verhandelbar!", win:true, joker:true},
     {label:"VIP Drop", title:"VIP DROP", text:"Du kommst auf die VIP-Liste für die nächsten heißen Drops!", win:true},
     {label:"Priorität", title:"PRIORITÄT", text:"Deine Anfrage wird bevorzugt bearbeitet. Schnellster Service!", win:true},
     {label:"Try again", title:"NEXT TIME", text:"Diesmal kein Bonus — aber der Sneaker-Gott meint es gut, schreib uns!", win:false},
@@ -174,8 +193,22 @@
       document.getElementById('rwa').href='https://wa.me/491634692255?text='+waText;
       resultEl.classList.add('show');
       if(seg.win){ resultEl.classList.add('win'); confetti(); }
+      // JOKER: hypnotischer Spiral-Effekt
+      if(seg.joker){
+        const ov = document.getElementById('jokerOverlay');
+        ov.classList.add('show');
+        confetti();
+        setTimeout(confetti, 700);
+      }
       spinning=false;
     },4600);
+  });
+
+  // Joker-Overlay schließen -> öffnet WhatsApp
+  document.getElementById('jokerClose').addEventListener('click',()=>{
+    document.getElementById('jokerOverlay').classList.remove('show');
+    const t = encodeURIComponent("Hi Sneakers4Seeker! 🃏 Ich hab den JOKER 777 am Glücksrad gedreht! Das ist mein größter Bonus — lass uns reden! ✨");
+    window.open('https://wa.me/491634692255?text='+t,'_blank');
   });
 </script>
 
