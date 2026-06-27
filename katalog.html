@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Der Sneaker-Katalog von Sneakers4Seeker — verfügbare Paare, Größen und Preise. Direkt per WhatsApp anfragen.">
+<meta name="keywords" content="Sneaker Katalog, verfügbare Sneakers, Sneaker kaufen, Sneakers4Seeker">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://intelligentresponder-max.github.io/Sneaks4seek/katalog.html">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Sneaker-Katalog — Sneakers4Seeker">
+<meta property="og:description" content="Verfügbare Paare, Größen und Preise. Direkt per WhatsApp anfragen.">
+<title>Sneaker-Katalog — Sneakers4Seeker</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--volt:#CCFF00;--volt-2:#a6d400;--nero:#0B0B0B;--nero-2:#141414;--nero-3:#1E1E1E;--grigio:#888;--bianco:#F5F5F5;--wa:#25D366}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--nero);color:var(--bianco);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Archivo Black',sans-serif;font-weight:400;line-height:1.05;text-transform:uppercase}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(11,11,11,.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(204,255,0,.15)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:60px;max-width:1080px;margin:0 auto;padding:0 22px}
+  .logo{font-family:'Archivo Black',sans-serif;font-size:1.2rem}
+  .logo span{color:var(--volt)}
+  .nav-links{display:flex;gap:16px;font-size:.8rem;font-weight:500;color:var(--grigio)}
+  .nav-links a:hover{color:var(--volt)}
+
+  .hero{text-align:center;padding:60px 0 30px;background:radial-gradient(circle at 50% 0%,rgba(204,255,0,.10),transparent 55%)}
+  .hero .kick{color:var(--volt);font-size:.72rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;margin-bottom:14px}
+  .hero h1{font-size:clamp(2.2rem,7vw,3.4rem);margin-bottom:14px}
+  .hero h1 .volt{color:var(--volt)}
+  .hero p{color:var(--grigio);max-width:480px;margin:0 auto;font-size:1rem}
+
+  .gallery{padding:30px 0 60px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:24px}
+  .card{background:var(--nero-2);border:1px solid rgba(204,255,0,.15);border-radius:18px;overflow:hidden;transition:border-color .25s,transform .25s}
+  .card:hover{border-color:rgba(204,255,0,.5);transform:translateY(-4px)}
+  .card-img{aspect-ratio:4/3;background:linear-gradient(160deg,#222,#0B0B0B);display:flex;align-items:center;justify-content:center;font-size:3rem;color:var(--grigio)}
+  .card-body{padding:18px 20px}
+  .card-body .brand{color:var(--volt);font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+  .card-body h3{font-size:1.3rem;margin:6px 0 2px;font-family:'Inter',sans-serif;font-weight:700;text-transform:none}
+  .card-body .spec{color:var(--grigio);font-size:.85rem;margin-bottom:12px}
+  .card-body .price{font-family:'Archivo Black',sans-serif;font-size:1.4rem;color:var(--bianco);margin-bottom:14px}
+  .btn-wa{display:block;text-align:center;background:var(--wa);color:#fff;font-weight:600;padding:11px;border-radius:50px;font-size:.85rem;transition:transform .2s}
+  .btn-wa:hover{transform:translateY(-2px)}
+  .status{display:inline-block;font-size:.68rem;font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:3px 10px;border-radius:20px;margin-bottom:8px}
+  .status.available{background:rgba(63,181,92,.15);color:#3FB55C}
+  .status.soon{background:rgba(204,255,0,.12);color:var(--volt)}
+
+  .note{max-width:760px;margin:36px auto 0;padding:16px 20px;border-left:3px solid var(--volt);background:rgba(204,255,0,.06);color:var(--grigio);font-size:.85rem;border-radius:0 10px 10px 0}
+  .note b{color:var(--bianco)}
+
+  footer{text-align:center;padding:48px 0 40px;border-top:1px solid rgba(204,255,0,.15);color:var(--grigio);font-size:.82rem}
+  footer .logo{display:inline-block;margin-bottom:12px;font-size:1.2rem}
+  footer a{color:var(--volt)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a href="index.html" class="logo">Sneakers<span>4</span>Seeker</a>
+    <div class="nav-links">
+      <a href="verkaufen.html">Verkaufen</a>
+      <a href="ankauf.html">Ankauf</a>
+      <a href="index.html">Start</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="kick">Aktuell verfügbar</div>
+    <h1>Der <span class="volt">Katalog</span></h1>
+    <p>Frische Paare, faire Preise. Was dir gefällt, fragst du direkt per WhatsApp an — schnell und unkompliziert.</p>
+  </div>
+</section>
+
+<section class="gallery">
+  <div class="wrap">
+    <div class="grid">
+      <!-- ============================================================ -->
+      <!--  SNEAKER HINZUFÜGEN (für André):                             -->
+      <!--  1. Kopiere einen ganzen <article class="card">...</article> -->
+      <!--  2. Für ein echtes Foto: ersetze <div class="card-img">👟    -->
+      <!--     durch: <div class="card-img" style="background-image:     -->
+      <!--     url('bilder/DATEINAME.jpg');background-size:cover"></div>  -->
+      <!--  3. Marke, Name, Größe, Preis + WhatsApp-Link anpassen.       -->
+      <!-- ============================================================ -->
+
+      <article class="card">
+        <div class="card-img">👟</div>
+        <div class="card-body">
+          <span class="status available">Verfügbar</span>
+          <div class="brand">Beispiel · Marke</div>
+          <h3>Modellname</h3>
+          <div class="spec">Größe EU 43 · Zustand: Neu (DS)</div>
+          <div class="price">€ —</div>
+          <a class="btn-wa" href="https://wa.me/491634692255?text=Hi!%20Ich%20interessiere%20mich%20f%C3%BCr%20ein%20Paar%20aus%20dem%20Katalog.">Anfragen</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-img">👟</div>
+        <div class="card-body">
+          <span class="status available">Verfügbar</span>
+          <div class="brand">Beispiel · Marke</div>
+          <h3>Modellname</h3>
+          <div class="spec">Größe EU 42 · Zustand: Wie neu</div>
+          <div class="price">€ —</div>
+          <a class="btn-wa" href="https://wa.me/491634692255?text=Hi!%20Ich%20interessiere%20mich%20f%C3%BCr%20ein%20Paar%20aus%20dem%20Katalog.">Anfragen</a>
+        </div>
+      </article>
+
+      <article class="card">
+        <div class="card-img">👟</div>
+        <div class="card-body">
+          <span class="status soon">Bald da</span>
+          <div class="brand">Beispiel · Marke</div>
+          <h3>Modellname</h3>
+          <div class="spec">Größe EU 44 · Zustand: Neu (DS)</div>
+          <div class="price">€ —</div>
+          <a class="btn-wa" href="https://wa.me/491634692255?text=Hi!%20Ich%20interessiere%20mich%20f%C3%BCr%20ein%20Paar%20aus%20dem%20Katalog.">Anfragen</a>
+        </div>
+      </article>
+    </div>
+
+    <div class="note">
+      <b>Interner Hinweis:</b> Dies sind Platzhalter. Schick Robo Bro die echten Modelle, Größen, Preise und Fotos — dann werden sie hier eingebaut. Fotos kommen in einen Ordner <code>bilder/</code> im Repo.
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a href="index.html" class="logo">Sneakers<span style="color:var(--volt)">4</span>Seeker</a>
+    <div>© 2026 Sneakers4Seeker · <a href="verkaufen.html">Selbst verkaufen?</a></div>
+  </div>
+</footer>
+
+</body>
+</html>
