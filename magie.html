@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Das Sneaker-Glücksrad von Sneakers4Seeker — dreh am Rad und sichere dir deinen Drop-Bonus. 777 Style.">
+<meta name="robots" content="noindex">
+<title>Sneaker-Glücksrad ✨ — Sneakers4Seeker</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--volt:#CCFF00;--volt-2:#a6d400;--nero:#0B0B0B;--nero-2:#141414;--nero-3:#1E1E1E;--grigio:#888;--bianco:#F5F5F5;--wa:#25D366}
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--nero);color:var(--bianco);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{font-family:'Archivo Black',sans-serif;font-weight:400;line-height:1.05;letter-spacing:-.01em;text-transform:uppercase}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:600px;margin:0 auto;padding:0 22px}
+
+  /* Ambient glow */
+  .glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 50% 30%,rgba(204,255,0,.10),transparent 55%)}
+
+  header{position:relative;z-index:5;border-bottom:1px solid rgba(204,255,0,.15);background:rgba(11,11,11,.85);backdrop-filter:blur(10px)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:58px;max-width:600px;margin:0 auto;padding:0 22px}
+  .logo{font-family:'Archivo Black',sans-serif;font-size:1.15rem}
+  .logo span{color:var(--volt)}
+  .nav-back{font-size:.76rem;font-weight:500;color:var(--grigio)}
+  .nav-back:hover{color:var(--volt)}
+
+  .intro{position:relative;z-index:5;text-align:center;padding:46px 0 20px}
+  .seven{font-family:'Archivo Black',sans-serif;font-size:2.6rem;color:var(--volt);letter-spacing:.1em;filter:drop-shadow(0 0 18px rgba(204,255,0,.4));margin-bottom:6px}
+  .intro h1{font-size:1.9rem;margin-bottom:10px}
+  .intro p{color:var(--grigio);font-size:.95rem;max-width:400px;margin:0 auto}
+
+  /* Wheel */
+  .wheel-wrap{position:relative;z-index:5;width:300px;height:300px;margin:30px auto 10px}
+  .pointer{position:absolute;top:-6px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:26px solid var(--volt);z-index:10;filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+  canvas{border-radius:50%;box-shadow:0 0 0 6px var(--nero-2),0 0 0 8px rgba(204,255,0,.3),0 20px 50px rgba(0,0,0,.6);transition:transform 4.5s cubic-bezier(.17,.67,.2,1)}
+  .hub{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:54px;height:54px;border-radius:50%;background:radial-gradient(circle at 35% 35%,var(--volt),var(--volt-2));display:flex;align-items:center;justify-content:center;font-size:1.5rem;z-index:8;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+
+  .spin-btn{position:relative;z-index:5;display:block;margin:24px auto 0;background:var(--volt);color:var(--nero);font-weight:700;font-family:'Inter',sans-serif;font-size:1.05rem;padding:16px 44px;border:none;border-radius:50px;cursor:pointer;box-shadow:0 8px 30px rgba(204,255,0,.3);transition:transform .2s,box-shadow .2s}
+  .spin-btn:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(204,255,0,.5)}
+  .spin-btn:disabled{background:var(--nero-3);color:#666;cursor:not-allowed;transform:none;box-shadow:none}
+
+  /* Result */
+  .result{position:relative;z-index:5;max-width:440px;margin:30px auto 0;text-align:center;padding:26px 24px;border-radius:18px;background:var(--nero-2);border:1px solid rgba(204,255,0,.15);opacity:0;transform:translateY(10px);transition:opacity .4s,transform .4s,border-color .4s}
+  .result.show{opacity:1;transform:translateY(0)}
+  .result.win{border-color:rgba(204,255,0,.5);background:linear-gradient(160deg,rgba(204,255,0,.1),rgba(204,255,0,.02))}
+  .result .rtitle{font-family:'Archivo Black',sans-serif;font-size:1.5rem;color:var(--volt);margin-bottom:8px;text-transform:uppercase}
+  .result p{color:var(--bianco);font-size:.95rem;margin-bottom:16px}
+  .result .wa{display:inline-block;background:var(--wa);color:#fff;font-weight:600;padding:12px 28px;border-radius:50px;font-size:.9rem}
+
+  footer{position:relative;z-index:5;text-align:center;padding:36px 0;color:var(--grigio);font-size:.78rem;margin-top:20px;border-top:1px solid rgba(204,255,0,.12)}
+  footer a{color:var(--volt)}
+
+  /* Confetti */
+  .confetti{position:fixed;width:10px;height:10px;z-index:40;opacity:0;pointer-events:none}
+  @keyframes fall{0%{opacity:1;transform:translateY(-20px) rotate(0)}100%{opacity:0;transform:translateY(100vh) rotate(540deg)}}
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<header>
+  <div class="nav">
+    <a href="index.html" class="logo">Sneakers<span>4</span>Seeker</a>
+    <a href="index.html" class="nav-back">← Zurück</a>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="seven">777</div>
+  <h1>Das Glücksrad</h1>
+  <p>Dreh am Rad und sichere dir deinen Drop-Bonus. Ein Spin pro Besuch — viel Glück!</p>
+</section>
+
+<div class="wheel-wrap">
+  <div class="pointer"></div>
+  <canvas id="wheel" width="300" height="300"></canvas>
+  <div class="hub">👟</div>
+</div>
+
+<button class="spin-btn" id="spin">Dreh das Rad ✨</button>
+
+<div class="result" id="result">
+  <div class="rtitle" id="rtitle"></div>
+  <p id="rtext"></p>
+  <a class="wa" id="rwa" href="#" target="_blank">Auf WhatsApp einlösen →</a>
+</div>
+
+<footer>
+  <div class="wrap">
+    Sneakers<span style="color:var(--volt)">4</span>Seeker · Glücksrad nur zum Spaß ✨<br>
+    Bonus gilt nach Absprache via WhatsApp.
+  </div>
+</footer>
+
+<script>
+  const segments = [
+    {label:"5% Bonus", title:"5% EXTRA", text:"Du bekommst 5% mehr auf deinen Verkauf oder 5% Rabatt beim Ankauf!", win:true},
+    {label:"Free Check", title:"GRATIS CHECK", text:"Kostenloser Echtheits-Check für dein nächstes Paar.", win:true},
+    {label:"Nochmal", title:"FAST!", text:"Knapp daneben — aber meld dich trotzdem, wir finden was für dich.", win:false},
+    {label:"VIP Drop", title:"VIP DROP", text:"Du kommst auf die VIP-Liste für die nächsten heißen Drops!", win:true},
+    {label:"Priorität", title:"PRIORITÄT", text:"Deine Anfrage wird bevorzugt bearbeitet. Schnellster Service!", win:true},
+    {label:"Try again", title:"NEXT TIME", text:"Diesmal kein Bonus — aber der Sneaker-Gott meint es gut, schreib uns!", win:false},
+    {label:"10% Bonus", title:"10% JACKPOT", text:"Großer Treffer! 10% Bonus auf deinen Deal. 777!", win:true},
+    {label:"Mystery", title:"MYSTERY", text:"Mystery-Bonus! Schreib uns das Codewort '777' für eine Überraschung.", win:true}
+  ];
+  const colors = ['#CCFF00','#1E1E1E','#a6d400','#1E1E1E','#CCFF00','#1E1E1E','#a6d400','#1E1E1E'];
+
+  const cv = document.getElementById('wheel');
+  const ctx = cv.getContext('2d');
+  const cx=150, cy=150, r=150;
+  const n = segments.length;
+  const arc = 2*Math.PI/n;
+
+  function draw(){
+    for(let i=0;i<n;i++){
+      const a0 = i*arc - Math.PI/2;
+      ctx.beginPath();
+      ctx.moveTo(cx,cy);
+      ctx.arc(cx,cy,r,a0,a0+arc);
+      ctx.closePath();
+      ctx.fillStyle = colors[i];
+      ctx.fill();
+      // Text
+      ctx.save();
+      ctx.translate(cx,cy);
+      ctx.rotate(a0+arc/2);
+      ctx.textAlign='right';
+      ctx.fillStyle = (colors[i]==='#1E1E1E')?'#CCFF00':'#0B0B0B';
+      ctx.font='600 12px Inter, sans-serif';
+      ctx.fillText(segments[i].label, r-16, 5);
+      ctx.restore();
+    }
+  }
+  draw();
+
+  let spinning=false, currentRot=0;
+  const spinBtn=document.getElementById('spin');
+  const resultEl=document.getElementById('result');
+
+  function confetti(){
+    const cols=['#CCFF00','#a6d400','#F5F5F5'];
+    for(let i=0;i<40;i++){
+      const c=document.createElement('div');
+      c.className='confetti';
+      c.style.left=Math.random()*100+'vw';
+      c.style.background=cols[Math.floor(Math.random()*cols.length)];
+      c.style.borderRadius=Math.random()>.5?'50%':'2px';
+      c.style.animation='fall '+(1.6+Math.random()*1.4)+'s ease-in '+(Math.random()*.4)+'s forwards';
+      document.body.appendChild(c);
+      setTimeout(()=>c.remove(),3600);
+    }
+  }
+
+  spinBtn.addEventListener('click',()=>{
+    if(spinning) return;
+    spinning=true;
+    spinBtn.disabled=true;
+    resultEl.classList.remove('show','win');
+
+    const winIdx = Math.floor(Math.random()*n);
+    const extraSpins = 5;
+    // Zielwinkel: Segment-Mitte soll oben (unter dem Pointer) landen
+    const targetAngle = 360*extraSpins + (360 - (winIdx*(360/n) + (360/n)/2));
+    currentRot += targetAngle;
+    cv.style.transform = 'rotate('+currentRot+'deg)';
+
+    setTimeout(()=>{
+      const seg = segments[winIdx];
+      document.getElementById('rtitle').textContent = seg.title;
+      document.getElementById('rtext').textContent = seg.text;
+      const waText = encodeURIComponent("Hi Sneakers4Seeker! Ich hab am Glücksrad gedreht und '"+seg.title+"' gewonnen 🎉 "+(seg.win?"Das würde ich gern einlösen!":"Ich melde mich trotzdem!"));
+      document.getElementById('rwa').href='https://wa.me/491634692255?text='+waText;
+      resultEl.classList.add('show');
+      if(seg.win){ resultEl.classList.add('win'); confetti(); }
+      spinning=false;
+    },4600);
+  });
+</script>
+
+</body>
+</html>

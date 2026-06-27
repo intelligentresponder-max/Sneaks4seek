@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sneakers4Seeker — die Plattform für Sneaker-Liebhaber. Verkaufe deine Sneakers oder finde dein nächstes Paar. Verkauf & Ankauf, einfach per WhatsApp.">
+<meta name="keywords" content="Sneakers, Sportschuhe, Sneaker verkaufen, Sneaker ankaufen, Streetwear, limited edition, Sneakers4Seeker">
+<meta name="author" content="Sneakers4Seeker">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://intelligentresponder-max.github.io/sneaks4seek/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sneakers4Seeker">
+<meta property="og:title" content="Sneakers4Seeker — Verkaufe & finde deine Sneakers">
+<meta property="og:description" content="Die Plattform für Sneaker-Liebhaber. Verkauf & Ankauf, einfach per WhatsApp.">
+<meta property="og:locale" content="de_DE">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Sneakers4Seeker">
+<meta name="twitter:description" content="Verkaufe deine Sneakers oder finde dein nächstes Paar.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Store",
+  "name": "Sneakers4Seeker",
+  "description": "Plattform für den Verkauf und Ankauf von Sneakers und Sportschuhen.",
+  "url": "https://intelligentresponder-max.github.io/sneaks4seek/"
+}
+</script>
+<title>Sneakers4Seeker — Verkaufe & finde deine Sneakers</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --volt:#CCFF00;
+    --volt-2:#a6d400;
+    --nero:#0B0B0B;
+    --nero-2:#141414;
+    --nero-3:#1E1E1E;
+    --grigio:#888;
+    --bianco:#F5F5F5;
+    --wa:#25D366;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--nero);color:var(--bianco);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{font-family:'Archivo Black',sans-serif;font-weight:400;line-height:1.05;letter-spacing:-.01em}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(11,11,11,.9);backdrop-filter:blur(12px);border-bottom:1px solid rgba(204,255,0,.15)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:64px;flex-wrap:wrap;gap:8px}
+  .logo{font-family:'Archivo Black',sans-serif;font-size:1.3rem;color:var(--bianco);letter-spacing:-.02em}
+  .logo span{color:var(--volt)}
+  .nav-links{display:flex;gap:16px;font-size:.8rem;font-weight:500;color:var(--grigio);flex-wrap:wrap}
+  .nav-links a:hover{color:var(--volt)}
+
+  .hero{text-align:center;padding:90px 0 70px;position:relative;background:radial-gradient(circle at 50% 0%,rgba(204,255,0,.12),transparent 55%)}
+  .hero .tag{display:inline-block;border:1px solid rgba(204,255,0,.4);color:var(--volt);font-size:.7rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;padding:6px 16px;border-radius:50px;margin-bottom:26px}
+  .hero h1{font-size:clamp(2.6rem,9vw,5rem);margin-bottom:22px;text-transform:uppercase}
+  .hero h1 .volt{color:var(--volt)}
+  .hero p{color:var(--grigio);max-width:540px;margin:0 auto 36px;font-size:1.08rem}
+  .hero-btns{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+  .btn{display:inline-block;padding:15px 34px;border-radius:50px;font-weight:600;font-size:.98rem;transition:transform .2s,box-shadow .2s}
+  .btn-volt{background:var(--volt);color:var(--nero);box-shadow:0 8px 30px rgba(204,255,0,.25)}
+  .btn-volt:hover{transform:translateY(-2px);box-shadow:0 12px 36px rgba(204,255,0,.4)}
+  .btn-outline{border:1px solid rgba(245,245,245,.3);color:var(--bianco)}
+  .btn-outline:hover{border-color:var(--volt);color:var(--volt);transform:translateY(-2px)}
+
+  .section{padding:64px 0}
+  .sec-head{text-align:center;margin-bottom:48px}
+  .sec-head .kick{color:var(--volt);font-size:.72rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:12px}
+  .sec-head h2{font-size:clamp(2rem,6vw,3rem);text-transform:uppercase}
+
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+  .path-card{background:var(--nero-2);border:1px solid rgba(204,255,0,.15);border-radius:20px;padding:40px 32px;text-align:center;transition:border-color .25s,transform .25s}
+  .path-card:hover{border-color:rgba(204,255,0,.5);transform:translateY(-4px)}
+  .path-card .ico{font-size:3rem;margin-bottom:18px}
+  .path-card h3{font-size:1.8rem;margin-bottom:10px;text-transform:uppercase}
+  .path-card p{color:var(--grigio);font-size:.95rem;margin-bottom:24px}
+  .path-card .btn{width:100%}
+
+  .feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+  .feat{background:var(--nero-2);border:1px solid rgba(204,255,0,.12);border-radius:16px;padding:28px 24px;text-align:center}
+  .feat .ico{font-size:1.8rem;margin-bottom:12px}
+  .feat h3{font-size:1.2rem;margin-bottom:8px;text-transform:uppercase;font-family:'Inter',sans-serif;font-weight:700;letter-spacing:0}
+  .feat p{color:var(--grigio);font-size:.9rem}
+
+  footer{text-align:center;padding:54px 0 40px;border-top:1px solid rgba(204,255,0,.15);color:var(--grigio);font-size:.85rem}
+  footer .logo{display:inline-block;margin-bottom:14px;font-size:1.3rem}
+  .footer-links{margin:14px 0;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
+  footer a{color:var(--volt)}
+
+  @media(max-width:640px){.two-col{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <div class="logo">Sneakers<span>4</span>Seeker</div>
+    <div class="nav-links">
+      <a href="#paths">Verkauf &amp; Ankauf</a>
+      <a href="verkaufen.html">Verkaufen</a>
+      <a href="ankauf.html">Ankauf</a>
+      <a href="magie.html" style="color:var(--volt)">✨ 777</a>
+      <a href="#warum">Warum wir</a>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="tag">Die Plattform für Sneaker-Heads</div>
+    <h1>Deine Sneakers.<br>Dein <span class="volt">Move</span>.</h1>
+    <p>Verkaufe deine Paare oder finde dein nächstes Grail. Schnell, fair und direkt per WhatsApp — keine komplizierten Plattformen, kein Stress.</p>
+    <div class="hero-btns">
+      <a href="verkaufen.html" class="btn btn-volt">👟 Sneakers verkaufen</a>
+      <a href="ankauf.html" class="btn btn-outline">🔍 Sneakers suchen / ankaufen</a>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="paths">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kick">Zwei Wege, ein Ziel</div>
+      <h2>Was willst du tun?</h2>
+    </div>
+    <div class="two-col">
+      <div class="path-card">
+        <div class="ico">👟</div>
+        <h3>Verkaufen</h3>
+        <p>Du hast Sneakers, die ein neues Zuhause brauchen? Schick uns Fotos und Details — wir finden den Käufer.</p>
+        <a href="verkaufen.html" class="btn btn-volt">Jetzt verkaufen</a>
+      </div>
+      <div class="path-card">
+        <div class="ico">🔍</div>
+        <h3>Ankauf / Suche</h3>
+        <p>Du suchst ein bestimmtes Paar oder willst ankaufen? Sag uns, wonach du suchst — wir halten die Augen offen.</p>
+        <a href="ankauf.html" class="btn btn-outline">Suche starten</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="warum" style="background:var(--nero-2)">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="kick">Warum Sneakers4Seeker</div>
+      <h2>Einfach. Fair. Direkt.</h2>
+    </div>
+    <div class="feat-grid">
+      <div class="feat">
+        <div class="ico">⚡</div>
+        <h3>Schnell</h3>
+        <p>Kein Account-Stress. Ein paar Angaben, ab per WhatsApp — fertig.</p>
+      </div>
+      <div class="feat">
+        <div class="ico">🤝</div>
+        <h3>Fair</h3>
+        <p>Transparente Konditionen für Verkauf und Ankauf.</p>
+      </div>
+      <div class="feat">
+        <div class="ico">🔒</div>
+        <h3>Sicher</h3>
+        <p>Keine Datenspeicherung auf der Seite. Alles läuft direkt über dich.</p>
+      </div>
+      <div class="feat">
+        <div class="ico">👟</div>
+        <h3>Echte Heads</h3>
+        <p>Von Sneaker-Fans für Sneaker-Fans. Wir kennen den Game.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="logo">Sneakers<span style="color:var(--volt)">4</span>Seeker</div>
+    <div class="footer-links">
+      <a href="verkaufen.html">Verkaufen</a>
+      <a href="ankauf.html">Ankauf</a>
+      <a href="https://wa.me/491634692255">WhatsApp</a>
+    </div>
+    <div>© 2026 Sneakers4Seeker · Verkauf &amp; Ankauf von Sneakers</div>
+  </div>
+</footer>
+
+</body>
+</html>
