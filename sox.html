@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sox by Sneakers4Seeker — weiße Nike Crew Sox gratis bei jedem Deal. Verkaufen, Deal machen oder Sneakers kaufen. Seite im Aufbau.">
+<meta name="keywords" content="weiße Sox, Nike Crew Socks, Sneaker Socken, Sneakers4Seeker, Off-White, Air Max, Streetwear">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Sneakers4Seeker">
+<meta property="og:title" content="Sox by Sneakers4Seeker — gratis bei jedem Deal">
+<meta property="og:description" content="Weiße Crew Sox gratis bei jedem Sneaker-Deal. Seite im Aufbau.">
+<title>Sox · Sneakers4Seeker</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --volt:#CCFF00; --volt-2:#a6d400;
+    --nero:#0B0B0B; --nero-2:#141414; --nero-3:#1E1E1E;
+    --grigio:#888; --bianco:#F5F5F5; --wa:#25D366;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--nero);color:var(--bianco);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{font-family:'Archivo Black',sans-serif;font-weight:400;line-height:1.05;letter-spacing:-.01em}
+  a{text-decoration:none;color:inherit}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+
+  /* header */
+  header{position:sticky;top:0;z-index:50;background:rgba(11,11,11,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(204,255,0,.15)}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+  .logo{font-family:'Archivo Black',sans-serif;font-size:1.3rem;color:var(--bianco);letter-spacing:-.02em}
+  .logo span{color:var(--volt)}
+  .back{font-size:.85rem;color:var(--grigio)}
+  .back:hover{color:var(--volt)}
+
+  /* baustellen-banner */
+  .bau{background:repeating-linear-gradient(45deg,#1a1a00,#1a1a00 14px,#0b0b0b 14px,#0b0b0b 28px);
+    border-top:2px solid var(--volt);border-bottom:2px solid var(--volt);text-align:center;padding:11px 16px;
+    font-family:'Archivo Black',sans-serif;font-size:.78rem;letter-spacing:.1em;color:var(--volt);text-transform:uppercase}
+
+  /* hero */
+  .hero{position:relative;text-align:center;padding:60px 0 30px;overflow:hidden}
+  .spiral{position:absolute;top:0;left:50%;width:150vmax;height:150vmax;transform:translateX(-50%);
+    background:repeating-conic-gradient(from 0deg,rgba(204,255,0,.09) 0deg 12deg,transparent 12deg 24deg);
+    animation:spin 26s linear infinite;pointer-events:none;opacity:.5;
+    mask-image:radial-gradient(circle,#000,transparent 60%);-webkit-mask-image:radial-gradient(circle,#000,transparent 60%)}
+  @keyframes spin{to{transform:translateX(-50%) rotate(360deg)}}
+  .hero .inner{position:relative;z-index:2}
+  .tag{display:inline-block;border:1px solid rgba(204,255,0,.4);color:var(--volt);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:6px 16px;border-radius:50px;margin-bottom:22px}
+  .hero h1{font-size:clamp(2.6rem,11vw,5rem);text-transform:uppercase}
+  .hero h1 .volt{color:var(--volt);text-shadow:0 0 34px rgba(204,255,0,.55)}
+  .hero p{color:var(--grigio);max-width:520px;margin:18px auto 0;font-size:1rem}
+
+  /* collage */
+  .collage{padding:36px 0 8px}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .cell{position:relative;border-radius:16px;overflow:hidden;border:1px solid rgba(204,255,0,.18);aspect-ratio:4/5;display:block;
+    transition:transform .3s,border-color .3s,box-shadow .3s}
+  .cell img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.95) contrast(1.03);transition:transform .5s,filter .3s}
+  .cell:hover{transform:translateY(-5px);border-color:var(--volt);box-shadow:0 14px 40px rgba(204,255,0,.22)}
+  .cell:hover img{transform:scale(1.07);filter:saturate(1.1)}
+  .cell .lbl{position:absolute;left:0;right:0;bottom:0;padding:24px 16px 14px;
+    background:linear-gradient(to top,rgba(11,11,11,.95),transparent);
+    font-family:'Archivo Black',sans-serif;font-size:.82rem;text-transform:uppercase;letter-spacing:.02em}
+  .cell .lbl small{display:block;font-family:'Inter';font-weight:400;font-size:.72rem;color:var(--volt);letter-spacing:.04em;margin-top:2px}
+  @media(max-width:640px){.grid{grid-template-columns:1fr;gap:14px}.cell{aspect-ratio:16/11}}
+
+  /* timeline (scroll-driven) */
+  .tl{padding:54px 0 30px}
+  .tl-head{text-align:center;margin-bottom:40px}
+  .tl-head .kick{color:var(--volt);font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+  .tl-head h2{font-size:clamp(1.8rem,6vw,2.6rem);text-transform:uppercase}
+  .line{position:relative;max-width:560px;margin:0 auto;padding-left:38px}
+  /* base rail */
+  .line::before{content:"";position:absolute;left:11px;top:6px;bottom:6px;width:3px;background:rgba(204,255,0,.14);border-radius:3px}
+  /* progress rail fills with scroll */
+  .line::after{content:"";position:absolute;left:11px;top:6px;width:3px;height:100%;border-radius:3px;
+    background:linear-gradient(var(--volt),var(--volt-2));transform-origin:top;
+    animation:fill linear both;animation-timeline:scroll(root);animation-range:0% 92%}
+  @keyframes fill{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+  .step{position:relative;padding:0 0 34px 4px}
+  .step .dot{position:absolute;left:-34px;top:2px;width:22px;height:22px;border-radius:50%;background:var(--nero);
+    border:3px solid var(--volt);box-shadow:0 0 0 5px rgba(204,255,0,.08)}
+  .step h3{font-size:1.1rem;text-transform:uppercase;margin-bottom:4px;font-family:'Archivo Black'}
+  .step p{color:var(--grigio);font-size:.92rem}
+  .step .meta{display:inline-block;margin-top:6px;font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--volt);border:1px solid rgba(204,255,0,.3);border-radius:50px;padding:3px 11px}
+  /* reveal on scroll */
+  @supports (animation-timeline:view()){
+    .step{animation:reveal linear both;animation-timeline:view();animation-range:entry 0% entry 55%}
+    @keyframes reveal{from{opacity:0;transform:translateY(26px)}to{opacity:1;transform:none}}
+  }
+
+  /* CTAs */
+  .cta-sec{padding:30px 0 64px}
+  .cta-head{text-align:center;margin-bottom:30px}
+  .cta-head h2{font-size:clamp(1.6rem,5vw,2.2rem);text-transform:uppercase}
+  .cta-head p{color:var(--grigio);font-size:.92rem;margin-top:8px}
+  .cta-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .cta{background:var(--nero-2);border:1px solid rgba(204,255,0,.16);border-radius:20px;padding:30px 22px;text-align:center;
+    transition:border-color .25s,transform .25s,box-shadow .25s}
+  .cta:hover{border-color:var(--volt);transform:translateY(-5px);box-shadow:0 14px 40px rgba(204,255,0,.18)}
+  .cta .ico{font-size:2.6rem;margin-bottom:12px}
+  .cta h3{font-size:1.3rem;text-transform:uppercase;margin-bottom:6px}
+  .cta p{color:var(--grigio);font-size:.86rem;margin-bottom:18px}
+  .btn{display:inline-block;width:100%;padding:13px 20px;border-radius:50px;font-weight:600;font-size:.92rem;transition:transform .2s,box-shadow .2s}
+  .btn-volt{background:var(--volt);color:var(--nero);box-shadow:0 8px 26px rgba(204,255,0,.25)}
+  .btn-volt:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(204,255,0,.4)}
+  .btn-wa{background:var(--wa);color:#fff}
+  .btn-out{border:1px solid rgba(245,245,245,.28);color:var(--bianco)}
+  .btn-out:hover{border-color:var(--volt);color:var(--volt)}
+  @media(max-width:640px){.cta-grid{grid-template-columns:1fr}}
+
+  /* video section */
+  .vidsec{padding:40px 0 10px}
+  .vid-head{text-align:center;margin-bottom:26px}
+  .vid-head .kick{color:var(--volt);font-size:.7rem;font-weight:600;letter-spacing:.2em;text-transform:uppercase;margin-bottom:10px}
+  .vid-head h2{font-size:clamp(1.8rem,6vw,2.6rem);text-transform:uppercase}
+  .vid-head h2 .volt{color:var(--volt);text-shadow:0 0 30px rgba(204,255,0,.6)}
+  .vid-frame{max-width:340px;margin:0 auto;border-radius:20px;overflow:hidden;border:1px solid rgba(204,255,0,.25);box-shadow:0 14px 50px rgba(204,255,0,.15)}
+  .vid-frame video{width:100%;display:block}
+  .vid-fine{text-align:center;margin-top:16px;font-size:.78rem;color:#777}
+
+  footer{text-align:center;padding:40px 0;border-top:1px solid rgba(204,255,0,.15);color:var(--grigio);font-size:.82rem}
+  footer a{color:var(--volt)}
+  .foot-links{margin:12px 0;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="logo">Sneakers<span>4</span>Seeker</a>
+    <a href="index.html" class="back">← Zurück</a>
+  </div>
+</header>
+
+<div class="bau">🚧 Sox-Bereich im Aufbau — erste Drops & Tool kommen bald 🧦</div>
+
+<section class="hero">
+  <div class="spiral"></div>
+  <div class="wrap inner">
+    <div class="tag">Gratis bei jedem Deal</div>
+    <h1>Weiße <span class="volt">Sox</span>.</h1>
+    <p>Frische weiße Nike Crew Sox zu jedem Sneaker-Deal. Clean cop, clean socken — weil ein neues Grail saubere Socken verdient.</p>
+  </div>
+</section>
+
+<section class="collage">
+  <div class="wrap">
+    <div class="grid">
+      <a class="cell" href="https://wa.me/491634692255?text=Yo!%20Ich%20will%20Sneakers%20VERKAUFEN%20und%20meine%20gratis%20Sox%20sichern%20%F0%9F%A7%A6">
+        <img src="sox-1.jpg" alt="Weiße Nike Crew Sox mit Air Max am Rad">
+        <div class="lbl">Verkaufen<small>Tippen → WhatsApp</small></div>
+      </a>
+      <a class="cell" href="https://wa.me/491634692255?text=Yo!%20Ich%20will%20einen%20DEAL%20machen%20%2B%20gratis%20Sox%20%F0%9F%A7%A6">
+        <img src="sox-2.jpg" alt="Weiße Sox Streetwear Look">
+        <div class="lbl">Deal · 777<small>Tippen → WhatsApp</small></div>
+      </a>
+      <a class="cell" href="https://wa.me/491634692255?text=Yo!%20Ich%20will%20Sneakers%20KAUFEN%20%2B%20gratis%20Sox%20%F0%9F%A7%A6">
+        <img src="sox-3.jpg" alt="Air Max mit weißen Crew Socks">
+        <div class="lbl">Kaufen<small>Tippen → WhatsApp</small></div>
+      </a>
+    </div>
+  </div>
+</section>
+
+<section class="vidsec">
+  <div class="wrap">
+    <div class="vid-head">
+      <div class="kick">Im Bewegtbild</div>
+      <h2>Sox in <span class="volt">Motion</span></h2>
+    </div>
+    <div class="vid-frame">
+      <video src="combo.mp4" autoplay muted loop playsinline
+             preload="metadata" poster="magic-sox-2.jpg"></video>
+    </div>
+    <p class="vid-fine">Magischer Volt-Glow · 2.5D-Schwenk · gemacht mit dem ASGlobal magic_zoom Tool</p>
+  </div>
+</section>
+
+<section class="tl">
+  <div class="wrap">
+    <div class="tl-head">
+      <div class="kick">So läuft der Sox-Flow</div>
+      <h2>Vom Tap zum Grail</h2>
+    </div>
+    <div class="line">
+      <div class="step">
+        <div class="dot"></div>
+        <h3>1 · Bild antippen</h3>
+        <p>Wähle Verkaufen, Deal oder Kaufen aus der Collage. Ein Tap öffnet direkt WhatsApp.</p>
+        <span class="meta">θ Theta · ruhig &amp; fokussiert</span>
+      </div>
+      <div class="step">
+        <div class="dot"></div>
+        <h3>2 · Fotos schicken</h3>
+        <p>Schick uns deine Sneaker-Fotos direkt im Chat — kein Upload, kein Account, kein Stress.</p>
+        <span class="meta">Flow steigt ↑</span>
+      </div>
+      <div class="step">
+        <div class="dot"></div>
+        <h3>3 · Deal &amp; Sox</h3>
+        <p>Wir machen den Deal klar. Bei Abschluss: frische weiße Crew Sox gratis obendrauf.</p>
+        <span class="meta">🧦 Reward unlocked</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-sec">
+  <div class="wrap">
+    <div class="cta-head">
+      <h2>Drei Wege. Ein Tap.</h2>
+      <p>Alles läuft direkt per WhatsApp — sofort, fair, ohne Umwege.</p>
+    </div>
+    <div class="cta-grid">
+      <div class="cta">
+        <div class="ico">👟</div>
+        <h3>Verkaufen</h3>
+        <p>Paare loswerden, Käufer finden lassen.</p>
+        <a class="btn btn-volt" href="verkaufen.html">Zum Verkauf</a>
+      </div>
+      <div class="cta">
+        <div class="ico">✨</div>
+        <h3>Deal · 777</h3>
+        <p>Direkter Deal mit dem Sox-Bonus.</p>
+        <a class="btn btn-wa" href="https://wa.me/491634692255?text=Yo!%20DEAL%20%2B%20gratis%20Sox%20%F0%9F%A7%A6">WhatsApp Deal</a>
+      </div>
+      <div class="cta">
+        <div class="ico">🔍</div>
+        <h3>Kaufen</h3>
+        <p>Dein nächstes Grail suchen lassen.</p>
+        <a class="btn btn-out" href="ankauf.html">Zur Suche</a>
+      </div>
+    </div>
+    <p style="text-align:center;margin-top:26px;font-size:.8rem;color:#666">🧦 Gratis Sox pro abgeschlossenem Deal · solange Vorrat reicht · <a href="sneaker4bieter.html" style="color:var(--volt)">Sneaker4Bieter (Auktion) → bald</a></p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="logo" style="font-size:1.2rem">Sneakers<span style="color:var(--volt)">4</span>Seeker</div>
+    <div class="foot-links">
+      <a href="index.html">Start</a>
+      <a href="verkaufen.html">Verkaufen</a>
+      <a href="ankauf.html">Ankauf</a>
+      <a href="https://wa.me/491634692255">WhatsApp</a>
+    </div>
+    <div>© 2026 Sneakers4Seeker · Sox-Bereich im Aufbau</div>
+  </div>
+</footer>
+
+</body>
+</html>
