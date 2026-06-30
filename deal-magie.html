@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sneaker Deal-Magie — der Margen-Rechner für Sneakers4Seeker. Ankauf, Gebühren, Verkauf eingeben, Gewinn live sehen.">
+<meta name="robots" content="noindex">
+<title>Deal-Magie 777 — Sneaker-Margen-Rechner | Sneakers4Seeker</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{--volt:#CCFF00;--volt-2:#a6d400;--nero:#0B0B0B;--nero-2:#141414;--nero-3:#1E1E1E;--grigio:#888;--bianco:#F5F5F5;--verde:#3FB55C;--rosso:#C0573F}
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{background:var(--nero);color:var(--bianco);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  h1,h2,h3{font-family:'Archivo Black',sans-serif;font-weight:400;line-height:1.05;text-transform:uppercase}
+  a{color:inherit;text-decoration:none}
+  .mono{font-family:'Space Mono',monospace}
+  .wrap{position:relative;z-index:5;max-width:600px;margin:0 auto;padding:0 22px}
+
+  .glow{position:fixed;inset:0;z-index:0;pointer-events:none;background:radial-gradient(circle at 50% 20%,rgba(204,255,0,.10),transparent 55%)}
+
+  header{position:relative;z-index:5;border-bottom:1px solid rgba(204,255,0,.15);background:rgba(11,11,11,.85);backdrop-filter:blur(10px)}
+  .nav{display:flex;align-items:center;justify-content:space-between;height:58px;max-width:600px;margin:0 auto;padding:0 22px}
+  .logo{font-family:'Archivo Black',sans-serif;font-size:1.15rem}
+  .logo span{color:var(--volt)}
+  .nav-back{font-size:.76rem;font-weight:500;color:var(--grigio)}
+  .nav-back:hover{color:var(--volt)}
+
+  .intro{position:relative;z-index:5;text-align:center;padding:46px 0 24px}
+  .seven{font-family:'Archivo Black',sans-serif;font-size:2.6rem;color:var(--volt);letter-spacing:.1em;filter:drop-shadow(0 0 18px rgba(204,255,0,.4));margin-bottom:6px}
+  .intro h1{font-size:1.9rem;margin-bottom:10px}
+  .intro p{color:var(--grigio);font-size:.95rem;max-width:420px;margin:0 auto}
+
+  .calc{background:var(--nero-2);border:1px solid rgba(204,255,0,.25);border-radius:20px;padding:30px 26px;margin:10px 0 40px;position:relative;z-index:5;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .field{margin-bottom:20px}
+  .field label{display:block;font-size:.74rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--volt);margin-bottom:8px}
+  .field .hint{color:var(--grigio);font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px}
+  .input-eur{position:relative}
+  .input-eur::before{content:"€";position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--volt);font-family:'Space Mono',monospace;font-size:1.05rem}
+  .field input{width:100%;background:var(--nero-3);border:1px solid rgba(204,255,0,.18);border-radius:11px;padding:14px 15px 14px 36px;color:var(--bianco);font-family:'Space Mono',monospace;font-size:1.1rem;transition:border-color .2s,box-shadow .2s}
+  .field input:focus{outline:none;border-color:var(--volt);box-shadow:0 0 0 3px rgba(204,255,0,.12)}
+  .field input::placeholder{color:#555}
+
+  .results{margin-top:6px}
+  .res-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.06)}
+  .res-row .lbl{color:var(--grigio);font-size:.9rem}
+  .res-row .val{font-family:'Space Mono',monospace;font-size:1.1rem}
+  .res-row.big{padding:18px 0}
+  .res-row.big .lbl{color:var(--bianco);font-size:1rem;font-weight:500}
+  .res-row.big .val{font-size:1.7rem;font-weight:700;color:var(--volt)}
+
+  .verdict{margin-top:24px;text-align:center;padding:22px;border-radius:16px;transition:all .4s;min-height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .verdict.neutral{background:var(--nero-3);color:var(--grigio)}
+  .verdict.good{background:linear-gradient(135deg,rgba(204,255,0,.1),rgba(63,181,92,.06));border:1px solid rgba(204,255,0,.3);color:var(--bianco)}
+  .verdict.loss{background:rgba(192,87,63,.08);border:1px solid rgba(192,87,63,.3);color:var(--bianco)}
+  .verdict .vtitle{font-family:'Archivo Black',sans-serif;font-size:1.4rem;margin-bottom:4px;text-transform:uppercase}
+  .verdict.good .vtitle{color:var(--volt)}
+  .verdict.loss .vtitle{color:var(--rosso)}
+
+  .roi-badge{display:inline-block;margin-top:8px;font-family:'Space Mono',monospace;font-size:.9rem;color:var(--grigio)}
+
+  footer{position:relative;z-index:5;text-align:center;padding:34px 0;color:var(--grigio);font-size:.78rem;border-top:1px solid rgba(204,255,0,.12);margin-top:10px}
+  footer a{color:var(--volt)}
+
+  /* 777 Magic */
+  .magic{position:fixed;inset:0;z-index:50;pointer-events:none;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .3s}
+  .magic.show{opacity:1}
+  .magic-777{font-family:'Archivo Black',sans-serif;font-size:7rem;color:var(--volt);letter-spacing:.05em;transform:scale(.3);opacity:0;filter:drop-shadow(0 0 30px rgba(204,255,0,.6))}
+  .magic.show .magic-777{animation:pop777 1.6s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes pop777{0%{transform:scale(.3) rotate(-8deg);opacity:0}40%{transform:scale(1.15) rotate(3deg);opacity:1}60%{transform:scale(1)}85%{opacity:1}100%{transform:scale(1.05);opacity:0}}
+  .spark{position:absolute;width:9px;height:9px;border-radius:50%;background:var(--volt);opacity:0}
+  .magic.show .spark{animation:fly 1.4s ease-out forwards}
+  @keyframes fly{0%{opacity:1;transform:translate(0,0) scale(1)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(0)}}
+
+  @media(max-width:480px){.magic-777{font-size:4.5rem}}
+  @media(prefers-reduced-motion:reduce){.magic.show .magic-777,.magic.show .spark{animation:none}.magic.show .magic-777{opacity:1;transform:scale(1)}}
+</style>
+</head>
+<body>
+
+<div class="glow"></div>
+
+<header>
+  <div class="nav">
+    <a href="index.html" class="logo">Sneakers<span>4</span>Seeker</a>
+    <a href="index.html" class="nav-back">← Zurück</a>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="seven">777</div>
+  <h1>Deal-Magie</h1>
+  <p>Rechne in Sekunden, ob sich ein Sneaker-Flip lohnt. Ankauf, Gebühren, Verkauf — Gewinn live.</p>
+</section>
+
+<div class="wrap">
+  <div class="calc">
+    <div class="field">
+      <label>Ankaufspreis <span class="hint">was du zahlst</span></label>
+      <div class="input-eur"><input type="number" id="ankauf" inputmode="decimal" placeholder="z. B. 120" min="0"></div>
+    </div>
+    <div class="field">
+      <label>Gebühren / Kosten <span class="hint">Versand, Verifizierung, Reinigung</span></label>
+      <div class="input-eur"><input type="number" id="gebuehren" inputmode="decimal" placeholder="z. B. 25" min="0"></div>
+    </div>
+    <div class="field">
+      <label>Geplanter Verkaufspreis <span class="hint">Resell-Wert</span></label>
+      <div class="input-eur"><input type="number" id="verkauf" inputmode="decimal" placeholder="z. B. 220" min="0"></div>
+    </div>
+
+    <div class="results">
+      <div class="res-row">
+        <span class="lbl">Gesamtkosten (Ankauf + Gebühren)</span>
+        <span class="val" id="kosten">€ 0</span>
+      </div>
+      <div class="res-row big">
+        <span class="lbl">Dein Gewinn</span>
+        <span class="val" id="gewinn">€ 0</span>
+      </div>
+    </div>
+
+    <div class="verdict neutral" id="verdict">
+      <div>Gib deine Zahlen ein, um die Magie zu starten.</div>
+    </div>
+  </div>
+</div>
+
+<div class="magic" id="magic"><div class="magic-777">777</div></div>
+
+<footer>
+  <div class="wrap">
+    Deal-Magie 777 · internes Werkzeug für <a href="index.html">Sneakers4Seeker</a><br>
+    Alles wird nur in deinem Browser berechnet — nichts gespeichert.
+  </div>
+</footer>
+
+<script>
+  const ankauf=document.getElementById('ankauf');
+  const gebuehren=document.getElementById('gebuehren');
+  const verkauf=document.getElementById('verkauf');
+  const verdictEl=document.getElementById('verdict');
+  const magic=document.getElementById('magic');
+  const fmt=n=>'€ '+(Math.round(n)).toLocaleString('de-DE');
+
+  let magicArmed=false, magicCooldown=false;
+
+  function calc(){
+    const a=parseFloat(ankauf.value)||0;
+    const g=parseFloat(gebuehren.value)||0;
+    const v=parseFloat(verkauf.value)||0;
+    const kosten=a+g;
+    const gewinn=v-kosten;
+    const roi = kosten>0 ? (gewinn/kosten*100) : 0;
+
+    document.getElementById('kosten').textContent=fmt(kosten);
+    const gEl=document.getElementById('gewinn');
+    gEl.textContent=fmt(gewinn);
+    gEl.style.color = gewinn>=0 ? 'var(--volt)' : 'var(--rosso)';
+
+    if(v<=0 || kosten<=0){
+      verdictEl.className='verdict neutral';
+      verdictEl.innerHTML='<div>Gib deine Zahlen ein, um die Magie zu starten.</div>';
+      magicArmed=false;
+      return;
+    }
+    if(gewinn>0){
+      verdictEl.className='verdict good';
+      verdictEl.innerHTML='<div class="vtitle">✨ Profit!</div><div>Du machst '+fmt(gewinn)+' Gewinn bei diesem Flip.</div><div class="roi-badge">ROI: '+roi.toFixed(0)+'%</div>';
+      if(!magicArmed && !magicCooldown) triggerMagic();
+      magicArmed=true;
+    } else if(gewinn===0){
+      verdictEl.className='verdict neutral';
+      verdictEl.innerHTML='<div class="vtitle">±0</div><div>Genau Break-even. Kein Gewinn, kein Verlust.</div>';
+      magicArmed=false;
+    } else {
+      verdictEl.className='verdict loss';
+      verdictEl.innerHTML='<div class="vtitle">Minus</div><div>Du machst '+fmt(Math.abs(gewinn))+' Verlust. Preis prüfen!</div>';
+      magicArmed=false;
+    }
+  }
+
+  function triggerMagic(){
+    const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    magic.querySelectorAll('.spark').forEach(s=>s.remove());
+    if(!reduce){
+      for(let i=0;i<24;i++){
+        const sp=document.createElement('div');
+        sp.className='spark';
+        const ang=(Math.PI*2)*(i/24);
+        const dist=160+Math.random()*120;
+        sp.style.setProperty('--dx',Math.cos(ang)*dist+'px');
+        sp.style.setProperty('--dy',Math.sin(ang)*dist+'px');
+        sp.style.left='50%';sp.style.top='50%';
+        sp.style.animationDelay=(Math.random()*.2)+'s';
+        magic.appendChild(sp);
+      }
+    }
+    magic.classList.add('show');
+    magicCooldown=true;
+    setTimeout(()=>magic.classList.remove('show'),1600);
+    setTimeout(()=>magicCooldown=false,2000);
+  }
+
+  ankauf.addEventListener('input',calc);
+  gebuehren.addEventListener('input',calc);
+  verkauf.addEventListener('input',calc);
+  calc();
+</script>
+
+</body>
+</html>

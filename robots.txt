@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://intelligentresponder-max.github.io/sneaks4seek/sitemap.xml
+Sitemap: https://intelligentresponder-max.github.io/Sneaks4seek/sitemap.xml
