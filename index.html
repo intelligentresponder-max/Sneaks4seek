@@ -88,6 +88,23 @@
   .footer-links{margin:14px 0;display:flex;gap:18px;justify-content:center;flex-wrap:wrap}
   footer a{color:var(--volt)}
 
+  /* --- Sox Lead-Magnet --- */
+  .sox{position:relative;overflow:hidden;background:#060606}
+  .sox-spiral{position:absolute;top:50%;left:50%;width:160vmax;height:160vmax;transform:translate(-50%,-50%);
+    background:repeating-conic-gradient(from 0deg,rgba(204,255,0,.10) 0deg 12deg,transparent 12deg 24deg);
+    animation:spin 22s linear infinite;pointer-events:none;opacity:.55;
+    mask-image:radial-gradient(circle,#000 0%,transparent 62%);-webkit-mask-image:radial-gradient(circle,#000 0%,transparent 62%)}
+  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+  .sox .wrap{position:relative;z-index:2;text-align:center}
+  .sox-badge{display:inline-block;background:var(--volt);color:var(--nero);font-family:'Archivo Black',sans-serif;
+    font-size:.7rem;letter-spacing:.12em;padding:7px 18px;border-radius:50px;margin-bottom:22px;box-shadow:0 0 24px rgba(204,255,0,.5)}
+  .sox h2{font-size:clamp(2rem,7vw,3.4rem);text-transform:uppercase;margin-bottom:18px}
+  .sox h2 .volt{color:var(--volt);text-shadow:0 0 30px rgba(204,255,0,.6)}
+  .sox p{color:var(--grigio);max-width:540px;margin:0 auto 30px;font-size:1rem}
+  .sox .btn-volt{animation:pulse 2.4s ease-in-out infinite}
+  @keyframes pulse{0%,100%{box-shadow:0 8px 30px rgba(204,255,0,.25)}50%{box-shadow:0 0 44px rgba(204,255,0,.7)}}
+  .sox-fine{margin-top:16px;font-size:.78rem;color:#777}
+
   @media(max-width:640px){.two-col{grid-template-columns:1fr}}
 </style>
 </head>
@@ -100,7 +117,10 @@
       <a href="#paths">Verkauf &amp; Ankauf</a>
       <a href="verkaufen.html">Verkaufen</a>
       <a href="ankauf.html">Ankauf</a>
+      <a href="katalog.html">Katalog</a>
+      <a href="zustand.html">Zustands-Check</a>
       <a href="magie.html" style="color:var(--volt)">✨ 777</a>
+      <a href="deal-magie.html" style="color:var(--volt)">💸 Rechner</a>
       <a href="#warum">Warum wir</a>
     </div>
   </div>
@@ -138,6 +158,17 @@
         <a href="ankauf.html" class="btn btn-outline">Suche starten</a>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section sox" id="sox">
+  <div class="sox-spiral"></div>
+  <div class="wrap">
+    <div class="sox-badge">🧦 GRATIS BEI JEDEM DEAL</div>
+    <h2>Frische weiße <span class="volt">Sox</span> obendrauf.</h2>
+    <p>Jeder Sneaker-Deal über Sneakers4Seeker kommt mit einem Paar frischer weißer Sox — gratis. Clean cop, clean socken. Weil ein neues Grail saubere Socken verdient, nicht die alten vom letzten Drop.</p>
+    <a href="https://wa.me/491634692255?text=Yo!%20Ich%20will%20einen%20Deal%20machen%20und%20meine%20gratis%20wei%C3%9Fen%20Sox%20sichern%20%F0%9F%A7%A6" class="btn btn-volt">🧦 Sox sichern + Deal starten</a>
+    <div class="sox-fine">Pro abgeschlossenem Verkauf oder Ankauf · solange Vorrat reicht</div>
   </div>
 </section>
 
