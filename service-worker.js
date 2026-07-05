@@ -1,20 +1,20 @@
 // Sneaks4Seek Service Worker — v1.0
 const CACHE = 'sneaks4seek-v1';
 const ASSETS = [
-  '/sneaks4seek/',
-  '/sneaks4seek/index.html',
-  '/sneaks4seek/sox.html',
-  '/sneaks4seek/ankauf.html',
-  '/sneaks4seek/verkaufen.htm',
-  '/sneaks4seek/katalog.html',
-  '/sneaks4seek/manifest.json',
-  '/sneaks4seek/spin-poster.jpg',
-  '/sneaks4seek/sox-1.jpg',
-  '/sneaks4seek/sox-2.jpg',
-  '/sneaks4seek/sox-3.jpg',
-  '/sneaks4seek/magic-sox-1.jpg',
-  '/sneaks4seek/magic-sox-2.jpg',
-  '/sneaks4seek/magic-sox-3.jpg',
+  '/Sneaks4seek/',
+  '/Sneaks4seek/index.html',
+  '/Sneaks4seek/sox.html',
+  '/Sneaks4seek/ankauf.html',
+  '/Sneaks4seek/verkaufen.htm',
+  '/Sneaks4seek/katalog.html',
+  '/Sneaks4seek/manifest.json',
+  '/Sneaks4seek/spin-poster.jpg',
+  '/Sneaks4seek/sox-1.jpg',
+  '/Sneaks4seek/sox-2.jpg',
+  '/Sneaks4seek/sox-3.jpg',
+  '/Sneaks4seek/magic-sox-1.jpg',
+  '/Sneaks4seek/magic-sox-2.jpg',
+  '/Sneaks4seek/magic-sox-3.jpg',
 ];
 
 // Install — Cache alle Assets
@@ -46,7 +46,7 @@ self.addEventListener('fetch', e => {
           caches.open(CACHE).then(cache => cache.put(e.request, clone));
         }
         return response;
-      }).catch(() => caches.match('/sneaks4seek/'));
+      }).catch(() => caches.match('/Sneaks4seek/'));
     })
   );
 });
