@@ -1,0 +1,38 @@
+{
+  "name": "Sneaks4Seek",
+  "short_name": "Sneaks4Seek",
+  "description": "Sneaker Verkauf & Ankauf — einfach per WhatsApp",
+  "start_url": "/sneaks4seek/",
+  "scope": "/sneaks4seek/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#c8ff00",
+  "lang": "de",
+  "categories": ["shopping", "lifestyle"],
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230a0a0a'/><text y='320' x='50' font-size='300' font-family='serif'>👟</text></svg>",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Verkaufen",
+      "short_name": "Verkaufen",
+      "description": "Sneaker verkaufen via WhatsApp",
+      "url": "/sneaks4seek/verkaufen.htm",
+      "icons": [{ "src": "spin-poster.jpg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Ankauf",
+      "short_name": "Ankauf",
+      "description": "Sneaker ankaufen",
+      "url": "/sneaks4seek/ankauf.html",
+      "icons": [{ "src": "spin-poster.jpg", "sizes": "192x192" }]
+    }
+  ]
+}
