@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sneaks4Seek Blog — Sneaker-Wissen ohne Bullshit. Grading, Fake-Check, Resell 2026.">
+<title>Blog · Sneaks4Seek</title>
+<link rel="manifest" href="/Sneaks4seek/manifest.json">
+<meta name="theme-color" content="#CCFF00">
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--volt:#CCFF00;--volt-2:#a6d400;--nero:#0B0B0B;--nero-2:#141414;--nero-3:#1E1E1E;--grigio:#888;--bianco:#F5F5F5;--wa:#25D366}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{background:var(--nero);color:var(--bianco);font-family:'Inter',sans-serif;font-weight:300;line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4{font-family:'Archivo Black',sans-serif;font-weight:400;line-height:1.1;letter-spacing:-.01em}
+a{text-decoration:none;color:inherit}
+.wrap{max-width:780px;margin:0 auto;padding:0 22px}
+header{position:sticky;top:0;z-index:50;background:rgba(11,11,11,.95);backdrop-filter:blur(10px);border-bottom:1px solid rgba(204,255,0,.15)}
+.nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0;max-width:1080px;margin:0 auto;padding-left:22px;padding-right:22px}
+.logo{font-family:'Archivo Black',sans-serif;font-size:1.2rem;color:var(--bianco)}
+.logo span{color:var(--volt)}
+.back{font-size:.85rem;color:var(--grigio);border:1px solid rgba(204,255,0,.2);padding:6px 14px;border-radius:50px;transition:.2s}
+.back:hover{color:var(--volt);border-color:rgba(204,255,0,.5)}
+
+/* HERO */
+.blog-hero{padding:60px 0 40px;border-bottom:1px solid rgba(204,255,0,.1)}
+.eyebrow{color:var(--volt);font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;font-weight:600;margin-bottom:14px}
+.blog-hero h1{font-size:clamp(2.2rem,7vw,4rem);text-transform:uppercase;margin-bottom:16px}
+.blog-hero h1 span{color:var(--volt)}
+.blog-hero p{color:var(--grigio);font-size:1rem;max-width:520px}
+
+/* ARTICLE */
+.article{padding:60px 0;border-bottom:1px solid rgba(255,255,255,.07)}
+.article:last-child{border-bottom:none}
+.art-tag{display:inline-block;background:rgba(204,255,0,.1);border:1px solid rgba(204,255,0,.3);color:var(--volt);font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:4px 12px;border-radius:50px;margin-bottom:18px}
+.article h2{font-size:clamp(1.6rem,5vw,2.4rem);text-transform:uppercase;margin-bottom:16px;line-height:1.1}
+.article .lead{font-size:1.05rem;color:var(--grigio);margin-bottom:28px;line-height:1.6}
+.article-body{font-size:.95rem;line-height:1.8;color:rgba(245,245,245,.85)}
+.article-body p{margin-bottom:18px}
+.article-body h3{font-size:1.2rem;text-transform:uppercase;color:var(--volt);margin:28px 0 12px}
+.article-body ul{padding-left:20px;margin-bottom:18px}
+.article-body ul li{margin-bottom:8px}
+.article-body strong{color:var(--bianco);font-weight:600}
+
+/* GRADE TABLE */
+.grade-table{width:100%;border-collapse:collapse;margin:20px 0 28px;font-size:.88rem}
+.grade-table th{text-align:left;padding:10px 14px;background:var(--nero-3);color:var(--volt);font-family:'Archivo Black',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;border-bottom:2px solid rgba(204,255,0,.3)}
+.grade-table td{padding:10px 14px;border-bottom:1px solid rgba(255,255,255,.06);color:var(--bianco)}
+.grade-table tr:hover td{background:rgba(204,255,0,.03)}
+.grade{font-weight:700;color:var(--volt);font-family:'Archivo Black',sans-serif}
+
+/* FAKE CHECK LIST */
+.fake-list{list-style:none;padding:0;margin:20px 0}
+.fake-list li{display:flex;gap:14px;padding:14px 18px;background:var(--nero-2);border:1px solid rgba(255,255,255,.06);border-radius:10px;margin-bottom:10px;align-items:flex-start}
+.fake-list li .num{font-family:'Archivo Black',sans-serif;font-size:1.4rem;color:var(--volt);flex-shrink:0;line-height:1}
+.fake-list li .txt strong{display:block;font-weight:600;margin-bottom:4px}
+.fake-list li .txt span{color:var(--grigio);font-size:.85rem}
+
+/* RESELL TABLE */
+.resell-grid{display:grid;gap:12px;margin:20px 0}
+.resell-item{display:flex;align-items:center;gap:14px;background:var(--nero-2);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px 18px}
+.resell-item .shoe{font-family:'Archivo Black',sans-serif;font-size:.95rem;flex:1}
+.resell-item .shoe small{display:block;color:var(--grigio);font-family:'Inter',sans-serif;font-weight:300;font-size:.78rem;margin-top:2px}
+.tag-hot{background:rgba(204,255,0,.15);color:var(--volt);font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:50px;letter-spacing:.1em;white-space:nowrap}
+.tag-mid{background:rgba(255,165,0,.1);color:#ffa500;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:50px;letter-spacing:.1em;white-space:nowrap}
+.tag-drop{background:rgba(192,57,43,.1);color:#e74c3c;font-size:.65rem;font-weight:700;padding:3px 10px;border-radius:50px;letter-spacing:.1em;white-space:nowrap}
+
+/* CTA */
+.art-cta{display:inline-flex;align-items:center;gap:10px;background:var(--wa);color:#fff;padding:13px 24px;border-radius:50px;font-weight:600;font-size:.9rem;margin-top:24px;transition:.2s}
+.art-cta:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(37,211,102,.3)}
+
+/* NAV DOTS */
+.toc{display:flex;gap:10px;flex-wrap:wrap;margin:32px 0 0}
+.toc a{border:1px solid rgba(204,255,0,.2);color:var(--grigio);font-size:.75rem;padding:6px 14px;border-radius:50px;transition:.2s}
+.toc a:hover{border-color:var(--volt);color:var(--volt)}
+
+footer{text-align:center;padding:40px 22px;border-top:1px solid rgba(204,255,0,.1);color:var(--grigio);font-size:.82rem}
+footer a{color:var(--volt)}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <a class="logo" href="index.html">Sneaks<span>4</span>Seek</a>
+    <a class="back" href="index.html">← Zurück</a>
+  </div>
+</header>
+
+<div class="wrap">
+  <div class="blog-hero">
+    <p class="eyebrow">✦ Blog</p>
+    <h1>Sneaker-Wissen.<br><span>Kein Bullshit.</span></h1>
+    <p>Alles was du wissen musst — Grading, Fakes, Resell. Direkt, ehrlich, auf den Punkt.</p>
+    <div class="toc">
+      <a href="#grading">📊 Grading Guide</a>
+      <a href="#fake">🔍 Fake erkennen</a>
+      <a href="#resell">💰 Resell 2026</a>
+    </div>
+  </div>
+
+  <!-- ARTIKEL 1: GRADING -->
+  <article class="article" id="grading">
+    <span class="art-tag">Guide</span>
+    <h2>Sneaker Grading<br>erklärt</h2>
+    <p class="lead">DS, VNDS, Used, Beater — was bedeutet das wirklich? Kein Verkäufer sagt dir das ehrlich. Wir schon.</p>
+    <div class="article-body">
+      <p>Wer Sneaker kauft oder verkauft kommt an Grading nicht vorbei. Das Problem: jeder versteht was anderes darunter. Ein "9/10" beim einen ist ein "7/10" beim anderen. Deshalb hier die echten Standards.</p>
+
+      <table class="grade-table">
+        <tr><th>Grade</th><th>Bedeutung</th><th>Woran erkennen?</th></tr>
+        <tr><td><span class="grade">DS</span></td><td>Deadstock — nie getragen</td><td>OG Box, alle Tags, perfekte Sohle, kein Yellowing</td></tr>
+        <tr><td><span class="grade">VNDS</span></td><td>Very Near Deadstock — 1-3x getragen</td><td>Minimalste Sole-Wear, Box vorhanden, keine Flecken</td></tr>
+        <tr><td><span class="grade">9/10</span></td><td>Sehr guter Zustand</td><td>Kaum sichtbare Wear, sauber, keine Risse</td></tr>
+        <tr><td><span class="grade">8/10</span></td><td>Guter Gebrauchtzustand</td><td>Sichtbare Sole-Wear, kleine Flecken möglich</td></tr>
+        <tr><td><span class="grade">7/10</span></td><td>Gebraucht, ehrlich</td><td>Deutliche Wear, aber keine Strukturschäden</td></tr>
+        <tr><td><span class="grade">Beater</span></td><td>Daily Driver</td><td>Heavily worn — Wert nur noch sentimental</td></tr>
+      </table>
+
+      <h3>Was Verkäufer oft verschweigen</h3>
+      <p><strong>Sole Yellowing</strong> — weiße Sohlen vergilben mit der Zeit, auch ungetragen. Frag immer nach Fotos unter UV-Licht oder bei natürlichem Tageslicht.</p>
+      <p><strong>Box Condition</strong> — eine zerstörte Box senkt den Wert spürbar, besonders bei Limited Releases. Kein Box = -10 bis -20% Marktwert.</p>
+      <p><strong>Creping</strong> — bei älteren Yeezys und Jordans kann die Midsole bröckeln. Finger rein und drücken — wenn's krümelt, Finger weg.</p>
+
+      <a class="art-cta" href="https://wa.me/4916346922255?text=Yo!%20Ich%20will%20meinen%20Sneaker%20graden%20lassen%20🔍">
+        💬 Kostenlos graden lassen
+      </a>
+    </div>
+  </article>
+
+  <!-- ARTIKEL 2: FAKE CHECK -->
+  <article class="article" id="fake">
+    <span class="art-tag">Fake-Check</span>
+    <h2>Fake erkennen<br>in 60 Sekunden</h2>
+    <p class="lead">Die 5 Stellen die Fälscher immer vergessen. Air Max, Jordan, Yeezy — überall dieselben Fehler.</p>
+    <div class="article-body">
+      <p>Der Markt ist voll mit Fakes — und die werden immer besser. Aber perfekt sind sie nie. Diese 5 Checks funktionieren bei 90% aller gefälschten Sneaker.</p>
+
+      <ul class="fake-list">
+        <li>
+          <div class="num">01</div>
+          <div class="txt">
+            <strong>Insole Stitch</strong>
+            <span>Die Naht auf der Einlegesohle ist bei Fakes meist ungleichmäßig oder zu grob. Original-Nähte sind pixelgenau — kein einziger Faden steht ab.</span>
+          </div>
+        </li>
+        <li>
+          <div class="num">02</div>
+          <div class="txt">
+            <strong>Tongue Label Schrift</strong>
+            <span>Schrift auf dem Zungeneti­kett — bei Fakes oft leicht verschwommen, falsche Schriftart oder falsche Abstände. Lupe raus und genau schauen.</span>
+          </div>
+        </li>
+        <li>
+          <div class="num">03</div>
+          <div class="txt">
+            <strong>Box Barcode</strong>
+            <span>Scanne den Barcode auf der Box. Er muss zur aufgedruckten Größe und Colorway passen. Nummern nicht übereinstimmend = Red Flag.</span>
+          </div>
+        </li>
+        <li>
+          <div class="num">04</div>
+          <div class="txt">
+            <strong>Glue Marks</strong>
+            <span>Schau an der Sohlennaht mit Taschenlampe rein. Klebstoff-Überschuss, Blasen oder ungleichmäßige Verbindung = Fast immer Fake.</span>
+          </div>
+        </li>
+        <li>
+          <div class="num">05</div>
+          <div class="txt">
+            <strong>Gewicht</strong>
+            <span>Originale haben ein spezifisches Gewicht — Fakes sind oft leichter (billiges Material) oder schwerer (zu viel Kleber). Beide Schuhe wiegen und vergleichen.</span>
+          </div>
+        </li>
+      </ul>
+
+      <h3>Spezial: Yeezy Boost</h3>
+      <p>Bei Yeezys immer die <strong>Boost-Sohle</strong> prüfen — echte Boost-Perlen sind unregelmäßig und leicht durchscheinend. Fake-Boost ist zu gleichmäßig und matt.</p>
+
+      <a class="art-cta" href="https://wa.me/4916346922255?text=Yo!%20Ich%20will%20meinen%20Sneaker%20auf%20Echtheit%20prüfen%20lassen%20🔍">
+        💬 Authenticity Check anfragen
+      </a>
+    </div>
+  </article>
+
+  <!-- ARTIKEL 3: RESELL 2026 -->
+  <article class="article" id="resell">
+    <span class="art-tag">Markt · 2026</span>
+    <h2>Resell 2026:<br>Was läuft noch?</h2>
+    <p class="lead">Welche Modelle noch Wert haben — und welche du so schnell wie möglich loswerden solltest.</p>
+    <div class="article-body">
+      <p>Der Resell-Markt hat sich 2024-2026 massiv verändert. Inflation, Überproduktion bei Nike und das Ende des Yeezy-Hypes haben alles durchgerüttelt. Hier die ehrliche Bestandsaufnahme.</p>
+
+      <h3>🔥 Noch stark</h3>
+      <div class="resell-grid">
+        <div class="resell-item"><div class="shoe">New Balance 990v4 / 990v6<small>Made in USA — steigt weiter</small></div><span class="tag-hot">HOT</span></div>
+        <div class="resell-item"><div class="shoe">Samba OG / Gazelle<small>Adidas-Welle hält an</small></div><span class="tag-hot">HOT</span></div>
+        <div class="resell-item"><div class="shoe">Jordan 1 High OG Collabs<small>Travis, Fragment, Off-White — zeitlos</small></div><span class="tag-hot">HOT</span></div>
+        <div class="resell-item"><div class="shoe">Salomon XT-6<small>Outdoor-Silhouette boomt</small></div><span class="tag-hot">HOT</span></div>
+      </div>
+
+      <h3>⚡ Mittelfeld</h3>
+      <div class="resell-grid">
+        <div class="resell-item"><div class="shoe">Air Max 1 / 90<small>Stabil, kein großes Plus mehr</small></div><span class="tag-mid">OK</span></div>
+        <div class="resell-item"><div class="shoe">Dunk Low (Non-Collab)<small>Markt gesättigt</small></div><span class="tag-mid">OK</span></div>
+      </div>
+
+      <h3>📉 Loswerden</h3>
+      <div class="resell-grid">
+        <div class="resell-item"><div class="shoe">Yeezy 350 (Post-Adidas)<small>Überangebot hat Markt zerstört</small></div><span class="tag-drop">SELL</span></div>
+        <div class="resell-item"><div class="shoe">Nike Dunk High (GS)<small>Kein Markt mehr für GS-Sizes</small></div><span class="tag-drop">SELL</span></div>
+      </div>
+
+      <p style="margin-top:24px">Der beste Tipp für 2026: <strong>Qualität schlägt Hype.</strong> Schuhe die handwerklich gut sind — Made in USA, Collabs mit echten Designern, limitierte Materialien — halten Wert. Alles was Nike oder Adidas in Millionen produziert hat, nicht.</p>
+
+      <a class="art-cta" href="https://wa.me/4916346922255?text=Yo!%20Ich%20will%20meinen%20Sneaker%20verkaufen%20💰">
+        💬 Sneaker jetzt verkaufen
+      </a>
+    </div>
+  </article>
+
+</div>
+
+<footer>
+  <a href="index.html" style="font-family:'Archivo Black',sans-serif;font-size:1.1rem">Sneaks<span style="color:var(--volt)">4</span>Seek</a>
+  <p style="margin-top:10px">© 2026 Sneaks4Seek · Frankfurt · <a href="index.html">Home</a></p>
+</footer>
+
+<script>if("serviceWorker"in navigator){navigator.serviceWorker.register("/Sneaks4seek/service-worker.js")}</script>
+</body>
+</html>
