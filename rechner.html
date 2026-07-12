@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Sneakers4Seeker Rechner — schätze in Sekunden, was dein Sneaker-Deal wert sein könnte.">
+<title>Rechner · Sneakers4Seeker</title>
+<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --volt:#CCFF00; --volt-2:#a6d400;
+    --nero:#0B0B0B; --nero-2:#141414; --nero-3:#1E1E1E;
+    --grigio:#888; --bianco:#F5F5F5; --wa:#25D366;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--nero);color:var(--bianco);font-family:'Inter',sans-serif;font-weight:300;line-height:1.6;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:'Archivo Black',sans-serif;font-weight:400;letter-spacing:-.01em}
+  a{color:inherit;text-decoration:none}
+  .wrap{max-width:600px;margin:0 auto;padding:0 22px}
+  header{position:sticky;top:0;z-index:50;background:rgba(11,11,11,.92);backdrop-filter:blur(10px);border-bottom:1px solid rgba(204,255,0,.15)}
+  .nav{display:flex;align-items:center;justify-content:space-between;padding:16px 0}
+  .logo{font-family:'Archivo Black',sans-serif;font-size:1.3rem}
+  .logo span{color:var(--volt)}
+  .back{font-size:.85rem;color:var(--grigio)}
+
+  .hero{text-align:center;padding:44px 0 10px}
+  .tag{display:inline-block;border:1px solid rgba(204,255,0,.4);color:var(--volt);font-size:.68rem;font-weight:600;letter-spacing:.16em;text-transform:uppercase;padding:6px 16px;border-radius:50px;margin-bottom:18px}
+  .hero h1{font-size:clamp(2rem,9vw,2.8rem);text-transform:uppercase}
+  .hero h1 .volt{color:var(--volt);text-shadow:0 0 30px rgba(204,255,0,.5)}
+  .hero p{color:var(--grigio);font-size:.95rem;max-width:44ch;margin:14px auto 0}
+
+  .card{background:var(--nero-2);border:1px solid rgba(204,255,0,.16);border-radius:20px;padding:26px 22px;margin:28px 0}
+  .label{font-family:'Archivo Black',sans-serif;font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center}
+  .label .val{color:var(--volt)}
+
+  input[type=range]{
+    -webkit-appearance:none;width:100%;height:6px;border-radius:6px;
+    background:linear-gradient(90deg,var(--volt) var(--pct,50%),var(--nero-3) var(--pct,50%));
+    outline:none;margin:10px 0 6px;
+  }
+  input[type=range]::-webkit-slider-thumb{
+    -webkit-appearance:none;width:26px;height:26px;border-radius:50%;
+    background:var(--volt);border:3px solid var(--nero);box-shadow:0 0 14px rgba(204,255,0,.6);cursor:pointer;
+  }
+  input[type=range]::-moz-range-thumb{
+    width:26px;height:26px;border-radius:50%;background:var(--volt);border:3px solid var(--nero);
+    box-shadow:0 0 14px rgba(204,255,0,.6);cursor:pointer;
+  }
+  .presets{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .preset{flex:1;text-align:center;padding:8px 6px;border-radius:10px;border:1px solid rgba(204,255,0,.2);font-size:.75rem;color:var(--grigio);cursor:pointer;transition:.2s}
+  .preset:hover,.preset.active{border-color:var(--volt);color:var(--volt);background:rgba(204,255,0,.06)}
+
+  .zustand-row{display:grid;grid-template-columns:1fr;gap:8px;margin-top:6px}
+  .chip{padding:13px 14px;border-radius:12px;border:1px solid rgba(204,255,0,.2);cursor:pointer;transition:.2s;display:flex;justify-content:space-between;align-items:center}
+  .chip small{color:var(--grigio);font-size:.72rem;display:block;margin-top:2px}
+  .chip.active{border-color:var(--volt);background:rgba(204,255,0,.08);box-shadow:0 0 20px rgba(204,255,0,.12)}
+  .chip.active .tik{opacity:1;transform:scale(1)}
+  .tik{width:18px;height:18px;border-radius:50%;background:var(--volt);color:var(--nero);font-size:.7rem;display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.5);transition:.2s}
+
+  .result{
+    background:linear-gradient(160deg,var(--nero-2),var(--nero-3));
+    border:1px solid var(--volt);border-radius:20px;padding:28px 22px;text-align:center;
+    box-shadow:0 0 40px rgba(204,255,0,.1);
+  }
+  .result .kick{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;color:var(--grigio);margin-bottom:8px}
+  .result .range{font-family:'Archivo Black',sans-serif;font-size:clamp(1.8rem,9vw,2.6rem);color:var(--volt);text-shadow:0 0 30px rgba(204,255,0,.5)}
+  .result .fine{font-size:.72rem;color:#666;margin-top:10px}
+
+  .btn{display:block;width:100%;text-align:center;padding:15px 20px;border-radius:50px;font-weight:600;font-size:.95rem;margin-top:20px;transition:transform .2s}
+  .btn-wa{background:var(--wa);color:#fff}
+  .btn-wa:hover{transform:translateY(-2px)}
+
+  footer{text-align:center;padding:36px 0;color:#555;font-size:.78rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a href="index.html" class="logo">Sneakers<span>4</span>Seeker</a>
+    <a href="index.html" class="back">← Zurück</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="tag">KI-gestützte Schätzung</div>
+    <h1>Der <span class="volt">Rechner</span></h1>
+    <p>Schieb den Regler, wähl den Zustand — und sieh in Echtzeit, was in deinem Deal stecken könnte.</p>
+  </div>
+</section>
+
+<div class="wrap">
+
+  <div class="card">
+    <div class="label">Einkaufspreis <span class="val" id="preisVal">250 €</span></div>
+    <input type="range" id="preisSlider" min="10" max="1000" value="250" step="5">
+    <div class="presets">
+      <div class="preset" data-val="100">bis 100 €</div>
+      <div class="preset active" data-val="250">bis 250 €</div>
+      <div class="preset" data-val="1000">bis 1000 €</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="label">Zustand</div>
+    <div class="zustand-row" id="zustandRow">
+      <div class="chip" data-mult-low="1.15" data-mult-high="1.3">
+        <div>Gebraucht<small>sichtbare Tragespuren</small></div>
+        <div class="tik">✓</div>
+      </div>
+      <div class="chip active" data-mult-low="1.4" data-mult-high="1.6">
+        <div>Neuwertig<small>kaum bis keine Spuren</small></div>
+        <div class="tik">✓</div>
+      </div>
+      <div class="chip" data-mult-low="1.8" data-mult-high="2.2">
+        <div>Original verpackt · unbenutzt<small>OVP, Deadstock</small></div>
+        <div class="tik">✓</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="result">
+    <div class="kick">Möglicher Verkaufspreis</div>
+    <div class="range" id="resultRange">350 € – 400 €</div>
+    <div class="fine">Unverbindliche Schätzung · echte Prüfung bei der Foto-Einreichung</div>
+  </div>
+
+  <a class="btn btn-wa" id="ctaWa" href="#">📲 Jetzt Deal per WhatsApp starten</a>
+
+</div>
+
+<footer>Sneakers4Seeker · Rechner ist eine Schätzhilfe, kein festes Angebot</footer>
+
+<script>
+(function(){
+  "use strict";
+  var slider = document.getElementById("preisSlider");
+  var preisVal = document.getElementById("preisVal");
+  var presets = document.querySelectorAll(".preset");
+  var chips = document.querySelectorAll("#zustandRow .chip");
+  var resultRange = document.getElementById("resultRange");
+  var ctaWa = document.getElementById("ctaWa");
+
+  function activeChip(){
+    for (var i=0;i<chips.length;i++){ if (chips[i].classList.contains("active")) return chips[i]; }
+    return chips[1];
+  }
+
+  function updateSliderTrack(){
+    var pct = ((slider.value - slider.min) / (slider.max - slider.min)) * 100;
+    slider.style.setProperty("--pct", pct + "%");
+  }
+
+  function calc(){
+    var preis = parseInt(slider.value, 10);
+    preisVal.textContent = preis + " €";
+    updateSliderTrack();
+
+    var chip = activeChip();
+    var low = preis * parseFloat(chip.getAttribute("data-mult-low"));
+    var high = preis * parseFloat(chip.getAttribute("data-mult-high"));
+
+    resultRange.textContent = Math.round(low) + " € – " + Math.round(high) + " €";
+
+    var msg = "Yo! Meine Sneakers (Einkaufspreis ca. " + preis + " €, Zustand: " +
+      chip.querySelector("div").firstChild.textContent.trim() +
+      ") sollen laut Rechner ca. " + Math.round(low) + "–" + Math.round(high) +
+      " € bringen. Lass uns den Deal machen 🧦";
+    ctaWa.href = "https://wa.me/491634692255?text=" + encodeURIComponent(msg);
+  }
+
+  slider.addEventListener("input", calc);
+
+  presets.forEach(function(p){
+    p.addEventListener("click", function(){
+      presets.forEach(function(x){ x.classList.remove("active"); });
+      p.classList.add("active");
+      slider.value = p.getAttribute("data-val");
+      calc();
+    });
+  });
+
+  chips.forEach(function(c){
+    c.addEventListener("click", function(){
+      chips.forEach(function(x){ x.classList.remove("active"); });
+      c.classList.add("active");
+      calc();
+    });
+  });
+
+  calc();
+})();
+</script>
+
+</body>
+</html>
