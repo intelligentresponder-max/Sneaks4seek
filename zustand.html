@@ -37,6 +37,20 @@
   .card{background:var(--nero-2);border:1px solid rgba(204,255,0,.2);border-radius:18px;padding:28px 24px;margin-bottom:20px}
   .card h2{font-size:1.2rem;margin-bottom:18px;color:var(--volt)}
 
+  /* Foto-Guide */
+  .steps{display:flex;flex-direction:column;gap:14px}
+  .step{display:grid;grid-template-columns:38px 1fr;gap:14px;align-items:start}
+  .step .n{width:38px;height:38px;border-radius:50%;background:var(--nero-3);border:1px solid rgba(204,255,0,.35);color:var(--volt);font-family:'Archivo Black',sans-serif;font-size:1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .step h3{font-size:.98rem;text-transform:none;font-family:'Inter',sans-serif;font-weight:600;color:var(--bianco);margin-bottom:3px}
+  .step p{font-size:.86rem;color:var(--grigio)}
+  .photo-tip{background:var(--nero-3);border:1px dashed rgba(204,255,0,.3);border-radius:12px;padding:14px 16px;margin-top:18px;font-size:.85rem;color:var(--grigio)}
+  .photo-tip b{color:var(--volt)}
+  .do-dont{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+  .dd{border-radius:10px;padding:10px 12px;font-size:.78rem;border:1px solid}
+  .dd.do{border-color:rgba(204,255,0,.35);color:var(--volt)}
+  .dd.dont{border-color:rgba(192,87,63,.4);color:#e08a76}
+  .dd b{display:block;font-family:'Archivo Black',sans-serif;font-size:.68rem;letter-spacing:.06em;margin-bottom:4px}
+
   .field{margin-bottom:16px}
   .field label{display:block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--volt);margin-bottom:7px}
   .field input,.field select{width:100%;background:var(--nero-3);border:1px solid rgba(204,255,0,.18);border-radius:10px;padding:12px 14px;color:var(--bianco);font-family:'Inter',sans-serif;font-size:.95rem}
@@ -73,7 +87,7 @@
   footer .logo{display:inline-block;margin-bottom:12px;font-size:1.2rem}
   footer a{color:var(--volt)}
 
-  @media(max-width:480px){.row2{grid-template-columns:1fr}}
+  @media(max-width:480px){.row2{grid-template-columns:1fr}.do-dont{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -95,6 +109,47 @@
 
 <section class="sec">
   <div class="wrap">
+
+    <div class="card">
+      <h2>0 · Die perfekten Fotos</h2>
+      <div class="steps">
+        <div class="step">
+          <div class="n">1</div>
+          <div><h3>Tageslicht, kein Blitz</h3><p>Ans Fenster stellen oder draußen im Schatten fotografieren. Blitzlicht verfälscht Farbe und Zustand.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">2</div>
+          <div><h3>Neutraler Hintergrund</h3><p>Einfarbiger Boden oder Tisch, keine wilde Tapete oder Wäscheberg im Bild — das Paar soll im Fokus stehen.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">3</div>
+          <div><h3>Beide Schuhe, Seitenansicht</h3><p>Ein Foto mit beiden Paaren nebeneinander, exakt von der Seite — zeigt Form, Sohlenzustand und Farbe am besten.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">4</div>
+          <div><h3>Sohle von unten</h3><p>Beide Laufsohlen einzeln fotografieren — Abrieb und Profil sind hier am wichtigsten für den Zustand.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">5</div>
+          <div><h3>Innenlabel / Größenangabe</h3><p>Zunge zurückklappen und Größenetikett scharf fotografieren — bestätigt Modell und Größe.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">6</div>
+          <div><h3>Mängel in Nahaufnahme</h3><p>Jede Stelle, die du oben unter "Mängel" ankreuzt, extra nah fotografieren. Ehrlichkeit hier = schnellerer Deal.</p></div>
+        </div>
+        <div class="step">
+          <div class="n">7</div>
+          <div><h3>10-Sekunden-Video</h3><p>Einmal kurz um den Schuh schwenken, in Bewegung wirkt Zustand am glaubwürdigsten.</p></div>
+        </div>
+      </div>
+
+      <div class="do-dont">
+        <div class="dd do"><b>✓ Gut</b>Scharf, hell, ganzes Paar im Bild</div>
+        <div class="dd dont"><b>✗ Vermeiden</b>Unscharf, dunkel, nur ein Schuh</div>
+      </div>
+
+      <div class="photo-tip"><b>Tipp:</b> Fotos + Video direkt im WhatsApp-Chat mitschicken, wenn du unten den Zustandsbericht sendest — dann läuft's in einem Rutsch.</div>
+    </div>
 
     <div class="card">
       <h2>1 · Das Paar</h2>
