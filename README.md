@@ -1,49 +1,53 @@
-# 👟 Sneakers4Seeker
+# Sneaks4Seek
 
-> Die Plattform für Sneaker-Heads — verkaufe deine Paare oder finde dein nächstes Grail. Verkauf & Ankauf, einfach und direkt per WhatsApp.
+Onboarding-Website im Versandetikett-Look für Sneaker-Verkäufer:innen. Nach dem Ausfüllen gibt's ein Paar Socken als Dankeschön.
 
-**Live:** [intelligentresponder-max.github.io/sneakers4seeker](https://intelligentresponder-max.github.io/sneaks4seek/)
+Live (nach Aktivierung von GitHub Pages): `https://intelligentresponder-max.github.io/Sneaks4seek/`
 
----
+## Struktur
 
-## Was ist das
+```
+/
+  index.html            Landing-Seite
+  onboarding/index.html Formular (Zugangscode-geschützt) + Upload bis 10 Bilder / 10 Videos (je max. 50 MB)
+  success/index.html    Danke-Seite mit QR-Code
+  assets/css/           Design-Tokens (theme.css) + Komponenten (components.css)
+  assets/js/            api.js (Backend-Anbindung), onboarding.js (Formularlogik), qrcode.js
+  apps-script/Code.gs   Referenzcode fürs Google-Apps-Script-Backend
+```
 
-Sneakers4Seeker verbindet Sneaker-Verkäufer und -Sucher. Kein komplizierter Account-Stress: ein paar Angaben ausfüllen, der Rest läuft direkt per WhatsApp.
+## Setup – 3 Schritte
 
-Zwei Wege:
-- **Verkaufen** — Sneakers loswerden, fairer Preis, schnelle Abwicklung
-- **Ankauf / Suche** — bestimmtes Paar finden oder als Wiederverkäufer ankaufen
+### 1) Backend deployen (Google Apps Script)
 
----
+1. Auf [script.google.com](https://script.google.com) ein neues Projekt anlegen und den Inhalt von `apps-script/Code.gs` einfügen.
+2. Unter **Projekteinstellungen → Script Properties** anlegen:
+   - `ACCESS_CODE` – der Code, mit dem die Onboarding-Seite geschützt ist
+   - `DRIVE_FOLDER_ID` – ID des Google-Drive-Zielordners für Uploads
+   - `SHEET_ID` – optional, sonst wird beim ersten Absenden automatisch ein Log-Sheet erstellt
+3. **Bereitstellen → Neue Bereitstellung → Web-App**, Ausführen als „Ich", Zugriff „Jeder".
+4. Die erzeugte Web-App-URL kopieren.
 
-## Seiten
+### 2) Frontend verbinden
 
-| Seite | Datei | Zweck |
-|-------|-------|-------|
-| Startseite | `index.html` | Übersicht, zwei Wege (Verkauf/Ankauf) |
-| Verkaufen | `verkaufen.html` | Onboarding-Formular für Verkäufer |
-| Ankauf / Suche | `ankauf.html` | Onboarding-Formular für Käufer/Ankäufer |
+In `assets/js/api.js` die Zeile
 
----
+```js
+const APPS_SCRIPT_URL = "PASTE_YOUR_DEPLOYED_WEB_APP_URL_HERE";
+```
 
-## Design
+durch die Web-App-URL aus Schritt 1 ersetzen.
 
-- **Farben:** Volt-Grün `#CCFF00`, Schwarz `#0B0B0B`, Weiß `#F5F5F5`
-- **Font:** Archivo Black (Headlines) + Inter (Text)
-- **Stil:** Streetwear, sportlich, dunkel mit Volt-Akzent
+### 3) GitHub Pages aktivieren
 
----
+Im Repo unter **Settings → Pages**: Branch `main`, Ordner `/ (root)` auswählen und speichern. Die Seite ist danach unter `https://intelligentresponder-max.github.io/Sneaks4seek/` erreichbar.
 
-## Technik
+## Hinweis zum Zugangscode-Schutz
 
-Statische Seite auf GitHub Pages. Kein Backend — alle Formulare senden direkt per WhatsApp (DSGVO-konform, keine Speicherung auf der Seite). SEO via `sitemap.xml`, `robots.txt`, Open Graph und Schema.org.
+Der Code-Gate im Onboarding-Formular ist ein **Soft-Gate im Frontend** (blendet das Formular erst nach Eingabe ein). Die eigentliche Prüfung passiert **serverseitig** in `Code.gs` bei jedem `init`/`upload`/`finalize`-Aufruf – ein falscher Code wird dort abgelehnt, unabhängig vom Frontend. Da GitHub Pages nur statisches Hosting ist, ist das die pragmatischste Lösung ohne eigenen Server/echtes Login.
 
----
+## Limits
 
-## Kontakt
-
-- **WhatsApp:** +49 163 4692255
-
----
-
-*© 2026 Sneakers4Seeker · Verkauf & Ankauf von Sneakers · Plattform auf Basis des ASGlobal-Gerüsts*
+- Bilder: max. 10, je max. 20 MB
+- Videos: max. 10, je max. 50 MB (anpassbar in `assets/js/onboarding.js`, Konstanten `MAX_*`)
+- Für größere Videos (>50 MB) müsste auf Chunk-Uploads oder einen anderen Storage-Dienst umgestellt werden.

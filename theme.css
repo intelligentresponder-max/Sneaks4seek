@@ -1,0 +1,53 @@
+/* Sneaks4Seek – Design Tokens
+   Palette + Sock-Weiß als "Inlay", Versandetikett-Look */
+
+:root{
+  --paper:      #C4A67A;   /* Kraftpapier-Ton */
+  --paper-dark: #AE8F62;   /* Hintergrund-Verlauf, dunkler */
+  --ink:        #1B1815;   /* Tiefschwarz-Tinte */
+  --sock:       #F6F2E9;   /* Sock-Weiß */
+  --stamp:      #C1442D;   /* Stempel-Rot */
+  --muted:      #8B8478;   /* gedämpftes Grau */
+
+  --line: rgba(27,24,21,.22);
+  --dash: rgba(27,24,21,.35);
+
+  --radius: 16px;
+
+  --mono:    "IBM Plex Mono", ui-monospace, "Courier New", monospace;
+  --body:    "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --display: "Oswald", Impact, Haettenschweiler, sans-serif;
+}
+
+*{ box-sizing: border-box; }
+
+html, body{ margin: 0; padding: 0; }
+
+body{
+  background: var(--paper-dark);
+  background-image:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.05) 0, transparent 35%),
+    radial-gradient(circle at 80% 70%, rgba(0,0,0,0.06) 0, transparent 40%);
+  color: var(--ink);
+  font-family: var(--body);
+  min-height: 100vh;
+}
+
+a{ color: inherit; text-decoration: none; }
+
+h1, h2, h3{
+  font-family: var(--display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1.05;
+  margin: 0 0 8px;
+}
+
+p{ margin: 0 0 12px; line-height: 1.55; }
+
+::selection{ background: var(--stamp); color: var(--sock); }
+
+@media (prefers-reduced-motion: reduce){
+  *{ transition: none !important; animation: none !important; }
+}
