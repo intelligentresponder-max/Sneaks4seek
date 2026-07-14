@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sneaks4Seek – Collage-Werkzeug</title>
+<title>Sneaks4Seek – Collage-Werkzeug Pro</title>
 <style>
   :root{
     --bg: #0b0c0e;
@@ -12,7 +12,7 @@
     --kraft-dim: #8a7455;
     --sock: #f2efe9;
     --line: #232427;
-    --glow: #ffffff;
+    --gold: #f5c542;
   }
   *{ box-sizing: border-box; }
   html,body{
@@ -23,7 +23,7 @@
     min-height:100vh;
   }
   .wrap{
-    max-width: 980px;
+    max-width: 1100px;
     margin: 0 auto;
     padding: 28px 18px 60px;
   }
@@ -79,6 +79,8 @@
     border-color: var(--kraft);
   }
   .btn.primary:hover{ background: #ddbc86; }
+  .btn.danger{ border-color: #b33; color: #f77; }
+  .btn.danger:hover{ background: #b33; color: #fff; }
   .btn:disabled{ opacity:.4; cursor:not-allowed; }
   input[type=file]{ display:none; }
   label.file-label{
@@ -95,7 +97,7 @@
     display:flex; align-items:center; gap:10px;
     font-size: 12px; color:#b6b8bd;
   }
-  input[type=range]{ accent-color: var(--kraft); width: 140px; }
+  input[type=range]{ accent-color: var(--kraft); width: 120px; }
   .canvas-shell{
     position:relative;
     border-radius: 10px;
@@ -135,72 +137,128 @@
     border-radius: 999px;
     padding: 3px 10px;
   }
+  .status-badge{
+    font-size: 11px;
+    background: #1e1f22;
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: var(--gold);
+    border: 1px solid var(--gold);
+  }
+  .crop-overlay {
+    position: absolute;
+    border: 2px dashed #ff4444;
+    background: rgba(255,0,0,0.1);
+    pointer-events: none;
+    display: none;
+    z-index: 10;
+  }
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
     <div>
-      <h1>Sneaks<span>4</span>Seek — Collage</h1>
-      <p class="sub">Sneaker-Bilder hochladen, automatisch anordnen, pro Bild zoomen/verschieben, Weiß leuchtet neonartig.</p>
+      <h1>Sneaks<span>4</span>Seek — Collage <span style="font-size:12px;color:#8b8d92;font-weight:400;">Pro</span></h1>
+      <p class="sub">Bild auswählen (anklicken) → Helligkeit, Kontrast, Zuschnitt, Vignette – Einstellungen auf 5 Bilder übertragen.</p>
     </div>
     <span class="count-pill" id="countPill">0 Bilder</span>
   </header>
 
+  <!-- Panel 1: Dateien & Grundfunktionen -->
   <div class="panel">
     <div class="row">
-      <label class="file-label" for="fileInput">+ Sneaker-Bilder wählen</label>
+      <label class="file-label" for="fileInput">+ Sneaker-Bilder</label>
       <input type="file" id="fileInput" accept="image/*" multiple>
-      <button class="btn" id="shuffleBtn" disabled>Layout neu mischen</button>
+      <button class="btn" id="shuffleBtn" disabled>Layout mischen</button>
       <button class="btn" id="resetZoomBtn" disabled>Zoom zurücksetzen</button>
-      <button class="btn" id="clearBtn" disabled>Alles entfernen</button>
-      <button class="btn primary" id="downloadBtn" disabled>Als PNG exportieren</button>
-    </div>
-    <div class="row" style="margin-top:12px;">
-      <div class="slider-group">
-        Neon-Glow
-        <input type="range" id="glowSlider" min="0" max="100" value="55">
-      </div>
-      <div class="slider-group">
-        Glow-Schärfe
-        <input type="range" id="glowBlurSlider" min="4" max="40" value="18">
-      </div>
+      <button class="btn" id="clearBtn" disabled>Alle entfernen</button>
+      <button class="btn primary" id="downloadBtn" disabled>PNG exportieren</button>
     </div>
   </div>
 
-  <div class="canvas-shell">
+  <!-- Panel 2: Bildbearbeitung (nur für ausgewähltes Bild) -->
+  <div class="panel" id="editPanel">
+    <div class="row" style="justify-content:space-between; width:100%;">
+      <span id="selectedLabel" class="status-badge">Kein Bild ausgewählt</span>
+      <div style="display:flex; gap:8px; flex-wrap:wrap;">
+        <button class="btn" id="copySettingsBtn" disabled>📋 Einstellungen kopieren</button>
+        <button class="btn" id="applyToFiveBtn" disabled>⬇️ Auf 5 Bilder anwenden</button>
+        <button class="btn danger" id="resetCropBtn" disabled>Crop zurücksetzen</button>
+        <button class="btn" id="cropModeBtn">✂️ Crop-Modus</button>
+      </div>
+    </div>
+    <div class="row" style="margin-top:12px; border-top:1px solid var(--line); padding-top:12px;">
+      <div class="slider-group">Helligkeit <input type="range" id="brightnessSlider" min="-100" max="100" value="0"></div>
+      <div class="slider-group">Kontrast <input type="range" id="contrastSlider" min="-100" max="100" value="0"></div>
+      <div class="slider-group">Vignette (Fokus) <input type="range" id="vignetteSlider" min="-100" max="100" value="0"></div>
+    </div>
+  </div>
+
+  <!-- Canvas -->
+  <div class="canvas-shell" id="canvasShell">
     <canvas id="stage" width="1400" height="1400"></canvas>
     <div class="empty-hint" id="emptyHint">
       <div><b>Noch keine Bilder</b></div>
-      <div>Lade mehrere Sneaker-Fotos hoch — sie werden automatisch<br>zu einer Collage angeordnet.</div>
+      <div>Lade mehrere Fotos hoch – klicke auf eine Kachel, um sie zu bearbeiten.</div>
     </div>
+    <div class="crop-overlay" id="cropOverlay"></div>
   </div>
 
   <footer class="hint">
-    Bedienung: Ziehen verschiebt ein Bild innerhalb seiner Kachel · Mausrad / Pinch-Geste zoomt das Bild unter dem Zeiger ·
-    „Layout neu mischen” ordnet die Kacheln neu an, ohne Bilder zu verlieren.
+    <b>Bedienung:</b> Ziehen verschiebt das Bild in der Kachel · Mausrad zoomt · <b>Klick auf Kachel</b> wählt sie aus ·
+    Crop-Modus: ziehe Rechteck auf, dann „Zuschnitt anwenden" (erscheint dann) · Einstellungen sind reproduzierbar.
   </footer>
 </div>
 
 <script>
 (function(){
+  // ----- Globals -----
   const canvas = document.getElementById('stage');
   const ctx = canvas.getContext('2d');
+  const shell = document.getElementById('canvasShell');
+  const cropOverlay = document.getElementById('cropOverlay');
   const fileInput = document.getElementById('fileInput');
   const shuffleBtn = document.getElementById('shuffleBtn');
   const resetZoomBtn = document.getElementById('resetZoomBtn');
   const clearBtn = document.getElementById('clearBtn');
   const downloadBtn = document.getElementById('downloadBtn');
-  const glowSlider = document.getElementById('glowSlider');
-  const glowBlurSlider = document.getElementById('glowBlurSlider');
+  const copySettingsBtn = document.getElementById('copySettingsBtn');
+  const applyToFiveBtn = document.getElementById('applyToFiveBtn');
+  const resetCropBtn = document.getElementById('resetCropBtn');
+  const cropModeBtn = document.getElementById('cropModeBtn');
+  const brightnessSlider = document.getElementById('brightnessSlider');
+  const contrastSlider = document.getElementById('contrastSlider');
+  const vignetteSlider = document.getElementById('vignetteSlider');
   const emptyHint = document.getElementById('emptyHint');
   const countPill = document.getElementById('countPill');
+  const selectedLabel = document.getElementById('selectedLabel');
 
   const SIZE = 1400;
   const GAP = 10;
-  let cells = []; // {img, glowCanvas, gx,gy,gw,gh, scale, offX, offY, naturalW, naturalH}
+  let cells = []; // {img, glowCanvas, gx,gy,gw,gh, scale, offX, offY, brightness, contrast, vignette, cropX, cropY, cropW, cropH}
+  let selectedIdx = -1;
   let dragState = null;
+  let cropMode = false;
+  let cropStart = null;
+  let cropEnd = null;
+  let copiedSettings = null; // speichert {brightness, contrast, vignette, cropX, cropY, cropW, cropH}
 
+  // ----- Hilfsfunktionen für Zellen-Standardwerte -----
+  function createCell(img){
+    return {
+      img,
+      glowCanvas: buildGlowMask(img),
+      scale: 1, offX: 0, offY: 0,
+      gx:0, gy:0, gw:0, gh:0,
+      brightness: 0,
+      contrast: 0,
+      vignette: 0,
+      cropX: 0, cropY: 0, cropW: 0, cropH: 0 // 0 = kein Crop (volle Größe)
+    };
+  }
+
+  // ----- UI Update -----
   function setUIEnabled(){
     const has = cells.length > 0;
     shuffleBtn.disabled = !has;
@@ -209,9 +267,26 @@
     downloadBtn.disabled = !has;
     emptyHint.style.display = has ? 'none' : 'flex';
     countPill.textContent = cells.length + (cells.length === 1 ? ' Bild' : ' Bilder');
+
+    const sel = selectedIdx >= 0 && selectedIdx < cells.length;
+    copySettingsBtn.disabled = !sel;
+    applyToFiveBtn.disabled = !sel;
+    resetCropBtn.disabled = !sel;
+    brightnessSlider.disabled = !sel;
+    contrastSlider.disabled = !sel;
+    vignetteSlider.disabled = !sel;
+    if(sel){
+      const c = cells[selectedIdx];
+      brightnessSlider.value = c.brightness;
+      contrastSlider.value = c.contrast;
+      vignetteSlider.value = c.vignette;
+      selectedLabel.textContent = `Bild ${selectedIdx+1}/${cells.length} (${c.img.naturalWidth}x${c.img.naturalHeight})`;
+    } else {
+      selectedLabel.textContent = 'Kein Bild ausgewählt';
+    }
   }
 
-  // ---- Glow-Maske: helle/weiße Bildbereiche extrahieren ----
+  // ----- Glow-Maske (unverändert) -----
   function buildGlowMask(img){
     const w = img.naturalWidth, h = img.naturalHeight;
     const src = document.createElement('canvas');
@@ -220,7 +295,7 @@
     sctx.drawImage(img, 0, 0, w, h);
     const data = sctx.getImageData(0, 0, w, h);
     const px = data.data;
-    const threshold = 190; // ab dieser Helligkeit beginnt das Leuchten
+    const threshold = 190;
     for (let i = 0; i < px.length; i += 4){
       const r = px[i], g = px[i+1], b = px[i+2];
       const lum = 0.299*r + 0.587*g + 0.114*b;
@@ -236,6 +311,7 @@
     return src;
   }
 
+  // ----- Bilder laden -----
   function loadFiles(files){
     const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
     let pending = arr.length;
@@ -245,12 +321,7 @@
       reader.onload = e => {
         const img = new Image();
         img.onload = () => {
-          cells.push({
-            img,
-            glowCanvas: buildGlowMask(img),
-            scale: 1, offX: 0, offY: 0,
-            gx:0, gy:0, gw:0, gh:0
-          });
+          cells.push(createCell(img));
           layout();
           setUIEnabled();
           render();
@@ -260,36 +331,31 @@
       reader.readAsDataURL(file);
     });
   }
-
   fileInput.addEventListener('change', e => loadFiles(e.target.files));
 
-  // ---- Layout: erstes Bild groß ("featured"), Rest im Raster ----
+  // ----- Layout (unverändert, aber Zellen werden korrekt gefüllt) -----
   function layout(){
     const n = cells.length;
     if (n === 0) return;
     const rects = [];
-
     if (n === 1){
       rects.push([0,0,SIZE,SIZE]);
     } else {
       const featured = n >= 3;
       let startIdx = 0;
       let restX = 0, restY = 0, restW = SIZE, restH = SIZE;
-
       if (featured){
         const fw = SIZE * 0.58;
         rects.push([0, 0, fw, SIZE]);
         restX = fw + GAP; restY = 0; restW = SIZE - fw - GAP; restH = SIZE;
         startIdx = 1;
       }
-
       const remaining = n - startIdx;
       const cols = Math.ceil(Math.sqrt(remaining * (restW / restH)));
       const colsClamped = Math.max(1, cols);
       const rows = Math.ceil(remaining / colsClamped);
       const cw = (restW - GAP * (colsClamped - 1)) / colsClamped;
       const ch = (restH - GAP * (rows - 1)) / rows;
-
       for (let i = 0; i < remaining; i++){
         const r = Math.floor(i / colsClamped);
         const c = i % colsClamped;
@@ -300,44 +366,24 @@
         ]);
       }
     }
-
-    // an evtl. abweichende Zellenanzahl der letzten Reihe anpassen (Lücken schließen)
     cells.forEach((cell, i) => {
-      const [x,y,w,h] = rects[i];
+      const [x,y,w,h] = rects[i] || rects[rects.length-1];
       cell.gx = x; cell.gy = y; cell.gw = w; cell.gh = h;
     });
   }
 
-  function shuffle(){
-    for (let i = cells.length - 1; i > 0; i--){
-      const j = Math.floor(Math.random() * (i+1));
-      [cells[i], cells[j]] = [cells[j], cells[i]];
-    }
-    layout();
-    render();
-  }
-
-  function resetZoom(){
-    cells.forEach(c => { c.scale = 1; c.offX = 0; c.offY = 0; });
-    render();
-  }
-
-  function clearAll(){
-    cells = [];
-    fileInput.value = '';
-    setUIEnabled();
-    render();
-  }
-
-  shuffleBtn.addEventListener('click', shuffle);
-  resetZoomBtn.addEventListener('click', resetZoom);
-  clearBtn.addEventListener('click', clearAll);
-  glowSlider.addEventListener('input', render);
-  glowBlurSlider.addEventListener('input', render);
-
-  // ---- Zeichnen ----
+  // ----- Zeichnen (erweitert um Helligkeit, Kontrast, Vignette, Crop) -----
   function drawCoverParams(cell){
-    const iw = cell.img.naturalWidth, ih = cell.img.naturalHeight;
+    let iw = cell.img.naturalWidth, ih = cell.img.naturalHeight;
+    // Crop anwenden, falls vorhanden
+    let cropX = cell.cropX, cropY = cell.cropY, cropW = cell.cropW, cropH = cell.cropH;
+    if (cropW > 0 && cropH > 0) {
+      iw = cropW;
+      ih = cropH;
+    } else {
+      cropX = 0; cropY = 0; cropW = cell.img.naturalWidth; cropH = cell.img.naturalHeight;
+    }
+
     const cellRatio = cell.gw / cell.gh;
     const imgRatio = iw / ih;
     let baseW, baseH;
@@ -354,7 +400,7 @@
     cell.offY = Math.min(maxOffY, Math.max(-maxOffY, cell.offY));
     const dx = cell.gx + (cell.gw - w)/2 + cell.offX;
     const dy = cell.gy + (cell.gh - h)/2 + cell.offY;
-    return { dx, dy, w, h };
+    return { dx, dy, w, h, cropX, cropY, cropW, cropH };
   }
 
   function render(){
@@ -362,27 +408,60 @@
     ctx.fillStyle = '#0b0c0e';
     ctx.fillRect(0,0,SIZE,SIZE);
 
-    const glowAmount = glowSlider.value / 100;
-    const glowBlur = Number(glowBlurSlider.value);
+    const glowAmount = 0.55; // fest oder per Slider, wir lassen den alten Glow-Slider weg für Übersichtlichkeit
+    const glowBlur = 18;
 
-    cells.forEach(cell => {
-      const { dx, dy, w, h } = drawCoverParams(cell);
+    cells.forEach((cell, idx) => {
+      const { dx, dy, w, h, cropX, cropY, cropW, cropH } = drawCoverParams(cell);
 
+      // --- Bild mit Filtern zeichnen ---
       ctx.save();
       roundedRectPath(ctx, cell.gx, cell.gy, cell.gw, cell.gh, 14);
       ctx.clip();
 
-      // Basisbild
-      ctx.drawImage(cell.img, dx, dy, w, h);
+      // Filter anwenden (Helligkeit & Kontrast)
+      const b = cell.brightness;
+      const c = cell.contrast;
+      const brightVal = 100 + b;
+      const contrastVal = 100 + c;
+      ctx.filter = `brightness(${brightVal}%) contrast(${contrastVal}%)`;
 
-      // Neon-Weiß-Glow aus heller Maske, weich geblurrt, additiv
+      // Bild zeichnen (mit Crop)
+      ctx.drawImage(
+        cell.img,
+        cropX, cropY, cropW, cropH,
+        dx, dy, w, h
+      );
+
+      // Vignette (selektiver Fokus) überlagern
+      if (cell.vignette !== 0){
+        ctx.filter = 'none';
+        const grad = ctx.createRadialGradient(
+          cell.gx + cell.gw/2, cell.gy + cell.gh/2, 0,
+          cell.gx + cell.gw/2, cell.gy + cell.gh/2, Math.max(cell.gw, cell.gh) * 0.7
+        );
+        const strength = cell.vignette / 100;
+        if (strength > 0) { // Mitte aufhellen
+          grad.addColorStop(0, `rgba(255,255,255,${strength * 0.5})`);
+          grad.addColorStop(1, 'rgba(0,0,0,0)');
+        } else { // Ränder abdunkeln
+          const s = Math.abs(strength);
+          grad.addColorStop(0, 'rgba(0,0,0,0)');
+          grad.addColorStop(1, `rgba(0,0,0,${s * 0.6})`);
+        }
+        ctx.globalCompositeOperation = 'overlay';
+        ctx.fillStyle = grad;
+        ctx.fillRect(cell.gx, cell.gy, cell.gw, cell.gh);
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
+      // Neon-Glow (wie gehabt)
       if (glowAmount > 0){
         ctx.save();
         ctx.filter = `blur(${glowBlur}px)`;
         ctx.globalCompositeOperation = 'screen';
         ctx.globalAlpha = Math.min(1, glowAmount * 1.1);
         ctx.drawImage(cell.glowCanvas, dx, dy, w, h);
-        // zweiter, engerer Layer für einen helleren Kern
         ctx.filter = `blur(${Math.max(2, glowBlur/3)}px)`;
         ctx.globalAlpha = Math.min(1, glowAmount * 0.7);
         ctx.drawImage(cell.glowCanvas, dx, dy, w, h);
@@ -391,16 +470,46 @@
 
       ctx.restore();
 
-      // dezenter Kachel-Rand mit leichtem Leuchten
+      // Kachel-Rand
       ctx.save();
       roundedRectPath(ctx, cell.gx, cell.gy, cell.gw, cell.gh, 14);
-      ctx.strokeStyle = 'rgba(255,255,255,' + (0.10 + glowAmount*0.12) + ')';
-      ctx.lineWidth = 1.5;
-      ctx.shadowColor = 'rgba(255,255,255,' + (glowAmount*0.6) + ')';
-      ctx.shadowBlur = 6 + glowAmount*10;
+      const isSelected = (idx === selectedIdx);
+      ctx.strokeStyle = isSelected ? 'rgba(245, 197, 66, 0.9)' : 'rgba(255,255,255,0.15)';
+      ctx.lineWidth = isSelected ? 3 : 1.5;
+      ctx.shadowColor = isSelected ? 'rgba(245,197,66,0.5)' : 'rgba(255,255,255,0.2)';
+      ctx.shadowBlur = isSelected ? 20 : 6;
       ctx.stroke();
       ctx.restore();
     });
+  }
+
+  // Crop Overlay DIV aktualisieren (wird über Canvas gelegt)
+  function updateCropOverlay(){
+    if (cropMode && selectedIdx >= 0 && cropStart && cropEnd){
+      const cell = cells[selectedIdx];
+      const x1 = Math.min(cropStart.x, cropEnd.x);
+      const y1 = Math.min(cropStart.y, cropEnd.y);
+      const x2 = Math.max(cropStart.x, cropEnd.x);
+      const y2 = Math.max(cropStart.y, cropEnd.y);
+
+      // Einschränken auf Kachel
+      const cx = Math.max(cell.gx, x1);
+      const cy = Math.max(cell.gy, y1);
+      const cx2 = Math.min(cell.gx + cell.gw, x2);
+      const cy2 = Math.min(cell.gy + cell.gh, y2);
+
+      if (cx2 > cx && cy2 > cy){
+        cropOverlay.style.display = 'block';
+        cropOverlay.style.left = (cx / SIZE * 100) + '%';
+        cropOverlay.style.top = (cy / SIZE * 100) + '%';
+        cropOverlay.style.width = ((cx2 - cx) / SIZE * 100) + '%';
+        cropOverlay.style.height = ((cy2 - cy) / SIZE * 100) + '%';
+      } else {
+        cropOverlay.style.display = 'none';
+      }
+    } else {
+      cropOverlay.style.display = 'none';
+    }
   }
 
   function roundedRectPath(c, x, y, w, h, r){
@@ -408,12 +517,12 @@
     c.moveTo(x+r, y);
     c.arcTo(x+w, y, x+w, y+h, r);
     c.arcTo(x+w, y+h, x, y+h, r);
-    c.arcTo(x, y+h, x, y, r);
+    c.arcTo(x+h, y+h, x, y, r);
     c.arcTo(x, y, x+w, y, r);
     c.closePath();
   }
 
-  // ---- Interaktion: Pan (Maus/Touch) + Zoom (Rad/Pinch) ----
+  // ----- Interaktion (Klick zum Auswählen, Drag für Pan/Zoom, Crop) -----
   function getPos(evt){
     const rect = canvas.getBoundingClientRect();
     const scaleX = SIZE / rect.width;
@@ -426,93 +535,259 @@
   function cellAt(x, y){
     for (let i = cells.length - 1; i >= 0; i--){
       const c = cells[i];
-      if (x >= c.gx && x <= c.gx + c.gw && y >= c.gy && y <= c.gy + c.gh) return c;
+      if (x >= c.gx && x <= c.gx + c.gw && y >= c.gy && y <= c.gy + c.gh) return i;
     }
-    return null;
+    return -1;
   }
 
-  function startDrag(evt){
+  function onCanvasDown(evt){
     const pos = getPos(evt);
-    const cell = cellAt(pos.x, pos.y);
-    if (!cell) return;
+    const idx = cellAt(pos.x, pos.y);
+    if (idx === -1) {
+      // Auswahl aufheben, wenn außerhalb geklickt
+      selectedIdx = -1;
+      setUIEnabled();
+      render();
+      return;
+    }
+
+    if (cropMode) {
+      // Starte Crop-Ziehen
+      cropStart = { x: pos.x, y: pos.y };
+      cropEnd = { x: pos.x, y: pos.y };
+      cropOverlay.style.display = 'block';
+      updateCropOverlay();
+      return;
+    }
+
+    // Normales Auswählen und Drag für Pan
+    selectedIdx = idx;
+    setUIEnabled();
+    render();
+
+    const cell = cells[idx];
     dragState = { cell, startX: pos.x, startY: pos.y, origOffX: cell.offX, origOffY: cell.offY };
     canvas.classList.add('dragging');
   }
-  function moveDrag(evt){
-    if (!dragState) return;
-    evt.preventDefault();
+
+  function onCanvasMove(evt){
     const pos = getPos(evt);
-    dragState.cell.offX = dragState.origOffX + (pos.x - dragState.startX);
-    dragState.cell.offY = dragState.origOffY + (pos.y - dragState.startY);
-    render();
+    if (cropMode && cropStart) {
+      cropEnd = { x: pos.x, y: pos.y };
+      updateCropOverlay();
+      evt.preventDefault();
+      return;
+    }
+    if (dragState) {
+      evt.preventDefault();
+      dragState.cell.offX = dragState.origOffX + (pos.x - dragState.startX);
+      dragState.cell.offY = dragState.origOffY + (pos.y - dragState.startY);
+      render();
+    }
   }
-  function endDrag(){
+
+  function onCanvasUp(evt){
+    if (cropMode && cropStart && cropEnd) {
+      updateCropOverlay();
+      return;
+    }
     dragState = null;
     canvas.classList.remove('dragging');
   }
 
-  canvas.addEventListener('mousedown', startDrag);
-  window.addEventListener('mousemove', moveDrag);
-  window.addEventListener('mouseup', endDrag);
-  canvas.addEventListener('touchstart', startDrag, {passive:true});
-  canvas.addEventListener('touchmove', moveDrag, {passive:false});
-  canvas.addEventListener('touchend', endDrag);
+  canvas.addEventListener('mousedown', onCanvasDown);
+  window.addEventListener('mousemove', onCanvasMove);
+  window.addEventListener('mouseup', onCanvasUp);
+  canvas.addEventListener('touchstart', onCanvasDown, {passive:true});
+  canvas.addEventListener('touchmove', onCanvasMove, {passive:false});
+  canvas.addEventListener('touchend', onCanvasUp);
 
   canvas.addEventListener('wheel', evt => {
     const pos = getPos(evt);
-    const cell = cellAt(pos.x, pos.y);
-    if (!cell) return;
+    const idx = cellAt(pos.x, pos.y);
+    if (idx === -1) return;
     evt.preventDefault();
+    const cell = cells[idx];
     const delta = evt.deltaY > 0 ? -0.08 : 0.08;
     cell.scale = Math.min(4, Math.max(1, cell.scale + delta));
     render();
   }, {passive:false});
 
-  // einfache Pinch-Geste (zwei Finger) fürs Zoomen auf Touch
-  let pinchStartDist = null, pinchCell = null, pinchStartScale = 1;
-  canvas.addEventListener('touchstart', evt => {
-    if (evt.touches.length === 2){
-      dragState = null;
-      const rect = canvas.getBoundingClientRect();
-      const midX = (evt.touches[0].clientX + evt.touches[1].clientX)/2 - rect.left;
-      const midY = (evt.touches[0].clientY + evt.touches[1].clientY)/2 - rect.top;
-      const scaleX = SIZE / rect.width, scaleY = SIZE / rect.height;
-      pinchCell = cellAt(midX*scaleX, midY*scaleY);
-      pinchStartDist = Math.hypot(
-        evt.touches[0].clientX - evt.touches[1].clientX,
-        evt.touches[0].clientY - evt.touches[1].clientY
-      );
-      pinchStartScale = pinchCell ? pinchCell.scale : 1;
+  // ----- Buttons & Funktionen -----
+  function shuffle(){
+    for (let i = cells.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [cells[i], cells[j]] = [cells[j], cells[i]];
     }
-  }, {passive:true});
-  canvas.addEventListener('touchmove', evt => {
-    if (evt.touches.length === 2 && pinchCell && pinchStartDist){
-      evt.preventDefault();
-      const dist = Math.hypot(
-        evt.touches[0].clientX - evt.touches[1].clientX,
-        evt.touches[0].clientY - evt.touches[1].clientY
-      );
-      pinchCell.scale = Math.min(4, Math.max(1, pinchStartScale * (dist / pinchStartDist)));
+    layout();
+    render();
+  }
+  shuffleBtn.addEventListener('click', shuffle);
+
+  function resetZoom(){
+    cells.forEach(c => { c.scale = 1; c.offX = 0; c.offY = 0; });
+    render();
+  }
+  resetZoomBtn.addEventListener('click', resetZoom);
+
+  function clearAll(){
+    cells = [];
+    selectedIdx = -1;
+    cropStart = null; cropEnd = null;
+    cropOverlay.style.display = 'none';
+    fileInput.value = '';
+    setUIEnabled();
+    render();
+  }
+  clearBtn.addEventListener('click', clearAll);
+
+  // Slider für ausgewähltes Bild
+  brightnessSlider.addEventListener('input', function(){
+    if (selectedIdx >= 0) {
+      cells[selectedIdx].brightness = parseInt(this.value);
       render();
     }
-  }, {passive:false});
-  canvas.addEventListener('touchend', () => { pinchStartDist = null; pinchCell = null; });
+  });
+  contrastSlider.addEventListener('input', function(){
+    if (selectedIdx >= 0) {
+      cells[selectedIdx].contrast = parseInt(this.value);
+      render();
+    }
+  });
+  vignetteSlider.addEventListener('input', function(){
+    if (selectedIdx >= 0) {
+      cells[selectedIdx].vignette = parseInt(this.value);
+      render();
+    }
+  });
 
+  // Crop-Modus umschalten & anwenden
+  const applyCropBtn = document.createElement('button');
+  applyCropBtn.className = 'btn';
+  applyCropBtn.textContent = '✅ Zuschnitt anwenden';
+  applyCropBtn.style.display = 'none';
+  applyCropBtn.addEventListener('click', applyCropToSelected);
+  document.querySelector('#editPanel .row:first-child').appendChild(applyCropBtn);
+
+  cropModeBtn.addEventListener('click', function(){
+    cropMode = !cropMode;
+    this.textContent = cropMode ? '✂️ Crop aktiv (ziehe)' : '✂️ Crop-Modus';
+    applyCropBtn.style.display = cropMode ? 'inline-block' : 'none';
+    if (!cropMode) {
+      cropStart = null; cropEnd = null;
+      cropOverlay.style.display = 'none';
+    }
+  });
+
+  // Crop anwenden (auf ausgewähltes Bild)
+  function applyCropToSelected(){
+    if (selectedIdx === -1 || !cropStart || !cropEnd) return;
+    const cell = cells[selectedIdx];
+    const x1 = Math.min(cropStart.x, cropEnd.x);
+    const y1 = Math.min(cropStart.y, cropEnd.y);
+    const x2 = Math.max(cropStart.x, cropEnd.x);
+    const y2 = Math.max(cropStart.y, cropEnd.y);
+    const cx = Math.max(cell.gx, x1);
+    const cy = Math.max(cell.gy, y1);
+    const cx2 = Math.min(cell.gx + cell.gw, x2);
+    const cy2 = Math.min(cell.gy + cell.gh, y2);
+    if (cx2 <= cx || cy2 <= cy) return;
+
+    const relX = (cx - cell.gx) / cell.gw;
+    const relY = (cy - cell.gy) / cell.gh;
+    const relW = (cx2 - cx) / cell.gw;
+    const relH = (cy2 - cy) / cell.gh;
+
+    const iw = cell.img.naturalWidth;
+    const ih = cell.img.naturalHeight;
+    const origX = relX * iw;
+    const origY = relY * ih;
+    const origW = relW * iw;
+    const origH = relH * ih;
+
+    cell.cropX = Math.round(origX);
+    cell.cropY = Math.round(origY);
+    cell.cropW = Math.round(origW);
+    cell.cropH = Math.round(origH);
+
+    cell.scale = 1;
+    cell.offX = 0;
+    cell.offY = 0;
+
+    cropStart = null; cropEnd = null;
+    cropOverlay.style.display = 'none';
+    render();
+    setUIEnabled();
+  }
+
+  // Resetcrop
+  function resetCrop(){
+    if (selectedIdx === -1) return;
+    const cell = cells[selectedIdx];
+    cell.cropX = 0; cell.cropY = 0; cell.cropW = 0; cell.cropH = 0;
+    cell.scale = 1; cell.offX = 0; cell.offY = 0;
+    render();
+    setUIEnabled();
+  }
+  resetCropBtn.addEventListener('click', resetCrop);
+
+  // Einstellungen kopieren
+  copySettingsBtn.addEventListener('click', function(){
+    if (selectedIdx === -1) return;
+    const c = cells[selectedIdx];
+    copiedSettings = {
+      brightness: c.brightness,
+      contrast: c.contrast,
+      vignette: c.vignette,
+      cropX: c.cropX,
+      cropY: c.cropY,
+      cropW: c.cropW,
+      cropH: c.cropH
+    };
+    this.textContent = '✅ Kopiert!';
+    setTimeout(() => { this.textContent = '📋 Einstellungen kopieren'; }, 1500);
+  });
+
+  // Auf 5 Bilder anwenden
+  applyToFiveBtn.addEventListener('click', function(){
+    if (!copiedSettings || selectedIdx === -1) return;
+    const count = Math.min(5, cells.length);
+    for (let i = 0; i < count; i++) {
+      const c = cells[i];
+      c.brightness = copiedSettings.brightness;
+      c.contrast = copiedSettings.contrast;
+      c.vignette = copiedSettings.vignette;
+      c.cropX = copiedSettings.cropX;
+      c.cropY = copiedSettings.cropY;
+      c.cropW = copiedSettings.cropW;
+      c.cropH = copiedSettings.cropH;
+      c.scale = 1;
+      c.offX = 0;
+      c.offY = 0;
+    }
+    selectedIdx = 0;
+    setUIEnabled();
+    render();
+    this.textContent = '✅ Angewandt!';
+    setTimeout(() => { this.textContent = '⬇️ Auf 5 Bilder anwenden'; }, 1500);
+  });
+
+  // ----- Download -----
   downloadBtn.addEventListener('click', () => {
     const link = document.createElement('a');
-    link.download = 'sneaks4seek-collage.png';
+    link.download = 'sneaks4seek-collage-pro.png';
     link.href = canvas.toDataURL('image/png');
     link.click();
   });
 
-  // Drag & Drop direkt auf die Fläche
-  const shell = document.querySelector('.canvas-shell');
+  // Drag & Drop auf Shell
   shell.addEventListener('dragover', e => e.preventDefault());
   shell.addEventListener('drop', e => {
     e.preventDefault();
     if (e.dataTransfer.files.length) loadFiles(e.dataTransfer.files);
   });
 
+  // Initial
   setUIEnabled();
   render();
 })();
