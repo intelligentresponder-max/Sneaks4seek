@@ -9,7 +9,7 @@
   const ref = params.get("ref") || id;
 
   document.getElementById("ref-tag").textContent = "Ref: " + ref;
-  document.getElementById("qr-caption").textContent = "Ref: " + ref;
+  document.getElementById("qr-caption").textContent = ref;
 
   const targetUrl = window.location.origin + window.location.pathname + "?id=" + encodeURIComponent(id);
 
