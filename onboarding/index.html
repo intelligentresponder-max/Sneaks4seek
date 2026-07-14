@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Onboarding · Sneaks4Seek</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/theme.css">
+<link rel="stylesheet" href="../assets/css/components.css">
+</head>
+<body>
+
+<div class="wrap">
+  <div class="label" style="position:relative;">
+
+    <!-- Zugangscode-Sperre -->
+    <div class="gate" id="gate">
+      <h2 style="font-size:20px;">Zugangscode</h2>
+      <p style="font-size:13px; color:#4a453f; max-width:32ch;">Dieses Onboarding ist geschützt. Gib den Code ein, den du von uns bekommen hast.</p>
+      <input type="password" id="gate-code" placeholder="Code" inputmode="numeric" autocomplete="off">
+      <p class="error-msg" id="gate-error">Falscher Code. Versuch's nochmal.</p>
+      <button class="btn" id="gate-submit" style="max-width:220px;">Freischalten</button>
+    </div>
+
+    <div class="header">
+      <div class="eyebrow">
+        <span>Sneaks4Seek · Verkäufer-Onboarding</span>
+        <span id="ref-tag">Ref: S4S-000</span>
+      </div>
+      <h1>Schuhe verkaufen.<br>Socken kassieren.</h1>
+      <p class="sub">Trag deine Sneaker-Daten ein, lad Fotos &amp; Videos hoch — wir melden uns mit Angebot &amp; Abholung. Als Dankeschön gibt's ein Paar Socken gratis dazu.</p>
+      <div class="stamp">Gratis<br>Socken<br>🧦</div>
+    </div>
+
+    <form id="onboarding-form">
+
+      <div class="section">
+        <p class="section-tag">01 · Kontaktdaten</p>
+        <div class="grid">
+          <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" name="name" placeholder="Vor- und Nachname" required>
+          </div>
+          <div class="field">
+            <label for="email">E-Mail</label>
+            <input type="email" id="email" name="email" placeholder="du@beispiel.de" required>
+          </div>
+          <div class="field">
+            <label for="phone">Telefon</label>
+            <input type="tel" id="phone" name="phone" placeholder="Für Abholung/Rückfragen">
+          </div>
+          <div class="field">
+            <label for="plz">PLZ / Ort</label>
+            <input type="text" id="plz" name="plz" placeholder="für Versand der Socken">
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label for="address">Adresse (Straße, Hausnr.)</label>
+          <input type="text" id="address" name="address" placeholder="Für den Versand deiner Gratis-Socken">
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-tag">02 · Schuh-Details</p>
+        <div class="grid">
+          <div class="field">
+            <label for="brand">Marke</label>
+            <input type="text" id="brand" name="brand" placeholder="z. B. Nike, Adidas, New Balance" required>
+          </div>
+          <div class="field">
+            <label for="model">Modell</label>
+            <input type="text" id="model" name="model" placeholder="z. B. Air Max 90" required>
+          </div>
+          <div class="field">
+            <label for="size">Größe (EU)</label>
+            <input type="number" id="size" name="size" placeholder="z. B. 42" min="30" max="52">
+          </div>
+          <div class="field">
+            <label for="price">Wunschpreis (€)</label>
+            <input type="number" id="price" name="price" placeholder="z. B. 60" min="0">
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label>Zustand</label>
+          <div class="condition-row">
+            <label class="chip"><input type="radio" name="condition" value="neu" required><span>Neu / OVP</span></label>
+            <label class="chip"><input type="radio" name="condition" value="sehr-gut"><span>Sehr gut</span></label>
+            <label class="chip"><input type="radio" name="condition" value="gebraucht"><span>Gebraucht</span></label>
+            <label class="chip"><input type="radio" name="condition" value="stark-getragen"><span>Stark getragen</span></label>
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:14px;">
+          <label for="notes">Zustand / Besonderheiten</label>
+          <textarea id="notes" name="notes" placeholder="z. B. kleine Kratzer, Original-Karton vorhanden, Kaufbeleg..."></textarea>
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-tag">03 · Fotos &amp; Videos</p>
+
+        <label>Bilder (max. 10)</label>
+        <div class="upload-box" id="image-box">
+          <input type="file" id="image-input" accept="image/*" multiple>
+          <span>📸 Tippen zum Auswählen oder Bilder hierher ziehen</span>
+          <p class="upload-hint">bis zu 10 Bilder</p>
+        </div>
+        <div class="thumb-grid" id="image-thumbs"></div>
+
+        <label style="margin-top:18px;">Videos (max. 10, je bis 50 MB)</label>
+        <div class="upload-box" id="video-box">
+          <input type="file" id="video-input" accept="video/*" multiple>
+          <span>🎥 Tippen zum Auswählen oder Videos hierher ziehen</span>
+          <p class="upload-hint">bis zu 10 Videos, je max. 50 MB</p>
+        </div>
+        <div class="thumb-grid" id="video-thumbs"></div>
+
+        <p class="error-msg" id="upload-error"></p>
+        <div class="upload-note">Deine Dateien werden erst beim Absenden hochgeladen — das kann je nach Anzahl/Größe einen Moment dauern. Bitte die Seite währenddessen offen lassen.</div>
+      </div>
+
+      <div class="section">
+        <p class="section-tag">04 · Übergabe &amp; Prämie</p>
+        <div class="field">
+          <label for="pickup">Bevorzugte Abwicklung</label>
+          <select id="pickup" name="pickup">
+            <option value="abholung">Abholung vor Ort</option>
+            <option value="versand">Ich verschicke selbst</option>
+            <option value="egal">Ist mir egal</option>
+          </select>
+        </div>
+        <div class="gift-line">
+          🧦 Sobald dein Schuh abgeholt/verschickt ist, geht dein Gratis-Paar Socken an die oben angegebene Adresse raus.
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-tag">05 · Bestätigung</p>
+        <div class="consent">
+          <input type="checkbox" id="consent" name="consent" required>
+          <label for="consent" style="text-transform:none; font-family:'Inter',sans-serif; letter-spacing:normal; font-size:13px; margin:0;">
+            Ich bin damit einverstanden, dass meine Angaben und hochgeladenen Dateien zur Bearbeitung dieser Anfrage genutzt werden.
+          </label>
+        </div>
+      </div>
+
+      <div class="submit-wrap">
+        <button type="submit" class="btn" id="submit-btn">Anfrage absenden</button>
+        <div class="progress-track" id="progress-track" style="display:none;">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <p class="status-msg" id="status-msg"></p>
+        <p class="error-msg" id="submit-error"></p>
+      </div>
+    </form>
+
+    <p class="foot-tag">Sneaks4Seek · Dieses Etikett wurde digital ausgefüllt</p>
+  </div>
+</div>
+
+<script src="../assets/js/api.js"></script>
+<script src="../assets/js/onboarding.js"></script>
+
+</body>
+</html>
