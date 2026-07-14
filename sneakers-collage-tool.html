@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sneaks4Seek – Collage-Werkzeug</title>
+<style>
+  :root{
+    --bg: #0b0c0e;
+    --panel: #141517;
+    --kraft: #c9a876;
+    --kraft-dim: #8a7455;
+    --sock: #f2efe9;
+    --line: #232427;
+    --glow: #ffffff;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--sock);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height:100vh;
+  }
+  .wrap{
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+  }
+  h1{
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    margin:0;
+    font-weight: 600;
+    color: var(--sock);
+  }
+  h1 span{ color: var(--kraft); }
+  .sub{
+    font-size: 12px;
+    color: #8b8d92;
+    margin: 4px 0 0;
+  }
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .row{
+    display:flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+  .btn{
+    background: transparent;
+    border: 1px solid var(--kraft-dim);
+    color: var(--kraft);
+    padding: 9px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s ease, color .15s ease;
+  }
+  .btn:hover{ background: var(--kraft); color: #16140f; }
+  .btn.primary{
+    background: var(--kraft);
+    color: #16140f;
+    border-color: var(--kraft);
+  }
+  .btn.primary:hover{ background: #ddbc86; }
+  .btn:disabled{ opacity:.4; cursor:not-allowed; }
+  input[type=file]{ display:none; }
+  label.file-label{
+    background: transparent;
+    border: 1px dashed var(--kraft-dim);
+    color: var(--sock);
+    padding: 9px 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+  label.file-label:hover{ border-color: var(--kraft); }
+  .slider-group{
+    display:flex; align-items:center; gap:10px;
+    font-size: 12px; color:#b6b8bd;
+  }
+  input[type=range]{ accent-color: var(--kraft); width: 140px; }
+  .canvas-shell{
+    position:relative;
+    border-radius: 10px;
+    overflow:hidden;
+    border: 1px solid var(--line);
+    background:
+      radial-gradient(ellipse at 50% 0%, #1c1d20 0%, #0b0c0e 65%);
+  }
+  #stage{
+    display:block;
+    width:100%;
+    height:auto;
+    touch-action:none;
+    cursor: grab;
+  }
+  #stage.dragging{ cursor: grabbing; }
+  .empty-hint{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column; gap:8px;
+    color:#6c6e73; font-size:13px;
+    pointer-events:none;
+    text-align:center;
+    padding: 20px;
+  }
+  .empty-hint b{ color: var(--kraft); }
+  footer.hint{
+    font-size: 11.5px;
+    color:#75777c;
+    margin-top: 10px;
+    line-height:1.5;
+  }
+  .count-pill{
+    font-size: 11px;
+    color:#8b8d92;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 3px 10px;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Sneaks<span>4</span>Seek — Collage</h1>
+      <p class="sub">Sneaker-Bilder hochladen, automatisch anordnen, pro Bild zoomen/verschieben, Weiß leuchtet neonartig.</p>
+    </div>
+    <span class="count-pill" id="countPill">0 Bilder</span>
+  </header>
+
+  <div class="panel">
+    <div class="row">
+      <label class="file-label" for="fileInput">+ Sneaker-Bilder wählen</label>
+      <input type="file" id="fileInput" accept="image/*" multiple>
+      <button class="btn" id="shuffleBtn" disabled>Layout neu mischen</button>
+      <button class="btn" id="resetZoomBtn" disabled>Zoom zurücksetzen</button>
+      <button class="btn" id="clearBtn" disabled>Alles entfernen</button>
+      <button class="btn primary" id="downloadBtn" disabled>Als PNG exportieren</button>
+    </div>
+    <div class="row" style="margin-top:12px;">
+      <div class="slider-group">
+        Neon-Glow
+        <input type="range" id="glowSlider" min="0" max="100" value="55">
+      </div>
+      <div class="slider-group">
+        Glow-Schärfe
+        <input type="range" id="glowBlurSlider" min="4" max="40" value="18">
+      </div>
+    </div>
+  </div>
+
+  <div class="canvas-shell">
+    <canvas id="stage" width="1400" height="1400"></canvas>
+    <div class="empty-hint" id="emptyHint">
+      <div><b>Noch keine Bilder</b></div>
+      <div>Lade mehrere Sneaker-Fotos hoch — sie werden automatisch<br>zu einer Collage angeordnet.</div>
+    </div>
+  </div>
+
+  <footer class="hint">
+    Bedienung: Ziehen verschiebt ein Bild innerhalb seiner Kachel · Mausrad / Pinch-Geste zoomt das Bild unter dem Zeiger ·
+    „Layout neu mischen” ordnet die Kacheln neu an, ohne Bilder zu verlieren.
+  </footer>
+</div>
+
+<script>
+(function(){
+  const canvas = document.getElementById('stage');
+  const ctx = canvas.getContext('2d');
+  const fileInput = document.getElementById('fileInput');
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const resetZoomBtn = document.getElementById('resetZoomBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const downloadBtn = document.getElementById('downloadBtn');
+  const glowSlider = document.getElementById('glowSlider');
+  const glowBlurSlider = document.getElementById('glowBlurSlider');
+  const emptyHint = document.getElementById('emptyHint');
+  const countPill = document.getElementById('countPill');
+
+  const SIZE = 1400;
+  const GAP = 10;
+  let cells = []; // {img, glowCanvas, gx,gy,gw,gh, scale, offX, offY, naturalW, naturalH}
+  let dragState = null;
+
+  function setUIEnabled(){
+    const has = cells.length > 0;
+    shuffleBtn.disabled = !has;
+    resetZoomBtn.disabled = !has;
+    clearBtn.disabled = !has;
+    downloadBtn.disabled = !has;
+    emptyHint.style.display = has ? 'none' : 'flex';
+    countPill.textContent = cells.length + (cells.length === 1 ? ' Bild' : ' Bilder');
+  }
+
+  // ---- Glow-Maske: helle/weiße Bildbereiche extrahieren ----
+  function buildGlowMask(img){
+    const w = img.naturalWidth, h = img.naturalHeight;
+    const src = document.createElement('canvas');
+    src.width = w; src.height = h;
+    const sctx = src.getContext('2d');
+    sctx.drawImage(img, 0, 0, w, h);
+    const data = sctx.getImageData(0, 0, w, h);
+    const px = data.data;
+    const threshold = 190; // ab dieser Helligkeit beginnt das Leuchten
+    for (let i = 0; i < px.length; i += 4){
+      const r = px[i], g = px[i+1], b = px[i+2];
+      const lum = 0.299*r + 0.587*g + 0.114*b;
+      if (lum > threshold){
+        const a = Math.min(1, (lum - threshold) / (255 - threshold));
+        px[i] = 255; px[i+1] = 255; px[i+2] = 255;
+        px[i+3] = Math.round(a * 255);
+      } else {
+        px[i+3] = 0;
+      }
+    }
+    sctx.putImageData(data, 0, 0);
+    return src;
+  }
+
+  function loadFiles(files){
+    const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
+    let pending = arr.length;
+    if (!pending) return;
+    arr.forEach(file => {
+      const reader = new FileReader();
+      reader.onload = e => {
+        const img = new Image();
+        img.onload = () => {
+          cells.push({
+            img,
+            glowCanvas: buildGlowMask(img),
+            scale: 1, offX: 0, offY: 0,
+            gx:0, gy:0, gw:0, gh:0
+          });
+          layout();
+          setUIEnabled();
+          render();
+        };
+        img.src = e.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  fileInput.addEventListener('change', e => loadFiles(e.target.files));
+
+  // ---- Layout: erstes Bild groß ("featured"), Rest im Raster ----
+  function layout(){
+    const n = cells.length;
+    if (n === 0) return;
+    const rects = [];
+
+    if (n === 1){
+      rects.push([0,0,SIZE,SIZE]);
+    } else {
+      const featured = n >= 3;
+      let startIdx = 0;
+      let restX = 0, restY = 0, restW = SIZE, restH = SIZE;
+
+      if (featured){
+        const fw = SIZE * 0.58;
+        rects.push([0, 0, fw, SIZE]);
+        restX = fw + GAP; restY = 0; restW = SIZE - fw - GAP; restH = SIZE;
+        startIdx = 1;
+      }
+
+      const remaining = n - startIdx;
+      const cols = Math.ceil(Math.sqrt(remaining * (restW / restH)));
+      const colsClamped = Math.max(1, cols);
+      const rows = Math.ceil(remaining / colsClamped);
+      const cw = (restW - GAP * (colsClamped - 1)) / colsClamped;
+      const ch = (restH - GAP * (rows - 1)) / rows;
+
+      for (let i = 0; i < remaining; i++){
+        const r = Math.floor(i / colsClamped);
+        const c = i % colsClamped;
+        rects.push([
+          restX + c * (cw + GAP),
+          restY + r * (ch + GAP),
+          cw, ch
+        ]);
+      }
+    }
+
+    // an evtl. abweichende Zellenanzahl der letzten Reihe anpassen (Lücken schließen)
+    cells.forEach((cell, i) => {
+      const [x,y,w,h] = rects[i];
+      cell.gx = x; cell.gy = y; cell.gw = w; cell.gh = h;
+    });
+  }
+
+  function shuffle(){
+    for (let i = cells.length - 1; i > 0; i--){
+      const j = Math.floor(Math.random() * (i+1));
+      [cells[i], cells[j]] = [cells[j], cells[i]];
+    }
+    layout();
+    render();
+  }
+
+  function resetZoom(){
+    cells.forEach(c => { c.scale = 1; c.offX = 0; c.offY = 0; });
+    render();
+  }
+
+  function clearAll(){
+    cells = [];
+    fileInput.value = '';
+    setUIEnabled();
+    render();
+  }
+
+  shuffleBtn.addEventListener('click', shuffle);
+  resetZoomBtn.addEventListener('click', resetZoom);
+  clearBtn.addEventListener('click', clearAll);
+  glowSlider.addEventListener('input', render);
+  glowBlurSlider.addEventListener('input', render);
+
+  // ---- Zeichnen ----
+  function drawCoverParams(cell){
+    const iw = cell.img.naturalWidth, ih = cell.img.naturalHeight;
+    const cellRatio = cell.gw / cell.gh;
+    const imgRatio = iw / ih;
+    let baseW, baseH;
+    if (imgRatio > cellRatio){
+      baseH = cell.gh; baseW = baseH * imgRatio;
+    } else {
+      baseW = cell.gw; baseH = baseW / imgRatio;
+    }
+    const w = baseW * cell.scale;
+    const h = baseH * cell.scale;
+    const maxOffX = Math.max(0, (w - cell.gw) / 2);
+    const maxOffY = Math.max(0, (h - cell.gh) / 2);
+    cell.offX = Math.min(maxOffX, Math.max(-maxOffX, cell.offX));
+    cell.offY = Math.min(maxOffY, Math.max(-maxOffY, cell.offY));
+    const dx = cell.gx + (cell.gw - w)/2 + cell.offX;
+    const dy = cell.gy + (cell.gh - h)/2 + cell.offY;
+    return { dx, dy, w, h };
+  }
+
+  function render(){
+    ctx.clearRect(0,0,SIZE,SIZE);
+    ctx.fillStyle = '#0b0c0e';
+    ctx.fillRect(0,0,SIZE,SIZE);
+
+    const glowAmount = glowSlider.value / 100;
+    const glowBlur = Number(glowBlurSlider.value);
+
+    cells.forEach(cell => {
+      const { dx, dy, w, h } = drawCoverParams(cell);
+
+      ctx.save();
+      roundedRectPath(ctx, cell.gx, cell.gy, cell.gw, cell.gh, 14);
+      ctx.clip();
+
+      // Basisbild
+      ctx.drawImage(cell.img, dx, dy, w, h);
+
+      // Neon-Weiß-Glow aus heller Maske, weich geblurrt, additiv
+      if (glowAmount > 0){
+        ctx.save();
+        ctx.filter = `blur(${glowBlur}px)`;
+        ctx.globalCompositeOperation = 'screen';
+        ctx.globalAlpha = Math.min(1, glowAmount * 1.1);
+        ctx.drawImage(cell.glowCanvas, dx, dy, w, h);
+        // zweiter, engerer Layer für einen helleren Kern
+        ctx.filter = `blur(${Math.max(2, glowBlur/3)}px)`;
+        ctx.globalAlpha = Math.min(1, glowAmount * 0.7);
+        ctx.drawImage(cell.glowCanvas, dx, dy, w, h);
+        ctx.restore();
+      }
+
+      ctx.restore();
+
+      // dezenter Kachel-Rand mit leichtem Leuchten
+      ctx.save();
+      roundedRectPath(ctx, cell.gx, cell.gy, cell.gw, cell.gh, 14);
+      ctx.strokeStyle = 'rgba(255,255,255,' + (0.10 + glowAmount*0.12) + ')';
+      ctx.lineWidth = 1.5;
+      ctx.shadowColor = 'rgba(255,255,255,' + (glowAmount*0.6) + ')';
+      ctx.shadowBlur = 6 + glowAmount*10;
+      ctx.stroke();
+      ctx.restore();
+    });
+  }
+
+  function roundedRectPath(c, x, y, w, h, r){
+    c.beginPath();
+    c.moveTo(x+r, y);
+    c.arcTo(x+w, y, x+w, y+h, r);
+    c.arcTo(x+w, y+h, x, y+h, r);
+    c.arcTo(x, y+h, x, y, r);
+    c.arcTo(x, y, x+w, y, r);
+    c.closePath();
+  }
+
+  // ---- Interaktion: Pan (Maus/Touch) + Zoom (Rad/Pinch) ----
+  function getPos(evt){
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = SIZE / rect.width;
+    const scaleY = SIZE / rect.height;
+    const clientX = evt.touches ? evt.touches[0].clientX : evt.clientX;
+    const clientY = evt.touches ? evt.touches[0].clientY : evt.clientY;
+    return { x: (clientX - rect.left) * scaleX, y: (clientY - rect.top) * scaleY };
+  }
+
+  function cellAt(x, y){
+    for (let i = cells.length - 1; i >= 0; i--){
+      const c = cells[i];
+      if (x >= c.gx && x <= c.gx + c.gw && y >= c.gy && y <= c.gy + c.gh) return c;
+    }
+    return null;
+  }
+
+  function startDrag(evt){
+    const pos = getPos(evt);
+    const cell = cellAt(pos.x, pos.y);
+    if (!cell) return;
+    dragState = { cell, startX: pos.x, startY: pos.y, origOffX: cell.offX, origOffY: cell.offY };
+    canvas.classList.add('dragging');
+  }
+  function moveDrag(evt){
+    if (!dragState) return;
+    evt.preventDefault();
+    const pos = getPos(evt);
+    dragState.cell.offX = dragState.origOffX + (pos.x - dragState.startX);
+    dragState.cell.offY = dragState.origOffY + (pos.y - dragState.startY);
+    render();
+  }
+  function endDrag(){
+    dragState = null;
+    canvas.classList.remove('dragging');
+  }
+
+  canvas.addEventListener('mousedown', startDrag);
+  window.addEventListener('mousemove', moveDrag);
+  window.addEventListener('mouseup', endDrag);
+  canvas.addEventListener('touchstart', startDrag, {passive:true});
+  canvas.addEventListener('touchmove', moveDrag, {passive:false});
+  canvas.addEventListener('touchend', endDrag);
+
+  canvas.addEventListener('wheel', evt => {
+    const pos = getPos(evt);
+    const cell = cellAt(pos.x, pos.y);
+    if (!cell) return;
+    evt.preventDefault();
+    const delta = evt.deltaY > 0 ? -0.08 : 0.08;
+    cell.scale = Math.min(4, Math.max(1, cell.scale + delta));
+    render();
+  }, {passive:false});
+
+  // einfache Pinch-Geste (zwei Finger) fürs Zoomen auf Touch
+  let pinchStartDist = null, pinchCell = null, pinchStartScale = 1;
+  canvas.addEventListener('touchstart', evt => {
+    if (evt.touches.length === 2){
+      dragState = null;
+      const rect = canvas.getBoundingClientRect();
+      const midX = (evt.touches[0].clientX + evt.touches[1].clientX)/2 - rect.left;
+      const midY = (evt.touches[0].clientY + evt.touches[1].clientY)/2 - rect.top;
+      const scaleX = SIZE / rect.width, scaleY = SIZE / rect.height;
+      pinchCell = cellAt(midX*scaleX, midY*scaleY);
+      pinchStartDist = Math.hypot(
+        evt.touches[0].clientX - evt.touches[1].clientX,
+        evt.touches[0].clientY - evt.touches[1].clientY
+      );
+      pinchStartScale = pinchCell ? pinchCell.scale : 1;
+    }
+  }, {passive:true});
+  canvas.addEventListener('touchmove', evt => {
+    if (evt.touches.length === 2 && pinchCell && pinchStartDist){
+      evt.preventDefault();
+      const dist = Math.hypot(
+        evt.touches[0].clientX - evt.touches[1].clientX,
+        evt.touches[0].clientY - evt.touches[1].clientY
+      );
+      pinchCell.scale = Math.min(4, Math.max(1, pinchStartScale * (dist / pinchStartDist)));
+      render();
+    }
+  }, {passive:false});
+  canvas.addEventListener('touchend', () => { pinchStartDist = null; pinchCell = null; });
+
+  downloadBtn.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = 'sneaks4seek-collage.png';
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+  });
+
+  // Drag & Drop direkt auf die Fläche
+  const shell = document.querySelector('.canvas-shell');
+  shell.addEventListener('dragover', e => e.preventDefault());
+  shell.addEventListener('drop', e => {
+    e.preventDefault();
+    if (e.dataTransfer.files.length) loadFiles(e.dataTransfer.files);
+  });
+
+  setUIEnabled();
+  render();
+})();
+</script>
+</body>
+</html>
