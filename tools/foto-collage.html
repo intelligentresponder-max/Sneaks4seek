@@ -312,14 +312,41 @@
   }
 
   // ----- Bilder laden -----
+  function isLikelyImage(f){
+    if (f.type && f.type.startsWith('image/')) return true;
+    // Fallback: manche Android-Galerie-/Dateipicker liefern keinen (oder einen
+    // falschen) MIME-Type mit, dann anhand der Dateiendung prüfen.
+    return /\.(jpe?g|png|webp|gif|heic|heif|bmp)$/i.test(f.name || '');
+  }
+
   function loadFiles(files){
-    const arr = Array.from(files).filter(f => f.type.startsWith('image/'));
+    const originalCount = files.length;
+    const arr = Array.from(files).filter(isLikelyImage);
+
+    if (originalCount === 0){
+      alert('Es wurden keine Dateien vom Picker zurückgegeben (files.length = 0).');
+      return;
+    }
+    if (arr.length === 0){
+      const info = Array.from(files).map(f =>
+        `• ${f.name || '(kein Name)'} — Type: "${f.type || '(leer)'}" — ${f.size || 0} bytes`
+      ).join('\n');
+      alert('Keine der ausgewählten Dateien wurde als Bild erkannt:\n\n' + info);
+      return;
+    }
+
     let pending = arr.length;
     if (!pending) return;
     arr.forEach(file => {
       const reader = new FileReader();
+      reader.onerror = () => {
+        console.error('Datei konnte nicht gelesen werden:', file.name);
+      };
       reader.onload = e => {
         const img = new Image();
+        img.onerror = () => {
+          console.error('Bild konnte nicht geladen werden:', file.name);
+        };
         img.onload = () => {
           cells.push(createCell(img));
           layout();
