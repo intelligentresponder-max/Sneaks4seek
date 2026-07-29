@@ -1,18 +1,18 @@
 {
   "name": "Sneaks4Seek",
   "short_name": "Sneaks4Seek",
-  "description": "Sneaker Verkauf & Ankauf — einfach per WhatsApp",
+  "description": "Sneaker einreichen: Formular ausfüllen, Fotos hochladen, QR-Beleg erhalten",
   "start_url": "/Sneaks4seek/",
   "scope": "/Sneaks4seek/",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0a0a0a",
-  "theme_color": "#c8ff00",
+  "background_color": "#C4A67A",
+  "theme_color": "#1B1815",
   "lang": "de",
   "categories": ["shopping", "lifestyle"],
   "icons": [
     {
-      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%230a0a0a'/><text y='320' x='50' font-size='300' font-family='serif'>👟</text></svg>",
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23C4A67A'/><text y='320' x='50' font-size='300' font-family='serif'>👟</text></svg>",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
@@ -21,18 +21,11 @@
   "screenshots": [],
   "shortcuts": [
     {
-      "name": "Verkaufen",
-      "short_name": "Verkaufen",
-      "description": "Sneaker verkaufen via WhatsApp",
-      "url": "/Sneaks4seek/verkaufen.htm",
-      "icons": [{ "src": "spin-poster.jpg", "sizes": "192x192" }]
-    },
-    {
-      "name": "Ankauf",
-      "short_name": "Ankauf",
-      "description": "Sneaker ankaufen",
-      "url": "/Sneaks4seek/ankauf.html",
-      "icons": [{ "src": "spin-poster.jpg", "sizes": "192x192" }]
+      "name": "Code eingeben",
+      "short_name": "Start",
+      "description": "Zugangscode eingeben und Sneaker einreichen",
+      "url": "/Sneaks4seek/onboarding/",
+      "icons": [{ "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' fill='%23C4A67A'/><text y='320' x='50' font-size='300' font-family='serif'>👟</text></svg>", "sizes": "192x192" }]
     }
   ]
 }
