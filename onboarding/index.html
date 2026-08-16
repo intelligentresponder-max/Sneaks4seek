@@ -107,7 +107,7 @@
         <div class="upload-box" id="image-box">
           <input type="file" id="image-input" accept="image/*" multiple>
           <span>📸 Tippen zum Auswählen oder Bilder hierher ziehen</span>
-          <p class="upload-hint">bis zu 10 Bilder</p>
+          <p class="upload-hint">bis zu 10 Bilder — nur der Artikel, keine Personen im Bild</p>
         </div>
         <div class="thumb-grid" id="image-thumbs"></div>
 
@@ -115,7 +115,7 @@
         <div class="upload-box" id="video-box">
           <input type="file" id="video-input" accept="video/*" multiple>
           <span>🎥 Tippen zum Auswählen oder Videos hierher ziehen</span>
-          <p class="upload-hint">bis zu 10 Videos, je max. 50 MB</p>
+          <p class="upload-hint">bis zu 10 Videos, je max. 50 MB — nur der Artikel, keine Personen im Bild</p>
         </div>
         <div class="thumb-grid" id="video-thumbs"></div>
 
@@ -141,6 +141,18 @@
       <div class="section">
         <p class="section-tag">05 · Bestätigung</p>
         <div class="consent">
+          <input type="checkbox" id="age18" name="age18" required>
+          <label for="age18" style="text-transform:none; font-family:'Inter',sans-serif; letter-spacing:normal; font-size:13px; margin:0;">
+            Ich bin 18 Jahre oder älter.
+          </label>
+        </div>
+        <div class="consent" style="margin-top:10px;">
+          <input type="checkbox" id="photo-rule" name="photo-rule" required>
+          <label for="photo-rule" style="text-transform:none; font-family:'Inter',sans-serif; letter-spacing:normal; font-size:13px; margin:0;">
+            Auf meinen Fotos/Videos ist ausschließlich der Artikel zu sehen — keine Personen, keine Gesichter.
+          </label>
+        </div>
+        <div class="consent" style="margin-top:10px;">
           <input type="checkbox" id="consent" name="consent" required>
           <label for="consent" style="text-transform:none; font-family:'Inter',sans-serif; letter-spacing:normal; font-size:13px; margin:0;">
             Ich bin damit einverstanden, dass meine Angaben und hochgeladenen Dateien zur Bearbeitung dieser Anfrage genutzt werden.
