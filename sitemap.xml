@@ -1,14 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://intelligentresponder-max.github.io/turmhotel/</loc>
-    <lastmod>2026-06-17</lastmod>
-    <changefreq>monthly</changefreq>
+    <loc>https://intelligentresponder-max.github.io/Sneaks4seek/</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-  <!-- Bewusst NICHT gelistet, nur per QR-Code/direktem Link erreichbar: -->
-  <!-- wegweiser.html, speakingchat.html (Gäste, noindex) -->
-  <!-- facility.html, handbuch.html, housekeeping/housekeeping-v3.html, -->
-  <!-- housekeeping/alpha-scan.html, onboarding-checkliste.html (Personal, noindex) -->
-  <!-- personal.html: im Footer verlinkt, Datei existiert noch nicht im Repo (24.08.2026) -->
+  <url>
+    <loc>https://intelligentresponder-max.github.io/Sneaks4seek/blog.html</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://intelligentresponder-max.github.io/Sneaks4seek/warum.html</loc>
+    <lastmod>2026-09-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <!-- Bewusst NICHT gelistet: -->
+  <!-- onboarding/, success/: Formular-/Danke-Seiten, kein eigenständiger Suchwert -->
+  <!-- kreislauf/: separate Charity-Version, bewusst nicht verlinkt/indexiert -->
+  <!-- tools/foto-collage.html, tools/qr-generator.html: interne Werkzeuge -->
+  <!-- archive/*: archivierte Vorgänger-Richtung -->
 </urlset>
