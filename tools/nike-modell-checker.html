@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sneaks4Seek – Nike Modell-Checker</title>
+<style>
+  :root{
+    --bg: #0b0c0e;
+    --panel: #141517;
+    --kraft: #c9a876;
+    --kraft-dim: #8a7455;
+    --sock: #f2efe9;
+    --line: #232427;
+    --gold: #f5c542;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--sock);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height:100vh;
+  }
+  .wrap{
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 18px 60px;
+  }
+  header{
+    display:flex;
+    align-items:baseline;
+    justify-content:space-between;
+    gap:16px;
+    margin-bottom: 18px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  h1{
+    font-size: 18px;
+    letter-spacing: 0.02em;
+    margin:0;
+    font-weight: 600;
+    color: var(--sock);
+  }
+  h1 span{ color: var(--kraft); }
+  .sub{
+    font-size: 12px;
+    color: #8b8d92;
+    margin: 4px 0 0;
+    max-width: 560px;
+  }
+  .panel{
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .layout{
+    display:grid;
+    grid-template-columns: 340px 1fr;
+    gap: 16px;
+    align-items:start;
+  }
+  @media (max-width: 760px){
+    .layout{ grid-template-columns: 1fr; }
+    .photo-pane{ position: static !important; }
+  }
+
+  /* ---- Foto-Spalte ---- */
+  .photo-pane{
+    position: sticky;
+    top: 16px;
+  }
+  label.file-label{
+    display:block;
+    text-align:center;
+    background: transparent;
+    border: 1px dashed var(--kraft-dim);
+    color: var(--sock);
+    padding: 14px;
+    border-radius: 7px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-bottom: 10px;
+  }
+  label.file-label:hover{ border-color: var(--kraft); }
+  input[type=file]{ display:none; }
+  .shot-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .shot{
+    position:relative;
+    aspect-ratio: 1;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    overflow:hidden;
+    background: #1c1d20;
+    cursor: zoom-in;
+  }
+  .shot img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .shot .tag{
+    position:absolute; bottom:4px; left:4px;
+    font-size: 10px; background: rgba(0,0,0,.6); color: var(--kraft);
+    padding: 2px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: .04em;
+  }
+  .shot .remove{
+    position:absolute; top:4px; right:4px;
+    width:20px; height:20px; border-radius:50%;
+    background: #b33; color:#fff; border:none; font-size:12px; cursor:pointer; line-height:1;
+  }
+  .shot-empty{
+    aspect-ratio:1; border:1px dashed var(--line); border-radius:8px;
+    display:flex; align-items:center; justify-content:center;
+    font-size: 10px; color:#6c6e73; text-align:center; padding:6px;
+  }
+  footer.hint{
+    font-size: 11.5px;
+    color:#75777c;
+    margin-top: 14px;
+    line-height:1.5;
+  }
+
+  /* ---- Lightbox-Zoom ---- */
+  .lightbox{
+    position:fixed; inset:0; background: rgba(0,0,0,.92);
+    display:none; align-items:center; justify-content:center; z-index: 50;
+    cursor: zoom-out; padding: 20px;
+  }
+  .lightbox.show{ display:flex; }
+  .lightbox img{ max-width:100%; max-height:100%; object-fit:contain; border-radius: 6px; }
+
+  /* ---- Modell-Liste ---- */
+  .search-row{ display:flex; gap:10px; margin-bottom: 14px; flex-wrap: wrap; }
+  input[type=text]{
+    flex:1; min-width: 180px;
+    background: var(--bg); border:1px solid var(--line); color: var(--sock);
+    padding: 10px 12px; border-radius: 7px; font-size: 14px; outline:none;
+  }
+  input[type=text]:focus{ border-color: var(--kraft); }
+  .count-pill{
+    font-size: 11px; color:#8b8d92; border: 1px solid var(--line);
+    border-radius: 999px; padding: 3px 10px; align-self:center; white-space:nowrap;
+  }
+  .model-list{ display:flex; flex-direction:column; gap:10px; }
+  .model{
+    background: var(--panel); border:1px solid var(--line); border-radius: 10px;
+    padding: 14px 16px; cursor:pointer;
+  }
+  .model:hover{ border-color: var(--kraft-dim); }
+  .model.open{ border-color: var(--kraft); }
+  .model-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+  .model-head h3{ margin:0; font-size:15px; color: var(--sock); }
+  .model-head h3 small{ display:block; font-size:11px; color:#8b8d92; font-weight:400; margin-top:2px; }
+  .caret{ color: var(--kraft); font-size: 12px; transition: transform .15s; flex-shrink:0; }
+  .model.open .caret{ transform: rotate(90deg); }
+  .model-body{ display:none; margin-top:12px; border-top:1px solid var(--line); padding-top:12px; }
+  .model.open .model-body{ display:block; }
+  .marker-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .marker-list li{
+    display:flex; gap:10px; font-size:13px; color:#cfd1d4; line-height:1.5;
+  }
+  .marker-list li .ico{ color: var(--gold); flex-shrink:0; }
+  .confusable{
+    margin-top: 10px; font-size: 12px; color:#8b8d92;
+    border-top: 1px dashed var(--line); padding-top: 10px;
+  }
+  .confusable b{ color: var(--kraft); }
+  .no-match{ text-align:center; color:#6c6e73; font-size:13px; padding: 30px 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Sneaks<span>4</span>Seek — Nike Modell-Checker</h1>
+      <p class="sub">Foto neben Checkliste halten, Merkmal für Merkmal durchgehen — kein automatischer
+        Treffer, du entscheidest. Kein Foto verlässt dieses Gerät.</p>
+    </div>
+  </header>
+
+  <div class="layout">
+
+    <!-- Foto-Spalte -->
+    <div class="photo-pane">
+      <div class="panel">
+        <label class="file-label" for="fileInput">+ Nahaufnahmen hinzufügen</label>
+        <input type="file" id="fileInput" accept="image/*" multiple>
+        <div class="shot-grid" id="shotGrid">
+          <div class="shot-empty">Sohle</div>
+          <div class="shot-empty">Tongue-Label</div>
+          <div class="shot-empty">Zehenbox</div>
+          <div class="shot-empty">Fersenlogo</div>
+        </div>
+        <footer class="hint">
+          Tipp: ein Foto pro Merkmal (Sohle, Zungen-Etikett, Zehenbereich, Fersenbereich) —
+          auf Foto tippen zum Vergrößern. Nichts wird hochgeladen, alles bleibt lokal im Browser.
+        </footer>
+      </div>
+    </div>
+
+    <!-- Modell-Liste -->
+    <div>
+      <div class="search-row">
+        <input type="text" id="searchInput" placeholder="Modell suchen, z. B. 'Air Max' oder 'Sohle sichtbar'…">
+        <span class="count-pill" id="countPill">0 Modelle</span>
+      </div>
+      <div class="model-list" id="modelList"></div>
+      <p class="no-match" id="noMatch" style="display:none;">Kein Modell passt zu dieser Suche.</p>
+    </div>
+
+  </div>
+</div>
+
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt=""></div>
+
+<script>
+(function () {
+  "use strict";
+
+  /**
+   * Textbasierte Merkmals-Checklisten statt Referenzfotos: Sneaks4Seek hat
+   * keine Rechte an echten Nike-Produktbildern. Jedes Merkmal ist etwas,
+   * das man am eigenen Foto gegenprüfen kann, ohne ein zweites Bild danebenzuhalten.
+   */
+  const MODELS = [
+    {
+      name: "Air Force 1",
+      sub: "Low / Mid / High",
+      markers: [
+        "Durchgehend flache, dicke Sohle (ca. 3 cm) — kein sichtbares Air-Fenster.",
+        "Drei Reihen gestanzter Löcher auf der Zehenbox (meist bei Low/Mid).",
+        "Geprägtes 'Nike Air'-Logo auf der Ferse, nicht aufgedruckt.",
+        "Flache, breite Schnürsenkel.",
+        "Glattes Leder-Obermaterial, wenig bis keine Nähte in Panels unterteilt."
+      ],
+      confusable: "Oft verwechselt mit Blazer — Blazer hat eine dünnere, flachere Sohle und keine Loch-Perforation."
+    },
+    {
+      name: "Air Max 1",
+      sub: "Original 1987er Silhouette",
+      markers: [
+        "Kleines, rundliches Air-Fenster seitlich in der Ferse.",
+        "Waffelmuster auf der Außensohle.",
+        "Swoosh läuft diagonal über ein eigenes Mittelpanel, oft andersfarbig abgesetzt.",
+        "Mehrfarbiges Blocking aus mehreren Lederpanels, sichtbare Nähte dazwischen."
+      ],
+      confusable: "Zum Air Max 90 abgrenzen: AM1 hat ein kleineres, rundes Air-Fenster — AM90 ein größeres, kantigeres."
+    },
+    {
+      name: "Air Max 90",
+      sub: "",
+      markers: [
+        "Größeres, kantigeres Air-Fenster in der Ferse als beim AM1.",
+        "Deutlich dickere, mehrschichtige Seitenpanels aus Leder/Mesh.",
+        "Auffällig dicke, gepolsterte Zunge.",
+        "Sichtbarer Schaumstoff-Mittelsohlen-Rand rundherum."
+      ],
+      confusable: "Zum AM1 über die Fenstergröße abgrenzen, zum AM95 über die fehlenden Rippen-Panels."
+    },
+    {
+      name: "Air Max 95",
+      sub: "",
+      markers: [
+        "Rippenartige, gestreifte Seitenpanels (Muskel-/Rippen-Optik) — eindeutigstes Merkmal.",
+        "Farbverlauf von dunkel oben nach hell unten.",
+        "Zwei sichtbare Air-Einheiten: eine in der Ferse, eine im Vorderfuß.",
+        "Reflektierende Logo-Patches an der Seite."
+      ],
+      confusable: "Die Rippenpanels sind einzigartig — kaum mit anderen Air-Max-Modellen zu verwechseln."
+    },
+    {
+      name: "Air Max 97",
+      sub: "'Silver Bullet'",
+      markers: [
+        "Durchgehende Air-Einheit als Schlauch über die gesamte Sohlenlänge.",
+        "Gewellte, reflektierende Obermaterial-Streifen (Zug-/Wellenoptik).",
+        "Kein klassisch aufgenähter Swoosh — die Welle ersetzt ihn optisch.",
+        "Sehr glattes, metallisch wirkendes Obermaterial bei Original-Colorways."
+      ],
+      confusable: "Durchgehende Air-Einheit unterscheidet ihn klar von AM90/95 (dort nur Fersenbereich)."
+    },
+    {
+      name: "Dunk Low",
+      sub: "",
+      markers: [
+        "Niedriger Schaft, klassische Basketballschuh-Silhouette.",
+        "Farblich abgesetzte Lederpanels, Swoosh seitlich aufgenäht.",
+        "Flache Gummisohle ohne sichtbares Air-Fenster.",
+        "Schlaufe/Pull-Tab an der Zunge.",
+        "Teils perforierte Zehenbox (nicht immer, modellabhängig)."
+      ],
+      confusable: "Von SB Dunk über das Tongue-Label abgrenzen: SB-Varianten haben ein 'Nike SB'-Label, dickere Zunge/Innenfutter."
+    },
+    {
+      name: "Dunk High",
+      sub: "",
+      markers: [
+        "Wie Dunk Low, aber hoher Schaft über dem Knöchel.",
+        "Gleiche flache Sohle ohne Air-Fenster.",
+        "Gepolsterter Knöchelbereich, oft mit zusätzlichem Riemen/Klettverschluss bei manchen Colorways."
+      ],
+      confusable: "Schaft-Höhe ist der einzige strukturelle Unterschied zum Dunk Low."
+    },
+    {
+      name: "SB Dunk",
+      sub: "Skateboarding-Variante",
+      markers: [
+        "Gleiche Grundform wie Dunk, aber 'Nike SB'-Branding auf Zunge/Innensohle.",
+        "Deutlich dickere, weichere Zunge und Innenfutter (Skate-Polsterung).",
+        "Zoom-Air-Einlegesohle (fühlbar beim Reindrücken, nicht immer sichtbar von außen).",
+        "Oft gröberes, griffigeres Sohlenprofil als reguläre Dunks."
+      ],
+      confusable: "Ohne 'SB'-Label am Tongue/Insole kaum vom regulären Dunk zu unterscheiden — Label ist der entscheidende Check."
+    },
+    {
+      name: "Air Jordan 1",
+      sub: "High / Low",
+      markers: [
+        "'Wings'-Logo seitlich am Knöchel (bei High-Variante).",
+        "'Nike Air' oder Jumpman-Branding auf Zunge bzw. Ferse (je nach Release-Jahr).",
+        "Perforierte Zehenbox.",
+        "Farblich klar abgesetzte Lederpanels (meist 2–3 Farben, große Flächen).",
+        "Flache Sohle — das Air-Sole-Kissen ist innen, nicht als Fenster sichtbar."
+      ],
+      confusable: "Ohne Wings-Logo und bei niedrigem Schaft: AJ1 Low eher mit Dunk verwechselbar — Jumpman/Nike-Air-Branding auf der Zunge prüfen."
+    },
+    {
+      name: "Air Jordan 4",
+      sub: "",
+      markers: [
+        "Netz-/Mesh-Einsätze an den Seitenpanels.",
+        "Sichtbare, meist weiße Kunststoff-Ösen/Flügel an der Mittelsohle ('Wings'-Ösen).",
+        "Sichtbares Air-Fenster in der Ferse.",
+        "Markante Riemen-/Schnürsenkel-Schlaufe oberhalb der Zunge."
+      ],
+      confusable: "Die Plastik-Ösen an der Seite sind einzigartig für die 4er — bei keinem anderen Jordan-Modell in dieser Form vorhanden."
+    },
+    {
+      name: "Blazer Mid / Low",
+      sub: "",
+      markers: [
+        "Schlichtes, vintage-anmutendes Basketballschuh-Design.",
+        "Großer, einfacher Swoosh ohne Zusatzdetails.",
+        "Vulkanisierte, flache Gummisohle ohne Air-Fenster.",
+        "Gummi-Zehenkappe, Canvas- oder Lederpanel."
+      ],
+      confusable: "Von Air Force 1 über die dünnere Sohle und fehlende Lochperforation abgrenzen."
+    },
+    {
+      name: "Cortez",
+      sub: "",
+      markers: [
+        "Sehr flaches, niedriges Laufschuh-Profil (1970er-Optik).",
+        "Klassischer, schlanker Swoosh.",
+        "Meist Kombination aus Wildleder/Leder und Nylon.",
+        "Dünne, flache Sohle ohne jegliches Air-Fenster."
+      ],
+      confusable: "Kaum verwechselbar — das sehr flache, schlanke Profil ist unter Nike-Modellen untypisch."
+    },
+    {
+      name: "Air Max 270",
+      sub: "",
+      markers: [
+        "Sehr große, durchgehende Air-Einheit in der Ferse (höchste Luftkammer der Air-Max-Reihe).",
+        "Engineered-Mesh-Obermaterial, meist mit Neopren-Einsätzen.",
+        "Markant hohe, abgerundete Fersenform."
+      ],
+      confusable: "Von AM97 über die Fersenhöhe und das Mesh-Obermaterial statt metallischer Streifen abgrenzen."
+    },
+    {
+      name: "React Element 55",
+      sub: "",
+      markers: [
+        "Dicke, durchgefärbte React-Schaumsohle (kein Air-Fenster, der Schaum selbst ist das Merkmal).",
+        "Halbtransparentes oder Mesh-Obermaterial, oft mehrschichtig wirkend.",
+        "Reflektierende Akzent-Streifen seitlich."
+      ],
+      confusable: "Dicke farbige Schaumsohle ohne Luftfenster ist das Hauptunterscheidungsmerkmal zu allen Air-Max-Modellen."
+    },
+    {
+      name: "VaporMax",
+      sub: "",
+      markers: [
+        "Keine klassische Gummi-Außensohle — die Air-Einheiten berühren direkt den Boden.",
+        "Sohle wirkt wie mehrere einzelne 'Luftkissen', optisch segmentiert.",
+        "Sehr leichtes, oft gestricktes (Flyknit) Obermaterial."
+      ],
+      confusable: "Die bodenberührenden Air-Kissen ohne Gummisohle sind einzigartig — mit keinem anderen Modell zu verwechseln."
+    },
+    {
+      name: "Air Huarache",
+      sub: "",
+      markers: [
+        "Neopren-artige, sockenähnliche Innenkonstruktion.",
+        "Sichtbarer Kunststoff-Fersenclip/-käfig außen, der die Ferse umschließt.",
+        "Minimalistisches Obermaterial, wenig klassische Panels.",
+        "Swoosh sitzt meist seitlich auf einem eigenen Overlay-Streifen."
+      ],
+      confusable: "Der sichtbare Fersen-Käfig aus Plastik ist das eindeutigste Merkmal, bei keinem anderen Modell in dieser Form."
+    }
+  ];
+
+  const modelList = document.getElementById("modelList");
+  const searchInput = document.getElementById("searchInput");
+  const countPill = document.getElementById("countPill");
+  const noMatch = document.getElementById("noMatch");
+
+  function render(filter) {
+    const q = (filter || "").trim().toLowerCase();
+    const matches = MODELS.filter((m) => {
+      if (!q) return true;
+      const hay = (m.name + " " + m.sub + " " + m.markers.join(" ") + " " + (m.confusable || "")).toLowerCase();
+      return hay.includes(q);
+    });
+
+    countPill.textContent = matches.length + (matches.length === 1 ? " Modell" : " Modelle");
+    noMatch.style.display = matches.length ? "none" : "block";
+
+    modelList.innerHTML = "";
+    matches.forEach((m) => {
+      const el = document.createElement("div");
+      el.className = "model";
+      el.innerHTML =
+        '<div class="model-head">' +
+          '<h3>' + m.name + (m.sub ? '<small>' + m.sub + '</small>' : '') + '</h3>' +
+          '<span class="caret">▶</span>' +
+        '</div>' +
+        '<div class="model-body">' +
+          '<ul class="marker-list">' +
+            m.markers.map((x) => '<li><span class="ico">✓</span><span>' + x + '</span></li>').join("") +
+          '</ul>' +
+          (m.confusable ? '<div class="confusable"><b>Verwechslungsgefahr:</b> ' + m.confusable + '</div>' : '') +
+        '</div>';
+      el.addEventListener("click", () => el.classList.toggle("open"));
+      modelList.appendChild(el);
+    });
+  }
+
+  searchInput.addEventListener("input", () => render(searchInput.value));
+  render("");
+
+  /* ---- Fotos (lokal, nie hochgeladen) ---- */
+  const fileInput = document.getElementById("fileInput");
+  const shotGrid = document.getElementById("shotGrid");
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightboxImg");
+  const TAGS = ["Sohle", "Tongue-Label", "Zehenbox", "Fersenlogo"];
+  let shots = [];
+
+  function renderShots() {
+    shotGrid.innerHTML = "";
+    if (!shots.length) {
+      TAGS.forEach((t) => {
+        const d = document.createElement("div");
+        d.className = "shot-empty";
+        d.textContent = t;
+        shotGrid.appendChild(d);
+      });
+      return;
+    }
+    shots.forEach((url, i) => {
+      const d = document.createElement("div");
+      d.className = "shot";
+      d.innerHTML =
+        '<img src="' + url + '" alt="Nahaufnahme ' + (i + 1) + '">' +
+        '<span class="tag">' + (TAGS[i] || ("Foto " + (i + 1))) + '</span>' +
+        '<button class="remove" data-i="' + i + '">✕</button>';
+      shotGrid.appendChild(d);
+    });
+  }
+
+  fileInput.addEventListener("change", () => {
+    [...fileInput.files].forEach((file) => {
+      const url = URL.createObjectURL(file);
+      shots.push(url);
+    });
+    fileInput.value = "";
+    renderShots();
+  });
+
+  shotGrid.addEventListener("click", (e) => {
+    if (e.target.classList.contains("remove")) {
+      const i = +e.target.dataset.i;
+      shots.splice(i, 1);
+      renderShots();
+      return;
+    }
+    const img = e.target.closest(".shot")?.querySelector("img");
+    if (img) {
+      lightboxImg.src = img.src;
+      lightbox.classList.add("show");
+    }
+  });
+
+  lightbox.addEventListener("click", () => lightbox.classList.remove("show"));
+
+  renderShots();
+})();
+</script>
+</body>
+</html>
