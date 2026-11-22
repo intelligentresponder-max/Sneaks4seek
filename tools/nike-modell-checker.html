@@ -113,6 +113,24 @@
     width:20px; height:20px; border-radius:50%;
     background: #b33; color:#fff; border:none; font-size:12px; cursor:pointer; line-height:1;
   }
+  .shot .lens{
+    position:absolute; top:4px; left:4px;
+    height:20px; padding: 0 7px; border-radius:10px;
+    background: rgba(0,0,0,.72); color: var(--gold); border:1px solid var(--kraft-dim);
+    font-size:10.5px; cursor:pointer; line-height:18px; white-space:nowrap;
+  }
+  .shot .lens:hover{ background: var(--kraft); color:#16140f; }
+  .sku-panel{ margin-top: 12px; }
+  .sku-panel .search-row{ margin-bottom: 0; }
+  .sku-panel .hint{ margin-top: 8px; }
+  .sku-panel .label-tag{
+    font-family: monospace; font-size: 11px; letter-spacing: .1em;
+    text-transform: uppercase; color: #8b8d92; margin: 0 0 10px;
+  }
+  .lens-note{
+    font-size: 11px; color:#8b8d92; line-height:1.5; margin-top: 8px;
+    border-top: 1px dashed var(--line); padding-top: 8px;
+  }
   .shot-empty{
     aspect-ratio:1; border:1px dashed var(--line); border-radius:8px;
     display:flex; align-items:center; justify-content:center;
@@ -199,6 +217,24 @@
         <footer class="hint">
           Tipp: ein Foto pro Merkmal (Sohle, Zungen-Etikett, Zehenbereich, Fersenbereich) —
           auf Foto tippen zum Vergrößern. Nichts wird hochgeladen, alles bleibt lokal im Browser.
+        </footer>
+        <p class="lens-note" id="lensNote">
+          <b style="color:var(--kraft)">🔍 Lens</b> auf einem Foto öffnet das Android-Teilen-Menü —
+          dort „Google"/„Lens" wählen für automatische Erkennung + Preisvergleich, genau wie beim
+          manuellen Teilen aus der Galerie. Es gibt keine öffentliche Lens-API, deshalb läuft es
+          immer über diesen Umweg, nie direkt in der Seite.
+        </p>
+      </div>
+
+      <div class="panel sku-panel">
+        <p class="label-tag">Style-Code nachschlagen</p>
+        <div class="search-row">
+          <input type="text" id="skuInput" placeholder="z. B. HQ3824-001">
+        </div>
+        <footer class="hint">
+          Steht auf dem Größenetikett innen am Schuh — zuverlässiger als jede Sichtprüfung, der Code
+          identifiziert Modell <em>und</em> Colorway eindeutig. Enter drücken öffnet die Google-Suche
+          in einem neuen Tab.
         </footer>
       </div>
     </div>
@@ -363,6 +399,18 @@
       confusable: "Kaum verwechselbar — das sehr flache, schlanke Profil ist unter Nike-Modellen untypisch."
     },
     {
+      name: "Air Max Plus (TN)",
+      sub: "'Tuned Air'",
+      markers: [
+        "Gewellte, erhabene TPU-Rippen ('Gills') an den Seitenpanels — aufgesetzt, nicht nur aufgedruckt.",
+        "Spitz zulaufende, aggressive Zehenform, anders als bei jedem anderen Air-Max-Modell.",
+        "Sichtbare Max-Air-Einheit in der Ferse.",
+        "Oft sehr grafische, auffällige Colorways (Camo, Farbverläufe, Muster wie 'Shark Attack').",
+        "Grobes, aggressives Waffel-/Stollenprofil auf der Außensohle."
+      ],
+      confusable: "Von AM97 über die erhabenen TPU-Rippen abgrenzen — AM97 hat nur gewellte Linien im Material, keine aufgesetzte Struktur."
+    },
+    {
       name: "Air Max 270",
       sub: "",
       markers: [
@@ -449,8 +497,20 @@
   const shotGrid = document.getElementById("shotGrid");
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = document.getElementById("lightboxImg");
+  const lensNote = document.getElementById("lensNote");
   const TAGS = ["Sohle", "Tongue-Label", "Zehenbox", "Fersenlogo"];
-  let shots = [];
+  let shots = []; // { file, url }
+
+  // Keine Lens-API, siehe Kommentar oben am MODELS-Array: der Umweg über die
+  // native Teilen-Funktion ist das einzige, was sich ohne Backend bauen lässt.
+  const CAN_SHARE_FILES = !!(navigator.canShare && navigator.share);
+  if (!CAN_SHARE_FILES) {
+    lensNote.innerHTML =
+      '<b style="color:var(--kraft)">🔍 Lens</b> braucht die Teilen-Funktion deines Browsers — ' +
+      'hier nicht verfügbar (meist Desktop-Browser). Auf dem Handy in Chrome/Android öffnen, ' +
+      'dann erscheint der Button funktionsfähig. Alternativ: Foto in der Galerie öffnen, antippen, ' +
+      '„Mit Google Lens suchen" wählen.';
+  }
 
   function renderShots() {
     shotGrid.innerHTML = "";
@@ -463,12 +523,13 @@
       });
       return;
     }
-    shots.forEach((url, i) => {
+    shots.forEach((s, i) => {
       const d = document.createElement("div");
       d.className = "shot";
       d.innerHTML =
-        '<img src="' + url + '" alt="Nahaufnahme ' + (i + 1) + '">' +
+        '<img src="' + s.url + '" alt="Nahaufnahme ' + (i + 1) + '">' +
         '<span class="tag">' + (TAGS[i] || ("Foto " + (i + 1))) + '</span>' +
+        (CAN_SHARE_FILES ? '<button class="lens" data-i="' + i + '">🔍 Lens</button>' : '') +
         '<button class="remove" data-i="' + i + '">✕</button>';
       shotGrid.appendChild(d);
     });
@@ -476,18 +537,31 @@
 
   fileInput.addEventListener("change", () => {
     [...fileInput.files].forEach((file) => {
-      const url = URL.createObjectURL(file);
-      shots.push(url);
+      shots.push({ file, url: URL.createObjectURL(file) });
     });
     fileInput.value = "";
     renderShots();
   });
 
-  shotGrid.addEventListener("click", (e) => {
+  shotGrid.addEventListener("click", async (e) => {
     if (e.target.classList.contains("remove")) {
       const i = +e.target.dataset.i;
       shots.splice(i, 1);
       renderShots();
+      return;
+    }
+    if (e.target.classList.contains("lens")) {
+      const i = +e.target.dataset.i;
+      const file = shots[i].file;
+      try {
+        if (navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: "Sneaker-Nahaufnahme" });
+        } else {
+          alert("Dieses Dateiformat lässt sich nicht teilen — versuch es mit einem JPEG/PNG-Foto.");
+        }
+      } catch (err) {
+        if (err.name !== "AbortError") alert("Teilen fehlgeschlagen: " + err.message);
+      }
       return;
     }
     const img = e.target.closest(".shot")?.querySelector("img");
@@ -500,6 +574,15 @@
   lightbox.addEventListener("click", () => lightbox.classList.remove("show"));
 
   renderShots();
+
+  /* ---- Style-Code-Suche ---- */
+  const skuInput = document.getElementById("skuInput");
+  skuInput.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const code = skuInput.value.trim();
+    if (!code) return;
+    window.open("https://www.google.com/search?q=" + encodeURIComponent(code + " nike sneaker"), "_blank");
+  });
 })();
 </script>
 </body>
