@@ -40,6 +40,7 @@ function doPost(e) {
       case "init":     return jsonOut(handleInit(body, props));
       case "upload":   return jsonOut(handleUpload(body, props));
       case "finalize": return jsonOut(handleFinalize(body, props));
+      case "contact":  return jsonOut(handleContact(body, props));
       default:
         return jsonOut({ error: "Unbekannte Aktion: " + body.action });
     }
@@ -89,6 +90,34 @@ function handleFinalize(body, props) {
   sheet.appendRow(row);
 
   return { ref: body.submissionId };
+}
+
+/**
+ * Trägt Kontaktdaten (Name/E-Mail/Telefon/PLZ/Adresse) nachträglich in eine
+ * bereits per finalize angelegte Zeile ein — Onboarding fragt diese Felder
+ * inzwischen erst auf der Danke-Seite ab, nicht mehr beim ersten Absenden.
+ * Findet die Zeile über die Submission-ID in Spalte B und überschreibt
+ * Spalten C–G; mehrfaches Absenden korrigiert also einfach dieselbe Zeile.
+ */
+function handleContact(body, props) {
+  const sheet = getLogSheet(props);
+  const lastRow = sheet.getLastRow();
+  if (lastRow < 2) return { error: "Unbekannte Submission-ID." };
+
+  const ids = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+  let rowIndex = -1;
+  for (let i = 0; i < ids.length; i++) {
+    if (ids[i][0] === body.submissionId) { rowIndex = i + 2; break; }
+  }
+  if (rowIndex === -1) return { error: "Unbekannte Submission-ID." };
+
+  const c = body.contact || {};
+  sheet.getRange(rowIndex, 3, 1, 5).setValues([[
+    c.name || "", c.email || "", c.phone || "", c.plz || "", c.address || "",
+  ]]);
+  if (c.pickup) sheet.getRange(rowIndex, 14, 1, 1).setValue(c.pickup);
+
+  return { ok: true };
 }
 
 function getLogSheet(props) {
