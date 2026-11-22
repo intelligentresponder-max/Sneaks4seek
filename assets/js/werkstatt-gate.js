@@ -14,7 +14,7 @@
 (function () {
   "use strict";
 
-  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbznh7ttNtbXdgoSwLcSN6CAPXQJhwRfYT8pYkNBW1OePugQJG426L_lG3nPL95_eLhpmQ/exec";
+  const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby65MaILEBpZx3YOonBRLCPbesUfp8FpfzioZKboacNmBQcaJXotmpnNvLyhA0i_iF0ag/exec";
   const SESSION_KEY = "s4s_werkstatt_unlocked";
 
   if (sessionStorage.getItem(SESSION_KEY) === "1") return; // schon entsperrt in diesem Tab
