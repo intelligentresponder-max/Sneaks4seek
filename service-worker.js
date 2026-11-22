@@ -1,5 +1,10 @@
-// Sneaks4Seek Service Worker — v2.0
-const CACHE = 'sneaks4seek-v2';
+// Sneaks4Seek Service Worker — v3.0
+// Netzwerk-zuerst statt Cache-zuerst: wichtig, weil api.js/onboarding.js die
+// Backend-URL enthalten, die sich ändern kann — ein dauerhaft gecachtes
+// api.js mit toter URL hätte echten Verkäufern das Onboarding lautlos
+// kaputt gemacht, ohne dass irgendwer online davon etwas gemerkt hätte.
+// Offline-Fallback bleibt erhalten (Cache nur, wenn das Netzwerk fehlschlägt).
+const CACHE = 'sneaks4seek-v3';
 const ASSETS = [
   '/Sneaks4seek/',
   '/Sneaks4seek/index.html',
@@ -29,14 +34,12 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   e.respondWith(
-    caches.match(e.request).then(cached => {
-      return cached || fetch(e.request).then(response => {
-        if (response && response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE).then(cache => cache.put(e.request, clone));
-        }
-        return response;
-      }).catch(() => caches.match('/Sneaks4seek/'));
-    })
+    fetch(e.request).then(response => {
+      if (response && response.status === 200) {
+        const clone = response.clone();
+        caches.open(CACHE).then(cache => cache.put(e.request, clone));
+      }
+      return response;
+    }).catch(() => caches.match(e.request).then(cached => cached || caches.match('/Sneaks4seek/')))
   );
 });
