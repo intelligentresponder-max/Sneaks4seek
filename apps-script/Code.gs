@@ -5,7 +5,10 @@
  * 1. Neues Projekt auf https://script.google.com anlegen, diesen Code
  *    in Code.gs einfügen.
  * 2. Datei > Projekteinstellungen > Script Properties:
- *      ACCESS_CODE   = <dein Zugangscode fürs Onboarding>
+ *      ACCESS_CODE     = <dein Zugangscode fürs Onboarding>
+ *      WERKSTATT_CODE  = <separater Zugangscode für den internen Werkstatt-Bereich,
+ *                         z.B. Sneaker-Modell-Checker — unabhängig von ACCESS_CODE,
+ *                         André teilt den nicht mit Verkäufer:innen>
  *      DRIVE_FOLDER_ID = <ID des Google-Drive-Ordners, in den hochgeladen wird>
  *      SHEET_ID      = <ID eines Google Sheets fürs Log> (optional, sonst wird eins erstellt)
  * 3. Bereitstellen > Neue Bereitstellung > Web-App
@@ -18,6 +21,15 @@ function doPost(e) {
   try {
     const body = JSON.parse(e.postData.contents);
     const props = PropertiesService.getScriptProperties();
+
+    // Eigener Zugangscode für den internen Werkstatt-Bereich (Sneaker-Modell-
+    // Checker etc.) — unabhängig von ACCESS_CODE, das ist für das Verkäufer-
+    // Onboarding. Läuft am generischen Code-Check unten bewusst vorbei.
+    if (body.action === "verifyWerkstattCode") {
+      const validWerkstattCode = props.getProperty("WERKSTATT_CODE");
+      return jsonOut({ ok: !!validWerkstattCode && body.code === validWerkstattCode });
+    }
+
     const validCode = props.getProperty("ACCESS_CODE");
 
     if (!body.code || body.code !== validCode) {

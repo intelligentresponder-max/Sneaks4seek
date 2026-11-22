@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sneaks4Seek – Werkstatt</title>
+<style>
+  :root{
+    --bg: #0b0c0e;
+    --panel: #141517;
+    --kraft: #c9a876;
+    --kraft-dim: #8a7455;
+    --sock: #f2efe9;
+    --line: #232427;
+  }
+  *{ box-sizing: border-box; }
+  html,body{
+    margin:0; padding:0;
+    background: var(--bg);
+    color: var(--sock);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    min-height:100vh;
+  }
+  .wrap{ max-width: 720px; margin: 0 auto; padding: 28px 18px 60px; }
+  header{
+    margin-bottom: 20px; border-bottom: 1px solid var(--line); padding-bottom: 14px;
+  }
+  h1{ font-size: 18px; margin:0; font-weight:600; }
+  h1 span{ color: var(--kraft); }
+  .sub{ font-size:12px; color:#8b8d92; margin:4px 0 0; }
+  .entry{
+    display:block; background: var(--panel); border:1px solid var(--line); border-radius:10px;
+    padding:16px; margin-bottom:12px; text-decoration:none; color: var(--sock);
+  }
+  .entry:hover{ border-color: var(--kraft-dim); }
+  .entry h2{ margin:0 0 4px; font-size:15px; }
+  .entry p{ margin:0; font-size:12.5px; color:#8b8d92; }
+  .entry .tag{
+    display:inline-block; font-size:10px; text-transform:uppercase; letter-spacing:.08em;
+    color: var(--kraft); border:1px solid var(--kraft-dim); border-radius:999px;
+    padding:2px 8px; margin-top:8px;
+  }
+  footer.hint{ font-size:11.5px; color:#75777c; margin-top:20px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Sneaks<span>4</span>Seek — Werkstatt</h1>
+    <p class="sub">Interne Werkzeuge. Nicht verlinkt, nicht in der Sitemap — plus Zugangscode.</p>
+  </header>
+
+  <a class="entry" href="sneaker-modell-checker.html">
+    <h2>Sneaker Modell-Checker</h2>
+    <p>Merkmals-Checkliste für Nike + Adidas, Lens-Teilen-Button, Style-Code-Suche.</p>
+    <span class="tag">Nike · Adidas</span>
+  </a>
+
+  <a class="entry" href="qr-generator.html">
+    <h2>QR-Code-Generator</h2>
+    <p>Beliebigen Link oder Text als QR-Code, lokal, als PNG herunterladbar.</p>
+  </a>
+
+  <a class="entry" href="foto-collage.html">
+    <h2>Collage-Werkzeug Pro</h2>
+    <p>Bildbearbeitung für Produktfotos — Helligkeit, Kontrast, Zuschnitt, Vignette.</p>
+  </a>
+
+  <footer class="hint">
+    Neue Einträge kommen hier dazu, sobald weitere interne Werkzeuge entstehen — kein
+    Redeploy des Zugangsschutzes nötig, der Code bleibt serverseitig in Code.gs.
+  </footer>
+</div>
+<script src="../assets/js/werkstatt-gate.js"></script>
+</body>
+</html>

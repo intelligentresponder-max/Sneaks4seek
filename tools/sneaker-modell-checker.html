@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sneaks4Seek – Nike Modell-Checker</title>
+<title>Sneaks4Seek – Sneaker Modell-Checker</title>
 <style>
   :root{
     --bg: #0b0c0e;
@@ -153,6 +153,12 @@
   .lightbox img{ max-width:100%; max-height:100%; object-fit:contain; border-radius: 6px; }
 
   /* ---- Modell-Liste ---- */
+  .brand-tabs{ display:flex; gap:8px; margin-bottom: 12px; }
+  .brand-tabs button{
+    background: var(--panel); border:1px solid var(--line); color:#8b8d92;
+    padding:7px 16px; border-radius:999px; font-size:12.5px; cursor:pointer;
+  }
+  .brand-tabs button.active{ border-color: var(--kraft); color: var(--kraft); }
   .search-row{ display:flex; gap:10px; margin-bottom: 14px; flex-wrap: wrap; }
   input[type=text]{
     flex:1; min-width: 180px;
@@ -174,6 +180,10 @@
   .model-head{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
   .model-head h3{ margin:0; font-size:15px; color: var(--sock); }
   .model-head h3 small{ display:block; font-size:11px; color:#8b8d92; font-weight:400; margin-top:2px; }
+  .brand-pill{
+    font-size:9.5px; text-transform:uppercase; letter-spacing:.08em; color:#8b8d92;
+    border:1px solid var(--line); border-radius:999px; padding:2px 8px; flex-shrink:0;
+  }
   .caret{ color: var(--kraft); font-size: 12px; transition: transform .15s; flex-shrink:0; }
   .model.open .caret{ transform: rotate(90deg); }
   .model-body{ display:none; margin-top:12px; border-top:1px solid var(--line); padding-top:12px; }
@@ -195,7 +205,7 @@
 <div class="wrap">
   <header>
     <div>
-      <h1>Sneaks<span>4</span>Seek — Nike Modell-Checker</h1>
+      <h1>Sneaks<span>4</span>Seek — Sneaker Modell-Checker</h1>
       <p class="sub">Foto neben Checkliste halten, Merkmal für Merkmal durchgehen — kein automatischer
         Treffer, du entscheidest. Kein Foto verlässt dieses Gerät.</p>
     </div>
@@ -241,6 +251,11 @@
 
     <!-- Modell-Liste -->
     <div>
+      <div class="brand-tabs" id="brandTabs">
+        <button data-brand="all" class="active">Alle</button>
+        <button data-brand="nike">Nike</button>
+        <button data-brand="adidas">Adidas</button>
+      </div>
       <div class="search-row">
         <input type="text" id="searchInput" placeholder="Modell suchen, z. B. 'Air Max' oder 'Sohle sichtbar'…">
         <span class="count-pill" id="countPill">0 Modelle</span>
@@ -260,11 +275,13 @@
 
   /**
    * Textbasierte Merkmals-Checklisten statt Referenzfotos: Sneaks4Seek hat
-   * keine Rechte an echten Nike-Produktbildern. Jedes Merkmal ist etwas,
-   * das man am eigenen Foto gegenprüfen kann, ohne ein zweites Bild danebenzuhalten.
+   * keine Rechte an echten Produktbildern (Nike oder Adidas). Jedes Merkmal
+   * ist etwas, das man am eigenen Foto gegenprüfen kann, ohne ein zweites
+   * Bild danebenzuhalten.
    */
   const MODELS = [
     {
+      brand: "nike",
       name: "Air Force 1",
       sub: "Low / Mid / High",
       markers: [
@@ -277,6 +294,7 @@
       confusable: "Oft verwechselt mit Blazer — Blazer hat eine dünnere, flachere Sohle und keine Loch-Perforation."
     },
     {
+      brand: "nike",
       name: "Air Max 1",
       sub: "Original 1987er Silhouette",
       markers: [
@@ -288,6 +306,7 @@
       confusable: "Zum Air Max 90 abgrenzen: AM1 hat ein kleineres, rundes Air-Fenster — AM90 ein größeres, kantigeres."
     },
     {
+      brand: "nike",
       name: "Air Max 90",
       sub: "",
       markers: [
@@ -299,6 +318,7 @@
       confusable: "Zum AM1 über die Fenstergröße abgrenzen, zum AM95 über die fehlenden Rippen-Panels."
     },
     {
+      brand: "nike",
       name: "Air Max 95",
       sub: "",
       markers: [
@@ -310,6 +330,7 @@
       confusable: "Die Rippenpanels sind einzigartig — kaum mit anderen Air-Max-Modellen zu verwechseln."
     },
     {
+      brand: "nike",
       name: "Air Max 97",
       sub: "'Silver Bullet'",
       markers: [
@@ -321,84 +342,7 @@
       confusable: "Durchgehende Air-Einheit unterscheidet ihn klar von AM90/95 (dort nur Fersenbereich)."
     },
     {
-      name: "Dunk Low",
-      sub: "",
-      markers: [
-        "Niedriger Schaft, klassische Basketballschuh-Silhouette.",
-        "Farblich abgesetzte Lederpanels, Swoosh seitlich aufgenäht.",
-        "Flache Gummisohle ohne sichtbares Air-Fenster.",
-        "Schlaufe/Pull-Tab an der Zunge.",
-        "Teils perforierte Zehenbox (nicht immer, modellabhängig)."
-      ],
-      confusable: "Von SB Dunk über das Tongue-Label abgrenzen: SB-Varianten haben ein 'Nike SB'-Label, dickere Zunge/Innenfutter."
-    },
-    {
-      name: "Dunk High",
-      sub: "",
-      markers: [
-        "Wie Dunk Low, aber hoher Schaft über dem Knöchel.",
-        "Gleiche flache Sohle ohne Air-Fenster.",
-        "Gepolsterter Knöchelbereich, oft mit zusätzlichem Riemen/Klettverschluss bei manchen Colorways."
-      ],
-      confusable: "Schaft-Höhe ist der einzige strukturelle Unterschied zum Dunk Low."
-    },
-    {
-      name: "SB Dunk",
-      sub: "Skateboarding-Variante",
-      markers: [
-        "Gleiche Grundform wie Dunk, aber 'Nike SB'-Branding auf Zunge/Innensohle.",
-        "Deutlich dickere, weichere Zunge und Innenfutter (Skate-Polsterung).",
-        "Zoom-Air-Einlegesohle (fühlbar beim Reindrücken, nicht immer sichtbar von außen).",
-        "Oft gröberes, griffigeres Sohlenprofil als reguläre Dunks."
-      ],
-      confusable: "Ohne 'SB'-Label am Tongue/Insole kaum vom regulären Dunk zu unterscheiden — Label ist der entscheidende Check."
-    },
-    {
-      name: "Air Jordan 1",
-      sub: "High / Low",
-      markers: [
-        "'Wings'-Logo seitlich am Knöchel (bei High-Variante).",
-        "'Nike Air' oder Jumpman-Branding auf Zunge bzw. Ferse (je nach Release-Jahr).",
-        "Perforierte Zehenbox.",
-        "Farblich klar abgesetzte Lederpanels (meist 2–3 Farben, große Flächen).",
-        "Flache Sohle — das Air-Sole-Kissen ist innen, nicht als Fenster sichtbar."
-      ],
-      confusable: "Ohne Wings-Logo und bei niedrigem Schaft: AJ1 Low eher mit Dunk verwechselbar — Jumpman/Nike-Air-Branding auf der Zunge prüfen."
-    },
-    {
-      name: "Air Jordan 4",
-      sub: "",
-      markers: [
-        "Netz-/Mesh-Einsätze an den Seitenpanels.",
-        "Sichtbare, meist weiße Kunststoff-Ösen/Flügel an der Mittelsohle ('Wings'-Ösen).",
-        "Sichtbares Air-Fenster in der Ferse.",
-        "Markante Riemen-/Schnürsenkel-Schlaufe oberhalb der Zunge."
-      ],
-      confusable: "Die Plastik-Ösen an der Seite sind einzigartig für die 4er — bei keinem anderen Jordan-Modell in dieser Form vorhanden."
-    },
-    {
-      name: "Blazer Mid / Low",
-      sub: "",
-      markers: [
-        "Schlichtes, vintage-anmutendes Basketballschuh-Design.",
-        "Großer, einfacher Swoosh ohne Zusatzdetails.",
-        "Vulkanisierte, flache Gummisohle ohne Air-Fenster.",
-        "Gummi-Zehenkappe, Canvas- oder Lederpanel."
-      ],
-      confusable: "Von Air Force 1 über die dünnere Sohle und fehlende Lochperforation abgrenzen."
-    },
-    {
-      name: "Cortez",
-      sub: "",
-      markers: [
-        "Sehr flaches, niedriges Laufschuh-Profil (1970er-Optik).",
-        "Klassischer, schlanker Swoosh.",
-        "Meist Kombination aus Wildleder/Leder und Nylon.",
-        "Dünne, flache Sohle ohne jegliches Air-Fenster."
-      ],
-      confusable: "Kaum verwechselbar — das sehr flache, schlanke Profil ist unter Nike-Modellen untypisch."
-    },
-    {
+      brand: "nike",
       name: "Air Max Plus (TN)",
       sub: "'Tuned Air'",
       markers: [
@@ -411,6 +355,92 @@
       confusable: "Von AM97 über die erhabenen TPU-Rippen abgrenzen — AM97 hat nur gewellte Linien im Material, keine aufgesetzte Struktur."
     },
     {
+      brand: "nike",
+      name: "Dunk Low",
+      sub: "",
+      markers: [
+        "Niedriger Schaft, klassische Basketballschuh-Silhouette.",
+        "Farblich abgesetzte Lederpanels, Swoosh seitlich aufgenäht.",
+        "Flache Gummisohle ohne sichtbares Air-Fenster.",
+        "Schlaufe/Pull-Tab an der Zunge.",
+        "Teils perforierte Zehenbox (nicht immer, modellabhängig)."
+      ],
+      confusable: "Von SB Dunk über das Tongue-Label abgrenzen: SB-Varianten haben ein 'Nike SB'-Label, dickere Zunge/Innenfutter."
+    },
+    {
+      brand: "nike",
+      name: "Dunk High",
+      sub: "",
+      markers: [
+        "Wie Dunk Low, aber hoher Schaft über dem Knöchel.",
+        "Gleiche flache Sohle ohne Air-Fenster.",
+        "Gepolsterter Knöchelbereich, oft mit zusätzlichem Riemen/Klettverschluss bei manchen Colorways."
+      ],
+      confusable: "Schaft-Höhe ist der einzige strukturelle Unterschied zum Dunk Low."
+    },
+    {
+      brand: "nike",
+      name: "SB Dunk",
+      sub: "Skateboarding-Variante",
+      markers: [
+        "Gleiche Grundform wie Dunk, aber 'Nike SB'-Branding auf Zunge/Innensohle.",
+        "Deutlich dickere, weichere Zunge und Innenfutter (Skate-Polsterung).",
+        "Zoom-Air-Einlegesohle (fühlbar beim Reindrücken, nicht immer sichtbar von außen).",
+        "Oft gröberes, griffigeres Sohlenprofil als reguläre Dunks."
+      ],
+      confusable: "Ohne 'SB'-Label am Tongue/Insole kaum vom regulären Dunk zu unterscheiden — Label ist der entscheidende Check."
+    },
+    {
+      brand: "nike",
+      name: "Air Jordan 1",
+      sub: "High / Low",
+      markers: [
+        "'Wings'-Logo seitlich am Knöchel (bei High-Variante).",
+        "'Nike Air' oder Jumpman-Branding auf Zunge bzw. Ferse (je nach Release-Jahr).",
+        "Perforierte Zehenbox.",
+        "Farblich klar abgesetzte Lederpanels (meist 2–3 Farben, große Flächen).",
+        "Flache Sohle — das Air-Sole-Kissen ist innen, nicht als Fenster sichtbar."
+      ],
+      confusable: "Ohne Wings-Logo und bei niedrigem Schaft: AJ1 Low eher mit Dunk verwechselbar — Jumpman/Nike-Air-Branding auf der Zunge prüfen."
+    },
+    {
+      brand: "nike",
+      name: "Air Jordan 4",
+      sub: "",
+      markers: [
+        "Netz-/Mesh-Einsätze an den Seitenpanels.",
+        "Sichtbare, meist weiße Kunststoff-Ösen/Flügel an der Mittelsohle ('Wings'-Ösen).",
+        "Sichtbares Air-Fenster in der Ferse.",
+        "Markante Riemen-/Schnürsenkel-Schlaufe oberhalb der Zunge."
+      ],
+      confusable: "Die Plastik-Ösen an der Seite sind einzigartig für die 4er — bei keinem anderen Jordan-Modell in dieser Form vorhanden."
+    },
+    {
+      brand: "nike",
+      name: "Blazer Mid / Low",
+      sub: "",
+      markers: [
+        "Schlichtes, vintage-anmutendes Basketballschuh-Design.",
+        "Großer, einfacher Swoosh ohne Zusatzdetails.",
+        "Vulkanisierte, flache Gummisohle ohne Air-Fenster.",
+        "Gummi-Zehenkappe, Canvas- oder Lederpanel."
+      ],
+      confusable: "Von Air Force 1 über die dünnere Sohle und fehlende Lochperforation abgrenzen."
+    },
+    {
+      brand: "nike",
+      name: "Cortez",
+      sub: "",
+      markers: [
+        "Sehr flaches, niedriges Laufschuh-Profil (1970er-Optik).",
+        "Klassischer, schlanker Swoosh.",
+        "Meist Kombination aus Wildleder/Leder und Nylon.",
+        "Dünne, flache Sohle ohne jegliches Air-Fenster."
+      ],
+      confusable: "Kaum verwechselbar — das sehr flache, schlanke Profil ist unter Nike-Modellen untypisch."
+    },
+    {
+      brand: "nike",
       name: "Air Max 270",
       sub: "",
       markers: [
@@ -421,6 +451,7 @@
       confusable: "Von AM97 über die Fersenhöhe und das Mesh-Obermaterial statt metallischer Streifen abgrenzen."
     },
     {
+      brand: "nike",
       name: "React Element 55",
       sub: "",
       markers: [
@@ -431,6 +462,7 @@
       confusable: "Dicke farbige Schaumsohle ohne Luftfenster ist das Hauptunterscheidungsmerkmal zu allen Air-Max-Modellen."
     },
     {
+      brand: "nike",
       name: "VaporMax",
       sub: "",
       markers: [
@@ -441,6 +473,7 @@
       confusable: "Die bodenberührenden Air-Kissen ohne Gummisohle sind einzigartig — mit keinem anderen Modell zu verwechseln."
     },
     {
+      brand: "nike",
       name: "Air Huarache",
       sub: "",
       markers: [
@@ -450,6 +483,113 @@
         "Swoosh sitzt meist seitlich auf einem eigenen Overlay-Streifen."
       ],
       confusable: "Der sichtbare Fersen-Käfig aus Plastik ist das eindeutigste Merkmal, bei keinem anderen Modell in dieser Form."
+    },
+    {
+      brand: "adidas",
+      name: "Samba (OG)",
+      sub: "",
+      markers: [
+        "Niedriges Profil, flache Gummi-Sohle (meist cremefarben/gum).",
+        "Wildleder-Zehenkappe ('T-Toe-Overlay') über Leder-Obermaterial — klares Erkennungsmerkmal.",
+        "3 Stripes seitlich, oft perforiert statt nur aufgenäht.",
+        "Abgerundete Zehenform, Herkunft aus dem Hallenfußball."
+      ],
+      confusable: "Von Gazelle über die T-Toe-Überlappung abgrenzen — die hat die Gazelle nicht."
+    },
+    {
+      brand: "adidas",
+      name: "Gazelle",
+      sub: "",
+      markers: [
+        "Durchgehendes Wildleder-Obermaterial, keine separate Zehenkappe.",
+        "Flache Gummisohle, meist in Kontrastfarbe.",
+        "3 Stripes seitlich, schlichte, abgerundete Silhouette.",
+        "Niedriger Schaft, enganliegende Passform."
+      ],
+      confusable: "Ohne T-Toe-Überlappung klar von der Samba zu unterscheiden."
+    },
+    {
+      brand: "adidas",
+      name: "Stan Smith",
+      sub: "",
+      markers: [
+        "Durchgehend weißes glattes Leder (klassische Colorway).",
+        "Perforierte 3 Stripes — Löcher in Streifenform statt erhabener Streifen.",
+        "Grüne Fersenlasche bei der Original-Colorway.",
+        "Porträt/Unterschrift auf der Zunge.",
+        "Sehr flache, minimalistische Tennisschuh-Sohle."
+      ],
+      confusable: "Kaum verwechselbar — die perforierten statt erhabenen Streifen sind einzigartig für dieses Modell."
+    },
+    {
+      brand: "adidas",
+      name: "Superstar",
+      sub: "'Shell Toe'",
+      markers: [
+        "Markante, gummierte 'Shell Toe'-Zehenkappe (segmentierte, muschelartige Form).",
+        "Leder-Obermaterial, 3 Stripes seitlich.",
+        "Flache, einfache Gummisohle."
+      ],
+      confusable: "Die Shell-Toe-Form gibt es bei keinem anderen Adidas-Modell in dieser Ausprägung."
+    },
+    {
+      brand: "adidas",
+      name: "Campus",
+      sub: "",
+      markers: [
+        "Wildleder-Obermaterial, mittelhoher, runder Zehenbereich.",
+        "Dickere, gepolsterte Zunge als bei Gazelle/Samba.",
+        "Flache Sohle, 3 Stripes seitlich.",
+        "Basketballschuh-Erbe, etwas chunkiger als Gazelle."
+      ],
+      confusable: "Von Gazelle über die dickere Zunge und den runderen Zehenbereich abgrenzen."
+    },
+    {
+      brand: "adidas",
+      name: "Forum Low / High",
+      sub: "",
+      markers: [
+        "Deutlich chunkigere Basketballschuh-Silhouette als Superstar/Campus.",
+        "Markanter Klett-Knöchelriemen bei der High-Variante (Low hat keinen).",
+        "Grobes, texturiertes Gummisohlenprofil.",
+        "Leder-Obermaterial, 3 Stripes seitlich."
+      ],
+      confusable: "Knöchelriemen ist das eindeutigste Merkmal der High-Variante — bei Low fehlt er komplett."
+    },
+    {
+      brand: "adidas",
+      name: "Ultraboost",
+      sub: "",
+      markers: [
+        "Durchgehende, dicke weiße/transluzente Boost-Mittelsohle (Schaum-Pellets-Optik).",
+        "Primeknit-Strick-Obermaterial, sockenartig anliegend.",
+        "Sichtbarer Torsion-Steg im Gewölbebereich der Sohle.",
+        "3 Stripes oft als Käfig-Overlay über dem Strickobermaterial."
+      ],
+      confusable: "Von NMD über die fehlenden EVA-Plugs in der Sohle abgrenzen — Ultraboost hat eine durchgehende Boost-Sohle ohne Einsätze."
+    },
+    {
+      brand: "adidas",
+      name: "NMD R1",
+      sub: "",
+      markers: [
+        "Boost-Mittelsohle mit zwei auffälligen, meist bunten Kunststoff-Einsätzen ('Plugs') sichtbar im Fersenbereich.",
+        "Primeknit-Obermaterial, oft auffällige, grafische Colorways.",
+        "Kein klassischer Schnürsenkel-Käfig wie bei Ultraboost."
+      ],
+      confusable: "Die zwei Plastik-Plugs in der Sohle sind einzigartig für NMD — bei keinem anderen Modell vorhanden."
+    },
+    {
+      brand: "adidas",
+      name: "Spezial",
+      sub: "",
+      markers: [
+        "Niedriges Profil, Wildleder-Obermaterial, meist Gummi- oder Gum-Sohle.",
+        "Schlankere, spitzere Zehenform als Gazelle.",
+        "Herkunft aus dem Handball-/Trainingsschuh-Bereich.",
+        "3 Stripes seitlich, oft in Kontrastfarbe."
+      ],
+      confusable: "Von Gazelle über die schlankere, spitzere Zehenform abgrenzen."
     }
   ];
 
@@ -457,10 +597,13 @@
   const searchInput = document.getElementById("searchInput");
   const countPill = document.getElementById("countPill");
   const noMatch = document.getElementById("noMatch");
+  const brandTabs = document.getElementById("brandTabs");
+  let activeBrand = "all";
 
   function render(filter) {
     const q = (filter || "").trim().toLowerCase();
     const matches = MODELS.filter((m) => {
+      if (activeBrand !== "all" && m.brand !== activeBrand) return false;
       if (!q) return true;
       const hay = (m.name + " " + m.sub + " " + m.markers.join(" ") + " " + (m.confusable || "")).toLowerCase();
       return hay.includes(q);
@@ -476,6 +619,7 @@
       el.innerHTML =
         '<div class="model-head">' +
           '<h3>' + m.name + (m.sub ? '<small>' + m.sub + '</small>' : '') + '</h3>' +
+          '<span class="brand-pill">' + m.brand + '</span>' +
           '<span class="caret">▶</span>' +
         '</div>' +
         '<div class="model-body">' +
@@ -484,10 +628,20 @@
           '</ul>' +
           (m.confusable ? '<div class="confusable"><b>Verwechslungsgefahr:</b> ' + m.confusable + '</div>' : '') +
         '</div>';
-      el.addEventListener("click", () => el.classList.toggle("open"));
+      el.addEventListener("click", (e) => {
+        if (e.target.tagName === "SPAN" && e.target.classList.contains("brand-pill")) return;
+        el.classList.toggle("open");
+      });
       modelList.appendChild(el);
     });
   }
+
+  brandTabs.addEventListener("click", (e) => {
+    if (e.target.tagName !== "BUTTON") return;
+    activeBrand = e.target.dataset.brand;
+    [...brandTabs.children].forEach((b) => b.classList.toggle("active", b === e.target));
+    render(searchInput.value);
+  });
 
   searchInput.addEventListener("input", () => render(searchInput.value));
   render("");
@@ -581,9 +735,10 @@
     if (e.key !== "Enter") return;
     const code = skuInput.value.trim();
     if (!code) return;
-    window.open("https://www.google.com/search?q=" + encodeURIComponent(code + " nike sneaker"), "_blank");
+    window.open("https://www.google.com/search?q=" + encodeURIComponent(code + " sneaker"), "_blank");
   });
 })();
 </script>
+<script src="../assets/js/werkstatt-gate.js"></script>
 </body>
 </html>
