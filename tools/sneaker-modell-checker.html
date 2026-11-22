@@ -123,10 +123,36 @@
   .sku-panel{ margin-top: 12px; }
   .sku-panel .search-row{ margin-bottom: 0; }
   .sku-panel .hint{ margin-top: 8px; }
-  .sku-panel .label-tag{
+  .label-tag{
     font-family: monospace; font-size: 11px; letter-spacing: .1em;
     text-transform: uppercase; color: #8b8d92; margin: 0 0 10px;
   }
+  #conditionPanel{ margin-top: 12px; }
+  #conditionPanel .hint{ margin-top: 10px; }
+  #galleryPanel{ margin-top: 12px; }
+  #galleryPanel .hint{ margin-top: 10px; }
+  .gallery-grid{
+    display:grid; grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap:7px;
+    max-height: 260px; overflow-y:auto;
+  }
+  .gallery-icon{
+    aspect-ratio:1; border-radius:7px; overflow:hidden; border:1px solid var(--line);
+    cursor:zoom-in; background:#1c1d20;
+  }
+  .gallery-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+  .gallery-empty{ font-size:11.5px; color:#8b8d92; grid-column: 1 / -1; }
+  .price-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .price-btn{
+    background: var(--panel); border:1px solid var(--kraft-dim); color: var(--kraft);
+    padding:6px 12px; border-radius:7px; font-size:12px; cursor:pointer;
+  }
+  .price-btn:hover{ border-color: var(--kraft); background:#1c1d20; }
+  .condition-grid{ display:flex; flex-direction:column; gap:8px; }
+  .condition-item{
+    background:#1c1d20; border:1px solid var(--line); border-radius:8px; padding:9px 11px;
+  }
+  .condition-item .ctitle{ font-size:12.5px; font-weight:600; color: var(--sock); margin-bottom:3px; }
+  .condition-item .cdesc{ font-size:11.5px; color:#9a9ca1; line-height:1.4; }
   .lens-note{
     font-size: 11px; color:#8b8d92; line-height:1.5; margin-top: 8px;
     border-top: 1px dashed var(--line); padding-top: 8px;
@@ -153,7 +179,7 @@
   .lightbox img{ max-width:100%; max-height:100%; object-fit:contain; border-radius: 6px; }
 
   /* ---- Modell-Liste ---- */
-  .brand-tabs{ display:flex; gap:8px; margin-bottom: 12px; }
+  .brand-tabs{ display:flex; gap:8px; margin-bottom: 12px; flex-wrap:wrap; }
   .brand-tabs button{
     background: var(--panel); border:1px solid var(--line); color:#8b8d92;
     padding:7px 16px; border-radius:999px; font-size:12.5px; cursor:pointer;
@@ -246,6 +272,38 @@
           identifiziert Modell <em>und</em> Colorway eindeutig. Enter drücken öffnet die Google-Suche
           in einem neuen Tab.
         </footer>
+        <div class="price-row" id="priceRow" style="margin-top:10px;">
+          <button type="button" class="price-btn" data-site="stockx">StockX</button>
+          <button type="button" class="price-btn" data-site="goat">GOAT</button>
+          <button type="button" class="price-btn" data-site="ebay">eBay (verkauft)</button>
+        </div>
+        <footer class="hint">
+          Aktuelle Marktpreise gibt's nirgends kostenlos per API — die drei Knöpfe öffnen stattdessen
+          direkt die Verkaufs-/Verkauft-Suche der jeweiligen Plattform mit dem Style-Code oben.
+        </footer>
+      </div>
+
+      <div class="panel" id="conditionPanel">
+        <p class="label-tag">Zustand einschätzen</p>
+        <div class="condition-grid" id="conditionGrid"></div>
+        <footer class="hint">
+          Dieselben vier Stufen wie im Onboarding-Formular — hilft, den Angaben der
+          Verkäufer:innen anhand der Fotos eine zweite, eigene Einschätzung gegenüberzustellen.
+        </footer>
+      </div>
+
+      <div class="panel" id="galleryPanel">
+        <div style="display:flex; align-items:baseline; justify-content:space-between;">
+          <p class="label-tag" style="margin:0;">Foto-Galerie</p>
+          <span class="count-pill" id="galleryCount" style="font-size:10.5px;">0 Icons</span>
+        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+        <footer class="hint">
+          Jedes Foto, das du oben bei „Nahaufnahmen hinzufügen" einlädst, bekommt hier ein
+          klickbares Icon — bleibt nur in diesem Browser gespeichert (IndexedDB), wird nie
+          hochgeladen und wächst mit jedem geprüften Paar.
+          <button type="button" id="galleryClear" style="margin-left:8px; background:none; border:1px solid var(--kraft-dim); color:#9a9ca1; border-radius:6px; padding:2px 8px; font-size:10.5px; cursor:pointer;">Galerie leeren</button>
+        </footer>
       </div>
     </div>
 
@@ -255,6 +313,11 @@
         <button data-brand="all" class="active">Alle</button>
         <button data-brand="nike">Nike</button>
         <button data-brand="adidas">Adidas</button>
+        <button data-brand="new-balance">New Balance</button>
+        <button data-brand="vans">Vans</button>
+        <button data-brand="converse">Converse</button>
+        <button data-brand="puma">Puma</button>
+        <button data-brand="reebok">Reebok</button>
       </div>
       <div class="search-row">
         <input type="text" id="searchInput" placeholder="Modell suchen, z. B. 'Air Max' oder 'Sohle sichtbar'…">
@@ -275,7 +338,7 @@
 
   /**
    * Textbasierte Merkmals-Checklisten statt Referenzfotos: Sneaks4Seek hat
-   * keine Rechte an echten Produktbildern (Nike oder Adidas). Jedes Merkmal
+   * keine Rechte an echten Produktbildern der jeweiligen Marken. Jedes Merkmal
    * ist etwas, das man am eigenen Foto gegenprüfen kann, ohne ein zweites
    * Bild danebenzuhalten.
    */
@@ -417,6 +480,19 @@
     },
     {
       brand: "nike",
+      name: "Air Jordan 5",
+      sub: "",
+      markers: [
+        "Markantes 'Shark-Tooth'-Mittelsohlenprofil — gezackte, haifischzahnartige Kontur an der Außensohle, seitlich sichtbar.",
+        "Zugschlaufe ('Dog-Tag') oben an der Zunge — ein kleiner Ring/Lasche zum Festziehen.",
+        "Bei vielen Colorways reflektierendes, grob texturiertes Mesh-Seitenpanel.",
+        "High-Top-Schaft mit gepolstertem Knöchelbereich.",
+        "Jumpman-Logo sitzt seitlich am Mittelfuß, nicht am Knöchel."
+      ],
+      confusable: "Von AJ4 über die fehlenden Plastik-Ösen abgrenzen — die hat die 5er nicht. Von AJ1 über die Zugschlaufe an der Zunge und das Mesh-Panel, die AJ1 fehlen."
+    },
+    {
+      brand: "nike",
       name: "Blazer Mid / Low",
       sub: "",
       markers: [
@@ -483,6 +559,18 @@
         "Swoosh sitzt meist seitlich auf einem eigenen Overlay-Streifen."
       ],
       confusable: "Der sichtbare Fersen-Käfig aus Plastik ist das eindeutigste Merkmal, bei keinem anderen Modell in dieser Form."
+    },
+    {
+      brand: "nike",
+      name: "Shox",
+      sub: "R4 / NZ / TL u. a.",
+      markers: [
+        "Sichtbare, säulenartige Dämpfungselemente in der Ferse (meist 4 einzelne Columns) — ragen deutlich aus der Sohle heraus, kein geschlossenes Luftkissen.",
+        "Kein Air-Fenster — die Dämpfung sitzt komplett offen sichtbar als Einzel-Säulen.",
+        "Chunky, meist stark gerippte Seitenpanels mit eingeprägtem oder aufgesetztem Swoosh.",
+        "Running-/Trainingsschuh-Silhouette, massiver wirkende Ferse als bei anderen Nike-Laufschuhen."
+      ],
+      confusable: "Von Air-Max-Modellen klar über die fehlende durchgehende Air-Einheit abgrenzen — Shox hat einzelne sichtbare Säulen statt eines Luftkissens, das gibt es bei keinem Air-Max-Modell."
     },
     {
       brand: "adidas",
@@ -590,8 +678,151 @@
         "3 Stripes seitlich, oft in Kontrastfarbe."
       ],
       confusable: "Von Gazelle über die schlankere, spitzere Zehenform abgrenzen."
+    },
+    {
+      brand: "adidas",
+      name: "Yeezy Boost 350",
+      sub: "",
+      markers: [
+        "Durchgehendes Primeknit-Strickobermaterial, sockenartig anliegend — keine klassischen Lederpanels.",
+        "Halbtransparenter, seitlich eingewebter Streifen durchs Strickmaterial, oft in Kontrastfarbe.",
+        "Massive, aber leichte Boost-Mittelsohle, meist in Erd-/Grautönen.",
+        "Kein sichtbares 3-Streifen- oder Käfig-Branding — nur ein kleines Logo-Patch an der Ferse.",
+        "Sehr flacher Zehenbereich, minimalistische Schnürung (teils kurze oder rein dekorative Senkel)."
+      ],
+      confusable: "Von NMD/Ultraboost über das fehlende 3-Streifen-/Käfig-Branding abgrenzen — Yeezy zeigt keine 3 Stripes."
+    },
+    {
+      brand: "new-balance",
+      name: "990 (v3/v4/v5/v6)",
+      sub: "'Dad Shoe'-Klassiker, Made in USA",
+      markers: [
+        "Großes, deutlich abgesetztes 'N'-Logo seitlich, meist in Grau/Kontrastfarbe.",
+        "Überwiegend graues Wildleder/Mesh-Obermaterial, mehrschichtige Panels.",
+        "Dicke, aber klassisch geformte Sohle mit ENCAP-Technologie (sichtbare Polyurethan-Kappe in der Ferse).",
+        "'Made in USA'/'Made in UK'-Label an der Zunge je nach Modell."
+      ],
+      confusable: "Versionsnummer (v3–v6) nur am Zungen-Label oder Innensohlen-Druck zu unterscheiden — optisch sehr ähnlich."
+    },
+    {
+      brand: "new-balance",
+      name: "530",
+      sub: "",
+      markers: [
+        "Chunkige, mehrschichtige Running-Silhouette mit sichtbarer, oft zweifarbiger Mittelsohle.",
+        "Kleineres 'N'-Logo als beim 990er, meist reflektierend oder in Neonfarbe.",
+        "Mesh-Obermaterial mit Synthetik-Overlays in auffälligen Blockfarben.",
+        "Ausgeprägtes, breites Fersenstabilisierungs-Element (deutlich sichtbarer Clip/Panel hinten)."
+      ],
+      confusable: "Von der 9060er-Serie über die flachere, weniger aufgeblähte Sohle abgrenzen."
+    },
+    {
+      brand: "new-balance",
+      name: "9060",
+      sub: "",
+      markers: [
+        "Stark überhöhte, 'aufgeblasen' wirkende Mittelsohle (chunkiger als 530/990).",
+        "Transparente oder halbtransparente Fenster-Elemente in der Sohle sichtbar.",
+        "Sehr grafische, mehrfarbige Mesh-Panels am Obermaterial.",
+        "'N'-Logo oft in auffälliger Kontrastfarbe, größer als beim 530er."
+      ],
+      confusable: "Von 530 über die deutlich voluminösere, mehrschichtige Sohlenform abgrenzen."
+    },
+    {
+      brand: "new-balance",
+      name: "574",
+      sub: "",
+      markers: [
+        "Klassische Running-Silhouette, flacher als 990/9060.",
+        "Wildleder-Zehenkappe kombiniert mit Mesh-Mittelteil.",
+        "ENCAP-Sohle wie beim 990er, aber schlankere Gesamtform.",
+        "'N'-Logo mittelgroß, meist einfarbig."
+      ],
+      confusable: "Von 990 über die insgesamt schlankere, niedrigere Silhouette abgrenzen."
+    },
+    {
+      brand: "vans",
+      name: "Old Skool",
+      sub: "",
+      markers: [
+        "Markanter seitlicher 'Jazz Stripe' (der geschwungene seitliche Streifen) — eindeutigstes Merkmal.",
+        "Canvas- und Wildleder-Panel-Kombination.",
+        "Flache, gewaffelte Gummisohle ('Waffle Outsole').",
+        "Verstärkte Doppelnähte an den Zehen- und Fersenpanels."
+      ],
+      confusable: "Ohne Jazz Stripe eher mit der Authentic/Era zu verwechseln — die haben den Streifen nicht."
+    },
+    {
+      brand: "vans",
+      name: "Authentic / Era",
+      sub: "",
+      markers: [
+        "Durchgehendes Canvas-Obermaterial, kein seitlicher Streifen.",
+        "Sehr flaches, einfaches Low-Top-Profil.",
+        "Gewaffelte Gummisohle wie bei allen klassischen Vans-Modellen.",
+        "Era hat zusätzlich gepolsterte Knöchelpartie — Authentic nicht."
+      ],
+      confusable: "Era vs. Authentic nur über die gepolsterte Knöchelpartie zu unterscheiden, sonst identisch."
+    },
+    {
+      brand: "converse",
+      name: "Chuck Taylor All Star",
+      sub: "Low / High",
+      markers: [
+        "Rundes Knöchel-Patch mit Stern-Logo ('All Star') — eindeutigstes Merkmal.",
+        "Canvas-Obermaterial mit Gummi-Zehenkappe und Gummi-Sohlenrand.",
+        "Flache, einfache Vulkanisat-Sohle mit Diamantmuster.",
+        "Metallösen für die Schnürsenkel, kontrastfarbene Fadenlinie am Sohlenrand."
+      ],
+      confusable: "Kaum verwechselbar — das Knöchel-Patch mit Stern gibt es bei keinem anderen Modell."
+    },
+    {
+      brand: "puma",
+      name: "Suede Classic",
+      sub: "",
+      markers: [
+        "Durchgehendes Wildleder-Obermaterial.",
+        "Markante 'Formstrip' seitlich (geschwungener Puma-Streifen, meist in Kontrastfarbe).",
+        "Flache Gummisohle, meist cremefarben.",
+        "Gepolsterte, runde Zunge mit Puma-Logo."
+      ],
+      confusable: "Formstrip-Form unterscheidet sie von anderen Wildleder-Sneakern wie der Adidas Gazelle."
+    },
+    {
+      brand: "puma",
+      name: "RS-X",
+      sub: "",
+      markers: [
+        "Sehr chunkige, mehrfarbige 'Dad Shoe'-Silhouette mit sichtbar segmentierter Sohle.",
+        "Mehrere übereinanderliegende Mesh- und Synthetik-Panels in Blockfarben.",
+        "Formstrip seitlich, oft größer/auffälliger als bei der Suede.",
+        "Deutlich höhere, mehrschichtige Mittelsohle als bei klassischen Puma-Modellen."
+      ],
+      confusable: "Von der Suede Classic klar über die massive, mehrschichtige Sohle abzugrenzen."
+    },
+    {
+      brand: "reebok",
+      name: "Classic Leather",
+      sub: "",
+      markers: [
+        "Schlichtes, glattes Leder-Obermaterial.",
+        "Gebogenes 'Vector'-Logo seitlich.",
+        "Flache, meist cremefarbene Gummisohle im Retro-Running-Stil.",
+        "Gepolsterte, aber flache Zunge mit Reebok-Schriftzug."
+      ],
+      confusable: "Von Stan Smith/Gazelle über das Vector-Logo statt 3 Stripes abgrenzen."
     }
   ];
+
+  const BRAND_LABELS = {
+    nike: "Nike",
+    adidas: "Adidas",
+    "new-balance": "New Balance",
+    vans: "Vans",
+    converse: "Converse",
+    puma: "Puma",
+    reebok: "Reebok",
+  };
 
   const modelList = document.getElementById("modelList");
   const searchInput = document.getElementById("searchInput");
@@ -599,6 +830,21 @@
   const noMatch = document.getElementById("noMatch");
   const brandTabs = document.getElementById("brandTabs");
   let activeBrand = "all";
+
+  function escapeAttr(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
+  }
+
+  // Keine kostenlose Preis-API verfügbar (wie beim fehlenden Lens-API-Umweg
+  // oben) — stattdessen öffnen diese Links direkt die Verkaufs-/
+  // Verkauft-Suche der jeweiligen Plattform mit Marke + Modell.
+  function priceUrl(site, query) {
+    const q = encodeURIComponent(query);
+    if (site === "stockx") return "https://stockx.com/search?s=" + q;
+    if (site === "goat") return "https://www.goat.com/search?query=" + q;
+    if (site === "ebay") return "https://www.ebay.de/sch/i.html?_nkw=" + q + "&LH_Sold=1&LH_Complete=1";
+    return "https://www.google.com/search?q=" + q;
+  }
 
   function render(filter) {
     const q = (filter || "").trim().toLowerCase();
@@ -616,10 +862,11 @@
     matches.forEach((m) => {
       const el = document.createElement("div");
       el.className = "model";
+      const query = (BRAND_LABELS[m.brand] || m.brand) + " " + m.name;
       el.innerHTML =
         '<div class="model-head">' +
           '<h3>' + m.name + (m.sub ? '<small>' + m.sub + '</small>' : '') + '</h3>' +
-          '<span class="brand-pill">' + m.brand + '</span>' +
+          '<span class="brand-pill">' + (BRAND_LABELS[m.brand] || m.brand) + '</span>' +
           '<span class="caret">▶</span>' +
         '</div>' +
         '<div class="model-body">' +
@@ -627,9 +874,18 @@
             m.markers.map((x) => '<li><span class="ico">✓</span><span>' + x + '</span></li>').join("") +
           '</ul>' +
           (m.confusable ? '<div class="confusable"><b>Verwechslungsgefahr:</b> ' + m.confusable + '</div>' : '') +
+          '<div class="price-row" style="margin-top:10px;">' +
+            '<button type="button" class="price-link" data-site="stockx" data-q="' + escapeAttr(query) + '">StockX</button>' +
+            '<button type="button" class="price-link" data-site="goat" data-q="' + escapeAttr(query) + '">GOAT</button>' +
+            '<button type="button" class="price-link" data-site="ebay" data-q="' + escapeAttr(query) + '">eBay (verkauft)</button>' +
+          '</div>' +
         '</div>';
       el.addEventListener("click", (e) => {
         if (e.target.tagName === "SPAN" && e.target.classList.contains("brand-pill")) return;
+        if (e.target.classList.contains("price-link")) {
+          window.open(priceUrl(e.target.dataset.site, e.target.dataset.q), "_blank");
+          return;
+        }
         el.classList.toggle("open");
       });
       modelList.appendChild(el);
@@ -692,9 +948,126 @@
   fileInput.addEventListener("change", () => {
     [...fileInput.files].forEach((file) => {
       shots.push({ file, url: URL.createObjectURL(file) });
+      addGalleryIcon(file);
     });
     fileInput.value = "";
     renderShots();
+  });
+
+  /* ---- Foto-Galerie: Icons aus jedem eingeladenen Foto, dauerhaft nur
+     lokal (IndexedDB) — wächst mit jedem geprüften Paar, nie Upload. ---- */
+  const DB_NAME = "s4sCheckerGallery";
+  const STORE_NAME = "icons";
+  const ICON_SIZE = 160;
+  let galleryDb = null;
+  const galleryGrid = document.getElementById("galleryGrid");
+  const galleryCount = document.getElementById("galleryCount");
+
+  function openGalleryDb() {
+    return new Promise((resolve, reject) => {
+      if (!window.indexedDB) { reject(new Error("IndexedDB nicht verfügbar")); return; }
+      const req = indexedDB.open(DB_NAME, 1);
+      req.onupgradeneeded = () => {
+        req.result.createObjectStore(STORE_NAME, { keyPath: "id", autoIncrement: true });
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function dbAdd(dataUrl) {
+    return new Promise((resolve, reject) => {
+      if (!galleryDb) { resolve(); return; }
+      const tx = galleryDb.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).add({ dataUrl, addedAt: Date.now() });
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  function dbGetAll() {
+    return new Promise((resolve, reject) => {
+      if (!galleryDb) { resolve([]); return; }
+      const tx = galleryDb.transaction(STORE_NAME, "readonly");
+      const req = tx.objectStore(STORE_NAME).getAll();
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  function dbClear() {
+    return new Promise((resolve, reject) => {
+      if (!galleryDb) { resolve(); return; }
+      const tx = galleryDb.transaction(STORE_NAME, "readwrite");
+      tx.objectStore(STORE_NAME).clear();
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  function makeThumbnail(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = ICON_SIZE;
+        canvas.height = ICON_SIZE;
+        const ctx = canvas.getContext("2d");
+        const scale = Math.max(ICON_SIZE / img.width, ICON_SIZE / img.height);
+        const w = img.width * scale, h = img.height * scale;
+        ctx.drawImage(img, (ICON_SIZE - w) / 2, (ICON_SIZE - h) / 2, w, h);
+        URL.revokeObjectURL(url);
+        resolve(canvas.toDataURL("image/jpeg", 0.75));
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Foto konnte nicht gelesen werden")); };
+      img.src = url;
+    });
+  }
+
+  function renderGallery(icons) {
+    galleryCount.textContent = icons.length + (icons.length === 1 ? " Icon" : " Icons");
+    if (!icons.length) {
+      galleryGrid.innerHTML = '<p class="gallery-empty">Noch keine Fotos eingeladen — sobald du oben welche hinzufügst, erscheinen hier Icons.</p>';
+      return;
+    }
+    galleryGrid.innerHTML = "";
+    icons.slice().reverse().forEach((icon) => {
+      const div = document.createElement("div");
+      div.className = "gallery-icon";
+      div.innerHTML = '<img src="' + icon.dataUrl + '" alt="Schuh-Icon">';
+      div.addEventListener("click", () => {
+        lightboxImg.src = icon.dataUrl;
+        lightbox.classList.add("show");
+      });
+      galleryGrid.appendChild(div);
+    });
+  }
+
+  async function refreshGallery() {
+    try {
+      renderGallery(await dbGetAll());
+    } catch (e) {
+      galleryGrid.innerHTML = '<p class="gallery-empty">Galerie momentan nicht verfügbar.</p>';
+    }
+  }
+
+  async function addGalleryIcon(file) {
+    if (!galleryDb) return;
+    try {
+      await dbAdd(await makeThumbnail(file));
+      refreshGallery();
+    } catch (e) { /* Foto konnte nicht als Icon gespeichert werden — Hauptfunktion bleibt unberührt */ }
+  }
+
+  document.getElementById("galleryClear").addEventListener("click", async () => {
+    if (!confirm("Alle gespeicherten Icons aus der Foto-Galerie löschen?")) return;
+    await dbClear();
+    refreshGallery();
+  });
+
+  openGalleryDb().then((db) => { galleryDb = db; refreshGallery(); }).catch(() => {
+    galleryGrid.innerHTML = '<p class="gallery-empty">Galerie momentan nicht verfügbar (IndexedDB blockiert).</p>';
   });
 
   shotGrid.addEventListener("click", async (e) => {
@@ -737,6 +1110,45 @@
     if (!code) return;
     window.open("https://www.google.com/search?q=" + encodeURIComponent(code + " sneaker"), "_blank");
   });
+
+  /* ---- Preis-Lookup (Style-Code-Feld) ---- */
+  document.getElementById("priceRow").addEventListener("click", (e) => {
+    if (!e.target.classList.contains("price-btn")) return;
+    const code = skuInput.value.trim();
+    if (!code) { skuInput.focus(); return; }
+    window.open(priceUrl(e.target.dataset.site, code), "_blank");
+  });
+
+  /* ---- Zustand-Checkliste ---- */
+  const CONDITIONS = [
+    {
+      value: "neu",
+      title: "Neu / OVP",
+      desc: "Keine Lauf-/Gebrauchsspuren, Originalkarton vorhanden, Sohle unberührt (kein Grau/Braun an den Kanten), Etiketten noch dran.",
+    },
+    {
+      value: "sehr-gut",
+      title: "Sehr gut",
+      desc: "Minimale Gebrauchsspuren, Sohle nur leicht angelaufen, keine sichtbaren Risse/Flecken, Obermaterial faltenfrei bis leicht angeknittert.",
+    },
+    {
+      value: "gebraucht",
+      title: "Gebraucht",
+      desc: "Deutliche Laufspuren auf der Sohle, sichtbare Knicke im Zehenbereich, ggf. leichte Verfärbungen/Flecken, Obermaterial aber intakt.",
+    },
+    {
+      value: "stark-getragen",
+      title: "Stark getragen",
+      desc: "Starke Sohlenabnutzung/-ablösung, tiefe Risse oder Löcher im Material, deutliche Verfärbungen, ggf. fehlende Einlegesohle.",
+    },
+  ];
+  const conditionGrid = document.getElementById("conditionGrid");
+  conditionGrid.innerHTML = CONDITIONS.map((c) =>
+    '<div class="condition-item">' +
+      '<div class="ctitle">' + c.title + '</div>' +
+      '<div class="cdesc">' + c.desc + '</div>' +
+    '</div>'
+  ).join("");
 })();
 </script>
 <script src="../assets/js/werkstatt-gate.js"></script>

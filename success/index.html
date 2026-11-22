@@ -33,11 +33,62 @@
       </div>
     </div>
 
+    <div class="section" id="contact-section" style="display:none;">
+      <p class="section-tag">Letzter Schritt · Wie erreichen wir dich?</p>
+      <p style="font-size:12.5px; color:#6b6459; margin:0 0 12px; max-width:52ch;">
+        Brauchen wir nur für Rückmeldung zum Angebot und den Versand deiner Gratis-Socken.
+      </p>
+      <form id="contact-form">
+        <div class="field" id="contact-code-field" style="display:none; margin-bottom:14px;">
+          <label for="contact-code">Zugangscode</label>
+          <input type="password" id="contact-code" placeholder="Code" inputmode="numeric" autocomplete="off">
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="contact-name">Name</label>
+            <input type="text" id="contact-name" placeholder="Vor- und Nachname" required>
+          </div>
+          <div class="field">
+            <label for="contact-email">E-Mail</label>
+            <input type="email" id="contact-email" placeholder="du@beispiel.de" required>
+          </div>
+          <div class="field">
+            <label for="contact-phone">Telefon (optional)</label>
+            <input type="tel" id="contact-phone" placeholder="Für Abholung/Rückfragen">
+          </div>
+          <div class="field">
+            <label for="contact-plz">PLZ / Ort (optional)</label>
+            <input type="text" id="contact-plz" placeholder="für Versand der Socken">
+          </div>
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label for="contact-address">Adresse (optional, Straße, Hausnr.)</label>
+          <input type="text" id="contact-address" placeholder="Für den Versand deiner Gratis-Socken">
+        </div>
+        <div class="field" style="margin-top:14px;">
+          <label for="contact-pickup">Bevorzugte Abwicklung</label>
+          <select id="contact-pickup">
+            <option value="abholung">Abholung vor Ort</option>
+            <option value="versand">Ich verschicke selbst</option>
+            <option value="egal">Ist mir egal</option>
+          </select>
+        </div>
+        <div class="submit-wrap">
+          <button type="submit" class="btn" id="contact-submit">Kontaktdaten senden</button>
+          <p class="status-msg" id="contact-status"></p>
+          <p class="error-msg" id="contact-error"></p>
+        </div>
+      </form>
+      <p class="status-msg" id="contact-done" style="display:none;">✓ Kontaktdaten gespeichert — danke!</p>
+    </div>
+
     <p class="foot-tag">Sneaks4Seek</p>
   </div>
 </div>
 
+<script src="../assets/js/api.js"></script>
 <script src="../assets/js/qrcode.js"></script>
+<script src="../assets/js/success-contact.js"></script>
 
 </body>
 </html>

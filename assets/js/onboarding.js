@@ -157,7 +157,7 @@
     setProgress(3, "Sende Anfrage-Daten…");
 
     try {
-      const initRes = await apiInit(accessCode, { name: formData.name, email: formData.email });
+      const initRes = await apiInit(accessCode, {});
       const submissionId = initRes.submissionId;
 
       const allFiles = [
@@ -182,6 +182,12 @@
       const finalRes = await apiFinalize(accessCode, submissionId, formData);
 
       setProgress(100, "Fertig!");
+
+      // Code für die Danke-Seite merken, damit sie dort das Kontakt-Formular
+      // zeigen und serverseitig prüfen kann — ohne ihn sichtbar in die URL zu
+      // packen (sessionStorage gilt für die ganze Domain, nicht nur diesen Pfad).
+      try { sessionStorage.setItem("s4s_code", accessCode); } catch (e) {}
+
       const params = new URLSearchParams({
         id: submissionId,
         ref: finalRes.ref || submissionId,

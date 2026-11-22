@@ -31,55 +31,33 @@
         <span id="ref-tag">Ref: S4S-000</span>
       </div>
       <h1>Schuhe verkaufen.<br>Socken kassieren.</h1>
-      <p class="sub">Trag deine Sneaker-Daten ein, lad Fotos &amp; Videos hoch — wir melden uns mit Angebot &amp; Abholung. Als Dankeschön gibt's ein Paar Socken gratis dazu.</p>
+      <p class="sub">Lad Fotos &amp; Videos hoch, ein paar grobe Angaben reichen — wir melden uns mit Angebot &amp; Abholung. Deine Kontaktdaten brauchen wir erst danach, auf der nächsten Seite. Als Dankeschön gibt's ein Paar Socken gratis dazu.</p>
       <div class="stamp">Gratis<br>Socken<br>🧦</div>
     </div>
 
     <form id="onboarding-form">
 
       <div class="section">
-        <p class="section-tag">01 · Kontaktdaten</p>
+        <p class="section-tag">01 · Schuh-Details</p>
+        <p style="font-size:12.5px; color:#6b6459; margin:0 0 12px; max-width:52ch;">
+          Marke &amp; Modell nicht sicher? Einfach frei lassen oder grob beschreiben —
+          wir bestimmen das anhand deiner Fotos.
+        </p>
         <div class="grid">
           <div class="field">
-            <label for="name">Name</label>
-            <input type="text" id="name" name="name" placeholder="Vor- und Nachname" required>
+            <label for="brand">Marke (falls bekannt)</label>
+            <input type="text" id="brand" name="brand" placeholder="z. B. Nike, Adidas, New Balance">
           </div>
           <div class="field">
-            <label for="email">E-Mail</label>
-            <input type="email" id="email" name="email" placeholder="du@beispiel.de" required>
-          </div>
-          <div class="field">
-            <label for="phone">Telefon</label>
-            <input type="tel" id="phone" name="phone" placeholder="Für Abholung/Rückfragen">
-          </div>
-          <div class="field">
-            <label for="plz">PLZ / Ort</label>
-            <input type="text" id="plz" name="plz" placeholder="für Versand der Socken">
-          </div>
-        </div>
-        <div class="field" style="margin-top:14px;">
-          <label for="address">Adresse (Straße, Hausnr.)</label>
-          <input type="text" id="address" name="address" placeholder="Für den Versand deiner Gratis-Socken">
-        </div>
-      </div>
-
-      <div class="section">
-        <p class="section-tag">02 · Schuh-Details</p>
-        <div class="grid">
-          <div class="field">
-            <label for="brand">Marke</label>
-            <input type="text" id="brand" name="brand" placeholder="z. B. Nike, Adidas, New Balance" required>
-          </div>
-          <div class="field">
-            <label for="model">Modell</label>
-            <input type="text" id="model" name="model" placeholder="z. B. Air Max 90" required>
+            <label for="model">Modell (falls bekannt)</label>
+            <input type="text" id="model" name="model" placeholder="z. B. Air Max 90">
           </div>
           <div class="field">
             <label for="size">Größe (EU)</label>
             <input type="number" id="size" name="size" placeholder="z. B. 42" min="30" max="52">
           </div>
           <div class="field">
-            <label for="price">Wunschpreis (€)</label>
+            <label for="price">Wunschpreis (€, optional)</label>
             <input type="number" id="price" name="price" placeholder="z. B. 60" min="0">
           </div>
         </div>
@@ -95,13 +73,13 @@
         </div>
 
         <div class="field" style="margin-top:14px;">
-          <label for="notes">Zustand / Besonderheiten</label>
+          <label for="notes">Besonderheiten (optional)</label>
           <textarea id="notes" name="notes" placeholder="z. B. kleine Kratzer, Original-Karton vorhanden, Kaufbeleg..."></textarea>
         </div>
       </div>
 
       <div class="section">
-        <p class="section-tag">03 · Fotos &amp; Videos</p>
+        <p class="section-tag">02 · Fotos &amp; Videos</p>
 
         <label>Bilder (max. 10)</label>
         <div class="upload-box" id="image-box">
@@ -124,22 +102,7 @@
       </div>
 
       <div class="section">
-        <p class="section-tag">04 · Übergabe &amp; Prämie</p>
-        <div class="field">
-          <label for="pickup">Bevorzugte Abwicklung</label>
-          <select id="pickup" name="pickup">
-            <option value="abholung">Abholung vor Ort</option>
-            <option value="versand">Ich verschicke selbst</option>
-            <option value="egal">Ist mir egal</option>
-          </select>
-        </div>
-        <div class="gift-line">
-          🧦 Sobald dein Schuh abgeholt/verschickt ist, geht dein Gratis-Paar Socken an die oben angegebene Adresse raus.
-        </div>
-      </div>
-
-      <div class="section">
-        <p class="section-tag">05 · Bestätigung</p>
+        <p class="section-tag">03 · Bestätigung</p>
         <div class="consent">
           <input type="checkbox" id="age18" name="age18" required>
           <label for="age18" style="text-transform:none; font-family:'Inter',sans-serif; letter-spacing:normal; font-size:13px; margin:0;">
