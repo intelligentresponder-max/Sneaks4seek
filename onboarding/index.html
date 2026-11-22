@@ -9,6 +9,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../assets/css/theme.css">
 <link rel="stylesheet" href="../assets/css/components.css">
+<style>
+  .photo-examples{ margin-bottom:16px; }
+  .photo-examples-tag{
+    font-family: var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase;
+    color: var(--muted); margin:0 0 8px;
+  }
+  .photo-examples-grid{
+    display:grid; grid-template-columns: repeat(4, 1fr); gap:8px;
+  }
+  .photo-examples-grid figure{ margin:0; }
+  .photo-examples-grid img{
+    width:100%; aspect-ratio:1; object-fit:cover; border-radius:8px;
+    border:1px solid var(--line); display:block;
+  }
+  .photo-examples-grid figcaption{
+    font-size:10.5px; text-align:center; color: var(--muted); margin-top:4px;
+  }
+  .photo-examples-hint{ font-size:11.5px; color: var(--muted); margin:8px 0 0; }
+  @media (max-width:520px){
+    .photo-examples-grid{ grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
 </head>
 <body>
 
@@ -80,6 +102,29 @@
 
       <div class="section">
         <p class="section-tag">02 · Fotos &amp; Videos</p>
+
+        <div class="photo-examples">
+          <p class="photo-examples-tag">So fotografierst du am besten</p>
+          <div class="photo-examples-grid">
+            <figure>
+              <img src="../assets/images/examples/beispiel-sohle.jpg" alt="Beispielfoto: Sohle aus der Nähe" loading="lazy">
+              <figcaption>Sohle</figcaption>
+            </figure>
+            <figure>
+              <img src="../assets/images/examples/beispiel-zehenbox.jpg" alt="Beispielfoto: Zehenbox und Seite" loading="lazy">
+              <figcaption>Zehenbox / Seite</figcaption>
+            </figure>
+            <figure>
+              <img src="../assets/images/examples/beispiel-seite.jpg" alt="Beispielfoto: Seitenansicht" loading="lazy">
+              <figcaption>Seitenansicht</figcaption>
+            </figure>
+            <figure>
+              <img src="../assets/images/examples/beispiel-ferse.jpg" alt="Beispielfoto: Ferse / beide Schuhe" loading="lazy">
+              <figcaption>Ferse</figcaption>
+            </figure>
+          </div>
+          <p class="photo-examples-hint">Nah dran, gutes Licht, nur der Schuh im Bild — so wie hier.</p>
+        </div>
 
         <label>Bilder (max. 10)</label>
         <div class="upload-box" id="image-box">
