@@ -36,6 +36,18 @@
     if (e.key === "Enter") { e.preventDefault(); document.getElementById("gate-submit").click(); }
   });
 
+  // ---------- Auto-Login per Link/QR-Code ----------
+  // Für Verkäufer, die über einen QR-Code mit eingebettetem Code kommen
+  // (z. B. onboarding/?code=XXXX) — überspringt die manuelle Eingabe.
+  // Der Code wird trotzdem erst beim Absenden server-seitig geprüft (wie
+  // beim normalen Weg), ein falscher Code im Link scheitert also genauso
+  // wie eine falsche manuelle Eingabe, nie stiller Zugriff ohne Prüfung.
+  const urlCode = new URLSearchParams(window.location.search).get("code");
+  if (urlCode) {
+    accessCode = urlCode.trim();
+    gate.classList.add("hidden");
+  }
+
   // ---------- Datei-Helfer ----------
   function fileToBase64(file) {
     return new Promise((resolve, reject) => {
