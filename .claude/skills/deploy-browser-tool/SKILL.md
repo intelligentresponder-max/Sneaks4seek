@@ -102,6 +102,17 @@ Never `git push --force`. If push fails (auth prompt, no remote configured,
 branch conflict), report the exact failure to the user in one sentence and
 stop; don't guess at credentials or force through it.
 
+**If the repo's own docs say Claude doesn't push directly** (a "Patch-
+Übergabe" workflow — check for a line like "Claude hat keinen Push-Zugriff"
+in a handover/CLAUDE.md file before assuming direct push is wanted), or the
+person is working from their own local clone in parallel: commit locally in
+your own session instead of the `git push` above, then hand the file(s) to
+the person to add/commit/push themselves. Read
+`references/patch-handover.md` before doing this — it covers both delivery
+paths (file download vs. a terminal paste) and a base64 method for when
+either one fails (corrupted heredoc pastes, `.js` downloads that silently
+refuse).
+
 ## Step 4 — Verify it's actually live
 
 GitHub Pages takes roughly one to two minutes to pick up a push.
