@@ -74,6 +74,7 @@
         const data = await res.json();
         if (data && data.ok) {
           sessionStorage.setItem(SESSION_KEY, "1");
+          sessionStorage.setItem("s4s_werkstatt_code", code); // für Werkstatt-API (identify/saveModel)
           gate.remove();
           document.documentElement.classList.remove("werkstatt-locked");
         } else {

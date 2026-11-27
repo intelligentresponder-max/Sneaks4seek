@@ -225,6 +225,32 @@
   }
   .confusable b{ color: var(--kraft); }
   .no-match{ text-align:center; color:#6c6e73; font-size:13px; padding: 30px 0; }
+
+  /* ---- Automatische Modellerkennung ---- */
+  #identifyPanel{ margin-top: 12px; }
+  #identifyPanel .hint{ margin-top: 10px; }
+  #identifyPanel select, #identifyPanel input[type=text]{
+    width:100%; min-width:0; background: var(--bg); border:1px solid var(--line); color: var(--sock);
+    padding: 9px 11px; border-radius: 7px; font-size: 14px; outline:none; margin-bottom:8px;
+  }
+  #identifyBtn{ width:100%; padding:10px 12px; font-size:13px; }
+  #identifyBtn:disabled{ opacity:.5; cursor:wait; }
+  .id-result{ margin-top:12px; border-top:1px dashed var(--line); padding-top:12px; }
+  .id-result label{ display:block; font-size:10.5px; color:#8b8d92; text-transform:uppercase; letter-spacing:.06em; margin-bottom:3px; }
+  .id-conf{ font-size:12px; margin-bottom:10px; }
+  .id-conf b{ color: var(--gold); }
+  .id-conf.low b{ color:#e06b56; }
+  .id-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+  .id-actions .primary{ background: var(--kraft); color:#16140f; border-color: var(--kraft); font-weight:600; }
+  .id-msg{ font-size:12px; margin-top:8px; color:#9a9ca1; }
+  .id-msg.err{ color:#e06b56; }
+  .gallery-grid{ grid-template-columns: repeat(auto-fill, minmax(76px, 1fr)); }
+  .gallery-icon{ position:relative; }
+  .gallery-label{
+    position:absolute; left:0; right:0; bottom:0; padding:2px 4px;
+    background: rgba(0,0,0,.72); color: var(--kraft); font-size:9.5px; line-height:1.25;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
 </style>
 </head>
 <body>
@@ -233,7 +259,7 @@
     <div>
       <h1>Sneaks<span>4</span>Seek — Sneaker Modell-Checker</h1>
       <p class="sub">Foto neben Checkliste halten, Merkmal für Merkmal durchgehen — kein automatischer
-        Treffer, du entscheidest. Kein Foto verlässt dieses Gerät.</p>
+        Treffer, du entscheidest. Fotos bleiben lokal – außer du tippst auf „Modell automatisch erkennen“.</p>
     </div>
   </header>
 
@@ -260,6 +286,29 @@
           manuellen Teilen aus der Galerie. Es gibt keine öffentliche Lens-API, deshalb läuft es
           immer über diesen Umweg, nie direkt in der Seite.
         </p>
+      </div>
+
+      <div class="panel" id="identifyPanel">
+        <p class="label-tag">Modell automatisch erkennen</p>
+        <select id="identifyShot"><option value="">Erst oben ein Foto hinzufügen</option></select>
+        <button type="button" class="price-btn" id="identifyBtn" disabled>🤖 Modell automatisch erkennen</button>
+        <div class="id-result" id="identifyResult" style="display:none;">
+          <div class="id-conf" id="idConf"></div>
+          <label for="idBrand">Marke</label><input type="text" id="idBrand">
+          <label for="idModel">Modell</label><input type="text" id="idModel">
+          <label for="idColorway">Colorway</label><input type="text" id="idColorway">
+          <label for="idCondition">Zustand</label><select id="idCondition"></select>
+          <div class="id-actions">
+            <button type="button" class="price-btn primary" id="idSave">✓ Bestätigen &amp; speichern</button>
+            <button type="button" class="price-btn" id="idDiscard">Verwerfen</button>
+          </div>
+        </div>
+        <p class="id-msg" id="idMsg"></p>
+        <footer class="hint">
+          Schickt nur das gewählte Foto (verkleinert auf max. 1024 px) an die Werkstatt-API.
+          Das Ergebnis ist ein Vorschlag – mit der Checkliste gegenprüfen, Felder bei Bedarf
+          korrigieren und erst dann speichern (Drive-Ordner „Modelle“ + Sheet-Tab „Modelle“).
+        </footer>
       </div>
 
       <div class="panel sku-panel">
@@ -923,6 +972,7 @@
   }
 
   function renderShots() {
+    updateIdentifyShots();
     shotGrid.innerHTML = "";
     if (!shots.length) {
       TAGS.forEach((t) => {
@@ -947,8 +997,9 @@
 
   fileInput.addEventListener("change", () => {
     [...fileInput.files].forEach((file) => {
-      shots.push({ file, url: URL.createObjectURL(file) });
-      addGalleryIcon(file);
+      const shot = { file, url: URL.createObjectURL(file), iconId: null };
+      shots.push(shot);
+      addGalleryIcon(file).then((id) => { shot.iconId = id == null ? null : id; });
     });
     fileInput.value = "";
     renderShots();
@@ -979,8 +1030,10 @@
     return new Promise((resolve, reject) => {
       if (!galleryDb) { resolve(); return; }
       const tx = galleryDb.transaction(STORE_NAME, "readwrite");
-      tx.objectStore(STORE_NAME).add({ dataUrl, addedAt: Date.now() });
-      tx.oncomplete = () => resolve();
+      const addReq = tx.objectStore(STORE_NAME).add({ dataUrl, addedAt: Date.now(), label: "" });
+      let newId = null;
+      addReq.onsuccess = () => { newId = addReq.result; };
+      tx.oncomplete = () => resolve(newId);
       tx.onerror = () => reject(tx.error);
     });
   }
@@ -1035,7 +1088,8 @@
     icons.slice().reverse().forEach((icon) => {
       const div = document.createElement("div");
       div.className = "gallery-icon";
-      div.innerHTML = '<img src="' + icon.dataUrl + '" alt="Schuh-Icon">';
+      div.innerHTML = '<img src="' + icon.dataUrl + '" alt="' + (icon.label ? s4sEsc(icon.label) : "Schuh-Icon") + '">' +
+        (icon.label ? '<span class="gallery-label">' + s4sEsc(icon.label) + '</span>' : '');
       div.addEventListener("click", () => {
         lightboxImg.src = icon.dataUrl;
         lightbox.classList.add("show");
@@ -1055,8 +1109,9 @@
   async function addGalleryIcon(file) {
     if (!galleryDb) return;
     try {
-      await dbAdd(await makeThumbnail(file));
+      const id = await dbAdd(await makeThumbnail(file));
       refreshGallery();
+      return id;
     } catch (e) { /* Foto konnte nicht als Icon gespeichert werden — Hauptfunktion bleibt unberührt */ }
   }
 
@@ -1099,6 +1154,176 @@
   });
 
   lightbox.addEventListener("click", () => lightbox.classList.remove("show"));
+
+  /* ---- Automatische Modellerkennung (Werkstatt-API, nur auf Knopfdruck) ---- */
+  const S4S_API_URL = "https://script.google.com/macros/s/AKfycbwPS8XIn8FpAUlZ-vy645vfs-UKWln0XMOJ9bVrVsr7j2RUIUye1i9xXwd0F-Yps266/exec";
+  const S4S_CODE_KEY = "s4s_werkstatt_code";
+  const ID_MAX_PX = 1024;
+  let idCurrent = null; // { shot, image }
+
+  function s4sEsc(s) {
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+
+  function updateIdentifyShots() {
+    const sel = document.getElementById("identifyShot");
+    const btn = document.getElementById("identifyBtn");
+    if (!sel || !btn) return;
+    const prev = sel.value;
+    if (!shots.length) {
+      sel.innerHTML = '<option value="">Erst oben ein Foto hinzufügen</option>';
+      btn.disabled = true;
+      return;
+    }
+    sel.innerHTML = shots.map((s, i) =>
+      '<option value="' + i + '">' + (TAGS[i] || ("Foto " + (i + 1))) + '</option>').join("");
+    if (prev !== "" && +prev < shots.length) sel.value = prev;
+    btn.disabled = false;
+  }
+
+  function getWerkstattCode() {
+    let code = sessionStorage.getItem(S4S_CODE_KEY);
+    if (!code) {
+      code = (prompt("Werkstatt-Code für die Modellerkennung:") || "").trim();
+      if (code) sessionStorage.setItem(S4S_CODE_KEY, code);
+    }
+    return code;
+  }
+
+  function resizeForApi(file) {
+    return new Promise((resolve, reject) => {
+      const url = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        const scale = Math.min(1, ID_MAX_PX / Math.max(img.width, img.height));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        URL.revokeObjectURL(url);
+        const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+        resolve({ base64: dataUrl.split(",")[1], mimeType: "image/jpeg" });
+      };
+      img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Foto konnte nicht gelesen werden")); };
+      img.src = url;
+    });
+  }
+
+  async function callWerkstatt(payload) {
+    const code = getWerkstattCode();
+    if (!code) throw new Error("Kein Werkstatt-Code eingegeben.");
+    const res = await fetch(S4S_API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // vermeidet CORS-Preflight
+      body: JSON.stringify(Object.assign({ code }, payload)),
+    });
+    const data = await res.json();
+    if (data && data.error) {
+      if (/Werkstatt-Code/.test(data.error)) sessionStorage.removeItem(S4S_CODE_KEY);
+      throw new Error(data.error);
+    }
+    return data;
+  }
+
+  function idMsg(text, isErr) {
+    const el = document.getElementById("idMsg");
+    el.textContent = text || "";
+    el.classList.toggle("err", !!isErr);
+  }
+
+  function dbSetLabel(id, label) {
+    return new Promise((resolve, reject) => {
+      if (!galleryDb || id == null) { resolve(); return; }
+      const tx = galleryDb.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.get(id);
+      req.onsuccess = () => { if (req.result) { req.result.label = label; store.put(req.result); } };
+      tx.oncomplete = () => resolve();
+      tx.onerror = () => reject(tx.error);
+    });
+  }
+
+  // Passendes Checklisten-Modell aufklappen, damit der Vorschlag direkt geprüft werden kann
+  function showChecklistFor(brand, model) {
+    const hay = (brand + " " + model).toLowerCase();
+    const hit = MODELS.slice().sort((a, b) => b.name.length - a.name.length)
+      .find((m) => hay.includes(m.name.toLowerCase().split(" / ")[0].split(" (")[0]));
+    if (!hit) return;
+    searchInput.value = hit.name;
+    render(hit.name);
+    const first = modelList.querySelector(".model");
+    if (first) first.classList.add("open");
+  }
+
+  document.getElementById("identifyBtn").addEventListener("click", async () => {
+    const btn = document.getElementById("identifyBtn");
+    const idx = document.getElementById("identifyShot").value;
+    const shot = shots[+idx];
+    if (idx === "" || !shot) return;
+    btn.disabled = true;
+    btn.textContent = "Erkenne…";
+    idMsg("");
+    document.getElementById("identifyResult").style.display = "none";
+    try {
+      const image = await resizeForApi(shot.file);
+      const data = await callWerkstatt({ action: "identify", image });
+      const s = data.suggestion || {};
+      idCurrent = { shot, image };
+      document.getElementById("idBrand").value = s.brand || "";
+      document.getElementById("idModel").value = s.model || "";
+      document.getElementById("idColorway").value = s.colorway || "";
+      document.getElementById("idCondition").innerHTML =
+        '<option value="">– Zustand wählen –</option>' +
+        CONDITIONS.map((c) => '<option value="' + c.value + '">' + c.title + '</option>').join("");
+      const conf = document.getElementById("idConf");
+      const pct = s.confidence || 0;
+      conf.className = "id-conf" + (pct < 60 ? " low" : "");
+      conf.innerHTML = pct
+        ? 'Vorschlag mit <b>' + pct + ' %</b> Sicherheit – bitte prüfen.'
+        : '<b>Nicht erkannt</b> – Felder selbst ausfüllen oder anderes Foto (Seitenansicht) probieren.';
+      document.getElementById("identifyResult").style.display = "block";
+      if (s.model) showChecklistFor(s.brand || "", s.model);
+    } catch (err) {
+      idMsg("Fehler: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "🤖 Modell automatisch erkennen";
+    }
+  });
+
+  document.getElementById("idDiscard").addEventListener("click", () => {
+    idCurrent = null;
+    document.getElementById("identifyResult").style.display = "none";
+    idMsg("");
+  });
+
+  document.getElementById("idSave").addEventListener("click", async () => {
+    if (!idCurrent) return;
+    const model = {
+      brand: document.getElementById("idBrand").value.trim(),
+      model: document.getElementById("idModel").value.trim(),
+      colorway: document.getElementById("idColorway").value.trim(),
+      condition: document.getElementById("idCondition").value,
+    };
+    if (!model.brand && !model.model) { idMsg("Bitte mindestens Marke oder Modell eintragen.", true); return; }
+    const btn = document.getElementById("idSave");
+    btn.disabled = true;
+    idMsg("Speichere…");
+    try {
+      const data = await callWerkstatt({ action: "saveModel", image: idCurrent.image, model });
+      const label = data.label || [model.brand, model.model].filter(Boolean).join(" ");
+      await dbSetLabel(idCurrent.shot.iconId, label);
+      refreshGallery();
+      idMsg("Gespeichert: " + label + (data.fileUrl ? " (in Drive)" : ""));
+      document.getElementById("identifyResult").style.display = "none";
+      idCurrent = null;
+    } catch (err) {
+      idMsg("Fehler beim Speichern: " + err.message, true);
+    } finally {
+      btn.disabled = false;
+    }
+  });
+
 
   renderShots();
 
