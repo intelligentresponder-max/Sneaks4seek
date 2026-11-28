@@ -45,6 +45,12 @@ function doPost(e) {
         : handleSaveModel(body, props));
     }
 
+    // Oeffentlicher Upload (Landing Page): kein Zugangscode, dafuer Kontakt-Pflicht,
+    // Spam-Falle, Token pro Anfrage und Limits - siehe handlePub*.
+    if (body.action === "pubInit")     return jsonOut(handlePubInit(body, props));
+    if (body.action === "pubUpload")   return jsonOut(handlePubUpload(body, props));
+    if (body.action === "pubFinalize") return jsonOut(handlePubFinalize(body, props));
+
     const validCode = props.getProperty("ACCESS_CODE");
 
     if (!body.code || body.code !== validCode) {
@@ -232,6 +238,159 @@ function handleSaveModel(body, props) {
   ]);
 
   return { fileId: file.getId(), fileUrl: file.getUrl(), label: name };
+}
+
+/* ------------------------------------------------------------------ */
+/*  ÖFFENTLICHER UPLOAD (Landing Page, ohne Zugangscode)               */
+/*  pubInit -> pubUpload (je Datei) -> pubFinalize.                    */
+/*  Schutz: Kontakt-Pflicht (E-Mail oder Messenger), Spam-Falle,       */
+/*  Token pro Anfrage, Limits pro Kontakt und Stunde, Dateityp/-größe. */
+/* ------------------------------------------------------------------ */
+const PUB_MESSENGERS = ["WhatsApp", "Telegram", "Signal"];
+const PUB_MAX_FILES = 20;
+const PUB_MAX_PER_CONTACT_HOUR = 3;
+const PUB_MAX_PER_HOUR = 60;
+const PUB_MAX_BASE64 = 72 * 1024 * 1024; // entspricht ca. 50 MB Rohdaten
+
+// Text säubern, kürzen und gegen Formel-Einschleusung im Sheet absichern
+function pubCell(s, max) {
+  let t = String(s == null ? "" : s).replace(/[\u0000-\u001f]/g, " ").trim().slice(0, max);
+  if (/^[=+\-@]/.test(t)) t = "'" + t;
+  return t;
+}
+
+function pubIsPhone(s) {
+  return /^\+?\d{7,15}$/.test(String(s).replace(/[\s()\/.-]/g, ""));
+}
+
+function pubValidateContact(c) {
+  const email = String(c.email || "").trim().slice(0, 120);
+  const type = String(c.messengerType || "").trim();
+  const handle = String(c.messengerHandle || "").trim().slice(0, 60);
+  const name = String(c.name || "").trim().slice(0, 80);
+  const hasMessenger = !!(type || handle);
+
+  if (!email && !hasMessenger) return { error: "Bitte E-Mail oder Messenger angeben." };
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return { error: "Die E-Mail-Adresse ist ungültig." };
+  if (hasMessenger) {
+    if (PUB_MESSENGERS.indexOf(type) === -1 || !handle) return { error: "Bitte Messenger und Nummer oder Name angeben." };
+    const ok = type === "Telegram"
+      ? (/^@?[A-Za-z0-9_]{4,32}$/.test(handle) || pubIsPhone(handle))
+      : pubIsPhone(handle);
+    if (!ok) return { error: "Die Messenger-Angabe ist ungültig." };
+  }
+  return { contact: { name: name, email: email, messenger: hasMessenger ? type + ": " + handle : "" } };
+}
+
+function pubDigest(s) {
+  return Utilities.base64EncodeWebSafe(
+    Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, s)
+  );
+}
+
+// Zähler mit Obergrenze; false = Limit erreicht (oder Sperre nicht bekommen)
+function pubHit(key, max, ttlSeconds) {
+  const cache = CacheService.getScriptCache();
+  const lock = LockService.getScriptLock();
+  try {
+    lock.waitLock(5000);
+  } catch (e) {
+    return false;
+  }
+  try {
+    const n = parseInt(cache.get(key) || "0", 10);
+    if (n >= max) return false;
+    cache.put(key, String(n + 1), ttlSeconds);
+    return true;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function pubLoad(body) {
+  if (!body.submissionId || !body.token) return null;
+  const raw = CacheService.getScriptCache().get("sub:" + body.submissionId);
+  if (!raw) return null;
+  const s = JSON.parse(raw);
+  return (s.token === body.token && !s.done) ? s : null;
+}
+
+function pubSave(submissionId, s) {
+  CacheService.getScriptCache().put("sub:" + submissionId, JSON.stringify(s), 21600);
+}
+
+function handlePubInit(body, props) {
+  if (body.website) return { error: "Anfrage konnte nicht gesendet werden." }; // Spam-Falle
+  const v = pubValidateContact(body.contact || {});
+  if (v.error) return { error: v.error };
+  const c = v.contact;
+
+  const contactKey = "rl:" + pubDigest(c.email.toLowerCase() + "|" + c.messenger.toLowerCase());
+  if (!pubHit("rl:all", PUB_MAX_PER_HOUR, 3600) || !pubHit(contactKey, PUB_MAX_PER_CONTACT_HOUR, 3600)) {
+    return { error: "Gerade zu viele Anfragen. Bitte in einer Stunde noch einmal versuchen." };
+  }
+
+  const rootFolder = DriveApp.getFolderById(props.getProperty("DRIVE_FOLDER_ID"));
+  const submissionId = "S4S-" + Utilities.getUuid().slice(0, 8).toUpperCase();
+  rootFolder.createFolder(submissionId);
+
+  const token = Utilities.getUuid();
+  pubSave(submissionId, { token: token, contact: c, files: 0, done: false });
+  return { submissionId: submissionId, token: token };
+}
+
+function handlePubUpload(body, props) {
+  const s = pubLoad(body);
+  if (!s) return { error: "Anfrage abgelaufen. Bitte Seite neu laden und noch einmal senden." };
+
+  const f = body.file || {};
+  const mime = String(f.mimeType || "");
+  if (!/^(image|video)\//.test(mime)) return { error: "Dateityp nicht erlaubt." };
+  if (!f.base64 || f.base64.length > PUB_MAX_BASE64) return { error: "Datei fehlt oder ist zu groß." };
+  if (s.files >= PUB_MAX_FILES) return { error: "Zu viele Dateien in dieser Anfrage." };
+
+  s.files += 1;
+  pubSave(body.submissionId, s);
+
+  return handleUpload({
+    submissionId: body.submissionId,
+    file: {
+      base64: f.base64,
+      mimeType: mime,
+      filename: pubCell(f.filename, 100).replace(/^'/, "") || "datei",
+    },
+  }, props);
+}
+
+function handlePubFinalize(body, props) {
+  const s = pubLoad(body);
+  if (!s) return { error: "Anfrage abgelaufen. Bitte Seite neu laden und noch einmal senden." };
+
+  const d = body.formData || {};
+  const sheet = getLogSheet(props);
+  if (!sheet.getRange(1, 15).getValue()) sheet.getRange(1, 15).setValue("Messenger");
+
+  sheet.appendRow([
+    new Date(),
+    body.submissionId,
+    pubCell(s.contact.name, 80),
+    pubCell(s.contact.email, 120),
+    "",
+    "",
+    "",
+    pubCell(d.brand, 60),
+    pubCell(d.model, 80),
+    pubCell(d.size, 10),
+    pubCell(d.price, 10),
+    pubCell(d.condition, 20),
+    pubCell(d.notes, 1000),
+    "",
+    s.contact.messenger,
+  ]);
+
+  s.done = true;
+  pubSave(body.submissionId, s);
+  return { ref: body.submissionId };
 }
 
 function getLogSheet(props) {

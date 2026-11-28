@@ -30,6 +30,14 @@
   @media (max-width:520px){
     .photo-examples-grid{ grid-template-columns: repeat(2, 1fr); }
   }
+
+  .field select{
+    width:100%; padding:10px 12px; border:1px solid var(--line); border-radius:8px;
+    background:transparent; font:inherit; color:inherit;
+  }
+  .hp-field{ position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden; }
+  .thanks-box{ text-align:center; padding:28px 12px; }
+  .thanks-box h2{ font-size:24px; margin:0 0 10px; }
 </style>
 </head>
 <body>
@@ -37,23 +45,13 @@
 <div class="wrap">
   <div class="label" style="position:relative;">
 
-    <!-- Zugangscode-Sperre -->
-    <div class="gate" id="gate">
-      <h2 style="font-size:20px;">Zugangscode</h2>
-      <p style="font-size:13px; color:#4a453f; max-width:32ch;">Dieses Onboarding ist geschützt. Gib den Code ein, den du von uns bekommen hast.</p>
-      <input type="password" id="gate-code" placeholder="Code" inputmode="numeric" autocomplete="off">
-      <p class="error-msg" id="gate-error">Falscher Code. Versuch's nochmal.</p>
-      <button class="btn" id="gate-submit" style="max-width:220px;">Freischalten</button>
-      <p style="font-size:12px; color:#8b8478; max-width:32ch; margin-top:10px;">Code vergessen? Beim Team erfragen.</p>
-    </div>
-
     <div class="header">
       <div class="eyebrow">
         <span>Sneaks4Seek · Verkäufer-Onboarding</span>
         <span id="ref-tag">Ref: S4S-000</span>
       </div>
       <h1>Schuhe verkaufen.<br>Socken kassieren.</h1>
-      <p class="sub">Lad Fotos &amp; Videos hoch, ein paar grobe Angaben reichen — wir melden uns mit Angebot &amp; Abholung. Deine Kontaktdaten brauchen wir erst danach, auf der nächsten Seite. Als Dankeschön gibt's ein Paar Socken gratis dazu.</p>
+      <p class="sub">Lad Fotos &amp; Videos hoch, ein paar grobe Angaben reichen — wir melden uns mit Angebot &amp; Abholung. Eine Kontaktmöglichkeit brauchen wir, damit wir dir das Angebot schicken können. Als Dankeschön gibt's ein Paar Socken gratis dazu.</p>
       <div class="stamp">Gratis<br>Socken<br>🧦</div>
     </div>
 
@@ -147,7 +145,42 @@
       </div>
 
       <div class="section">
-        <p class="section-tag">03 · Bestätigung</p>
+        <p class="section-tag">03 · Kontakt</p>
+        <p style="font-size:12.5px; color:#6b6459; margin:0 0 12px; max-width:52ch;">
+          E-Mail <strong>oder</strong> Messenger &mdash; eins davon ist Pflicht. So schicken wir dir Angebot und Abholtermin.
+        </p>
+        <div class="grid">
+          <div class="field">
+            <label for="name">Name (optional)</label>
+            <input type="text" id="name" name="name" autocomplete="name" maxlength="80" placeholder="Vorname reicht">
+          </div>
+          <div class="field">
+            <label for="email">E-Mail</label>
+            <input type="email" id="email" name="email" autocomplete="email" maxlength="120" placeholder="dein@mail.de">
+          </div>
+          <div class="field">
+            <label for="messenger-type">Messenger</label>
+            <select id="messenger-type" name="messenger_type">
+              <option value="">– keiner –</option>
+              <option value="WhatsApp">WhatsApp</option>
+              <option value="Telegram">Telegram</option>
+              <option value="Signal">Signal</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="messenger-handle">Nummer oder @Name</label>
+            <input type="text" id="messenger-handle" name="messenger_handle" maxlength="60" autocomplete="tel" placeholder="z. B. +49 170 1234567">
+          </div>
+        </div>
+        <p class="error-msg" id="contact-error"></p>
+        <div class="hp-field" aria-hidden="true">
+          <label for="website">Website</label>
+          <input type="text" id="website" name="website" tabindex="-1" autocomplete="off">
+        </div>
+      </div>
+
+      <div class="section">
+        <p class="section-tag">04 · Bestätigung</p>
         <div class="consent">
           <input type="checkbox" id="age18" name="age18" required>
           <label for="age18" style="text-transform:none; font-family:'Inter',sans-serif; letter-spacing:normal; font-size:13px; margin:0;">
@@ -163,7 +196,7 @@
         <div class="consent" style="margin-top:10px;">
           <input type="checkbox" id="consent" name="consent" required>
           <label for="consent" style="text-transform:none; font-family:'Inter',sans-serif; letter-spacing:normal; font-size:13px; margin:0;">
-            Ich bin damit einverstanden, dass meine Angaben und hochgeladenen Dateien zur Bearbeitung dieser Anfrage genutzt werden.
+            Ich bin damit einverstanden, dass meine Angaben, Kontaktdaten und hochgeladenen Dateien zur Bearbeitung dieser Anfrage genutzt werden und ihr mich darüber kontaktieren dürft.
           </label>
         </div>
       </div>
@@ -177,6 +210,13 @@
         <p class="error-msg" id="submit-error"></p>
       </div>
     </form>
+
+    <div class="section thanks-box" id="thanks" style="display:none;">
+      <h2>Danke! 🧦</h2>
+      <p id="thanks-text"></p>
+      <p>Deine Referenz: <strong id="thanks-ref"></strong></p>
+    </div>
+
 
     <p class="foot-tag">Sneaks4Seek · Dieses Etikett wurde digital ausgefüllt</p>
   </div>
