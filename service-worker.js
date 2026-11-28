@@ -4,7 +4,7 @@
 // api.js mit toter URL hätte echten Verkäufern das Onboarding lautlos
 // kaputt gemacht, ohne dass irgendwer online davon etwas gemerkt hätte.
 // Offline-Fallback bleibt erhalten (Cache nur, wenn das Netzwerk fehlschlägt).
-const CACHE = 'sneaks4seek-v4';
+const CACHE = 'sneaks4seek-v5';
 const ASSETS = [
   '/Sneaks4seek/',
   '/Sneaks4seek/index.html',

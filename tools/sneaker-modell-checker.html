@@ -251,6 +251,17 @@
     background: rgba(0,0,0,.72); color: var(--kraft); font-size:9.5px; line-height:1.25;
     white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
+
+  /* ---- Hersteller-Check ---- */
+  .maker-hint{ font-size:12px; margin:10px 0 8px; color:#9a9ca1; min-height:1em; }
+  .maker-hint b{ color: var(--gold); }
+  .maker-hint.warn b{ color:#e06b56; }
+  .maker-row{ display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px; }
+  .maker-btn{
+    background: var(--panel); border:1px solid var(--line); color:#9a9ca1;
+    padding:5px 10px; border-radius:7px; font-size:11.5px; cursor:pointer;
+  }
+  .maker-btn.match{ border-color: var(--gold); color: var(--gold); font-weight:600; }
 </style>
 </head>
 <body>
@@ -320,6 +331,22 @@
           Steht auf dem Größenetikett innen am Schuh — zuverlässiger als jede Sichtprüfung, der Code
           identifiziert Modell <em>und</em> Colorway eindeutig. Enter drücken öffnet die Google-Suche
           in einem neuen Tab.
+        </footer>
+        <p class="label-tag" style="margin-top:12px;">Beim Hersteller prüfen</p>
+        <p class="maker-hint" id="makerHint">Style-Code eintippen – das Format verrät meist schon die Marke.</p>
+        <div class="maker-row" id="makerRow">
+          <button type="button" class="maker-btn" data-maker="nike">Nike / Jordan</button>
+          <button type="button" class="maker-btn" data-maker="adidas">Adidas</button>
+          <button type="button" class="maker-btn" data-maker="new-balance">New Balance</button>
+          <button type="button" class="maker-btn" data-maker="vans">Vans</button>
+          <button type="button" class="maker-btn" data-maker="converse">Converse</button>
+          <button type="button" class="maker-btn" data-maker="puma">Puma</button>
+          <button type="button" class="maker-btn" data-maker="reebok">Reebok</button>
+        </div>
+        <footer class="hint" style="margin-bottom:10px;">
+          Sucht den Code nur auf der offiziellen Hersteller-Domain. Taucht dort ein Produkt mit
+          gleichem Code, Modell und Colorway auf, passt es. Kein Treffer heißt nicht automatisch
+          Fake (ältere Releases verschwinden), ist aber ein Warnsignal.
         </footer>
         <div class="price-row" id="priceRow" style="margin-top:10px;">
           <button type="button" class="price-btn" data-site="stockx">StockX</button>
@@ -1264,8 +1291,9 @@
     btn.textContent = "Erkenne…";
     idMsg("");
     document.getElementById("identifyResult").style.display = "none";
+    let image = null;
     try {
-      const image = await resizeForApi(shot.file);
+      image = await resizeForApi(shot.file);
       const data = await callWerkstatt({ action: "identify", image });
       const s = data.suggestion || {};
       idCurrent = { shot, image };
@@ -1284,7 +1312,21 @@
       document.getElementById("identifyResult").style.display = "block";
       if (s.model) showChecklistFor(s.brand || "", s.model);
     } catch (err) {
-      idMsg("Fehler: " + err.message, true);
+      if (!image) { idMsg("Fehler: " + err.message, true); return; }
+      // Fallback: Formular leer öffnen, Modell selbst eintragen und trotzdem speichern
+      idCurrent = { shot, image };
+      ["idBrand", "idModel", "idColorway"].forEach((id) => { document.getElementById(id).value = ""; });
+      const sku = normCode(skuInput.value);
+      const guess = sku ? detectMakers(sku) : [];
+      if (guess.length === 1) document.getElementById("idBrand").value = MAKERS[guess[0]].label.split(" / ")[0];
+      document.getElementById("idCondition").innerHTML =
+        '<option value="">– Zustand wählen –</option>' +
+        CONDITIONS.map((c) => '<option value="' + c.value + '">' + c.title + '</option>').join("");
+      const conf = document.getElementById("idConf");
+      conf.className = "id-conf low";
+      conf.innerHTML = "<b>Manuell eintragen</b> – automatische Erkennung gerade nicht verfügbar.";
+      document.getElementById("identifyResult").style.display = "block";
+      idMsg("Hinweis: " + err.message, false);
     } finally {
       btn.disabled = false;
       btn.textContent = "🤖 Modell automatisch erkennen";
@@ -1343,6 +1385,52 @@
     if (!code) { skuInput.focus(); return; }
     window.open(priceUrl(e.target.dataset.site, code), "_blank");
   });
+
+    /* ---- Hersteller-Check: Code-Format + Suche auf offizieller Domain ---- */
+  // Heuristik, keine Garantie: typische Style-Code-Formate je Hersteller.
+  const MAKERS = {
+    nike:          { label: "Nike / Jordan", domain: "nike.com",       re: [/^[A-Z]{2}\d{4}-\d{3}$/, /^\d{6}-\d{3}$/] },
+    adidas:        { label: "Adidas",        domain: "adidas.de",      re: [/^[A-Z]{1,2}\d{4,5}$/] },
+    "new-balance": { label: "New Balance",   domain: "newbalance.de",  re: [/^(M|U|W|BB|CM|ML|MR|WL|GC|PC|IV)\d{3,4}[A-Z]{1,4}\d?$/] },
+    vans:          { label: "Vans",          domain: "vans.de",        re: [/^VN0[A-Z0-9]{5,9}$/] },
+    converse:      { label: "Converse",      domain: "converse.com",   re: [/^[AM]?\d{4,6}C$/] },
+    puma:          { label: "Puma",          domain: "puma.com",       re: [/^\d{6}[-_ ]?\d{2}$/] },
+    reebok:        { label: "Reebok",        domain: "reebok.eu",      re: [/^100\d{6}$/] },
+  };
+  const makerHint = document.getElementById("makerHint");
+  const makerRow = document.getElementById("makerRow");
+
+  function normCode(s) { return String(s || "").trim().toUpperCase().replace(/\s+/g, ""); }
+
+  function detectMakers(code) {
+    return Object.keys(MAKERS).filter((k) => MAKERS[k].re.some((r) => r.test(code)));
+  }
+
+  function updateMakerHint() {
+    const code = normCode(skuInput.value);
+    const hits = code ? detectMakers(code) : [];
+    [...makerRow.children].forEach((b) => b.classList.toggle("match", hits.includes(b.dataset.maker)));
+    makerHint.classList.remove("warn");
+    if (!code) {
+      makerHint.textContent = "Style-Code eintippen – das Format verrät meist schon die Marke.";
+    } else if (hits.length) {
+      makerHint.innerHTML = "Format passt zu: <b>" + hits.map((k) => MAKERS[k].label).join(" / ") +
+        "</b> – markierten Knopf tippen und Treffer vergleichen.";
+    } else {
+      makerHint.classList.add("warn");
+      makerHint.innerHTML = "<b>Unbekanntes Format</b> – Tippfehler? Code nochmal am Etikett prüfen.";
+    }
+  }
+
+  skuInput.addEventListener("input", updateMakerHint);
+  makerRow.addEventListener("click", (e) => {
+    const k = e.target.dataset && e.target.dataset.maker;
+    if (!k) return;
+    const code = normCode(skuInput.value);
+    if (!code) { skuInput.focus(); return; }
+    window.open("https://www.google.com/search?q=" + encodeURIComponent('"' + code + '" site:' + MAKERS[k].domain), "_blank");
+  });
+  updateMakerHint();
 
   /* ---- Zustand-Checkliste ---- */
   const CONDITIONS = [
