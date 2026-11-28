@@ -2,7 +2,7 @@
    Trage hier die URL deiner deployten Apps-Script-Web-App ein
    (siehe /apps-script/Code.gs + README.md). */
 
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPS8XIn8FpAUlZ-vy645vfs-UKWln0XMOJ9bVrVsr7j2RUIUye1i9xXwd0F-Yps266/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzhwYS1jaSVOA3hA0PWO_KWxrx8x_LmL7jtYB9Af0NLYgoADqjC11Qn9JBq4xOqh2jwwg/exec";
 
 async function callApi(action, payload) {
   if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes("PASTE_YOUR")) {
