@@ -262,6 +262,11 @@
     padding:5px 10px; border-radius:7px; font-size:11.5px; cursor:pointer;
   }
   .maker-btn.match{ border-color: var(--gold); color: var(--gold); font-weight:600; }
+
+  /* ---- Aus Chat einfügen ---- */
+  .chat-paste{ margin-top:10px; border-top:1px dashed var(--line); padding-top:10px; }
+  .chat-paste label{ display:block; font-size:10.5px; color:#8b8d92; text-transform:uppercase; letter-spacing:.06em; margin-bottom:4px; }
+  #chatLine{ font-family: monospace; font-size:12.5px !important; }
 </style>
 </head>
 <body>
@@ -303,6 +308,10 @@
         <p class="label-tag">Modell automatisch erkennen</p>
         <select id="identifyShot"><option value="">Erst oben ein Foto hinzufügen</option></select>
         <button type="button" class="price-btn" id="identifyBtn" disabled>🤖 Modell automatisch erkennen</button>
+        <div class="chat-paste">
+          <label for="chatLine">Aus Chat einfügen</label>
+          <input type="text" id="chatLine" placeholder="S4S|Marke|Modell|Colorway|Style-Code|Zustand|%" autocomplete="off">
+        </div>
         <div class="id-result" id="identifyResult" style="display:none;">
           <div class="id-conf" id="idConf"></div>
           <label for="idBrand">Marke</label><input type="text" id="idBrand">
@@ -1431,6 +1440,58 @@
     window.open("https://www.google.com/search?q=" + encodeURIComponent('"' + code + '" site:' + MAKERS[k].domain), "_blank");
   });
   updateMakerHint();
+
+  /* ---- Aus Chat einfügen: S4S|Marke|Modell|Colorway|Style-Code|Zustand|Sicherheit ---- */
+  const chatLine = document.getElementById("chatLine");
+
+  function parseChatLine(s) {
+    const t = String(s || "").trim().replace(/^`+|`+$/g, "");
+    const parts = t.split("|").map((x) => x.trim());
+    if (parts[0].toUpperCase() !== "S4S" || parts.length < 3) return null;
+    const cond = (parts[5] || "").toLowerCase().replace(/\s+/g, "-");
+    return {
+      brand: parts[1] || "",
+      model: parts[2] || "",
+      colorway: parts[3] || "",
+      sku: parts[4] || "",
+      condition: CONDITIONS.some((c) => c.value === cond) ? cond : "",
+      confidence: Math.max(0, Math.min(100, parseInt(parts[6], 10) || 0)),
+    };
+  }
+
+  async function applyChatLine() {
+    const d = parseChatLine(chatLine.value);
+    if (!d) {
+      if (chatLine.value.trim()) idMsg("Zeile nicht erkannt – sie muss mit S4S| anfangen.", true);
+      return;
+    }
+    const idx = document.getElementById("identifyShot").value;
+    const shot = shots[+idx];
+    if (idx === "" || !shot) { idMsg("Erst oben das passende Foto hinzufügen.", true); return; }
+    try {
+      const image = await resizeForApi(shot.file);
+      idCurrent = { shot, image };
+    } catch (err) { idMsg("Fehler: " + err.message, true); return; }
+    document.getElementById("idBrand").value = d.brand;
+    document.getElementById("idModel").value = d.model;
+    document.getElementById("idColorway").value = d.colorway;
+    const sel = document.getElementById("idCondition");
+    sel.innerHTML = '<option value="">– Zustand wählen –</option>' +
+      CONDITIONS.map((c) => '<option value="' + c.value + '">' + c.title + '</option>').join("");
+    sel.value = d.condition;
+    const conf = document.getElementById("idConf");
+    conf.className = "id-conf" + (d.confidence && d.confidence < 60 ? " low" : "");
+    conf.innerHTML = "Aus Chat übernommen" + (d.confidence ? " – <b>" + d.confidence + " %</b> Sicherheit" : "") + ". Prüfen, dann speichern.";
+    document.getElementById("identifyResult").style.display = "block";
+    if (d.sku) { skuInput.value = d.sku; updateMakerHint(); }
+    if (d.model) showChecklistFor(d.brand, d.model);
+    idMsg("");
+    chatLine.value = "";
+  }
+
+  chatLine.addEventListener("paste", () => setTimeout(applyChatLine, 0));
+  chatLine.addEventListener("keydown", (e) => { if (e.key === "Enter") applyChatLine(); });
+  chatLine.addEventListener("change", applyChatLine);
 
   /* ---- Zustand-Checkliste ---- */
   const CONDITIONS = [
